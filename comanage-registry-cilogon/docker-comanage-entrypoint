@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Database initialization or schema management using adodb
+# is idempotent so we always run it at startup.
+pushd "$COMANAGE_REGISTRY_DIR/app" > /dev/null 2>&1
+
+until ./Console/cake database > /dev/null 2>&1; do
+    >&2 echo "Database is unavailable - sleeping"
+    sleep 1
+done
+
+popd > /dev/null 2>&1
+
+# We only want to run the setup script once since it creates
+# state in the database. Until COmanage Registry has a better
+# mechanism for telling us if setup has already been run
+# we create an ephemeral CakePHP script to tell us.
+SETUP_ALREADY_SCRIPT="$COMANAGE_REGISTRY_DIR/app/Console/Command/SetupAlreadyShell.php"
+
+cat >> $SETUP_ALREADY_SCRIPT <<"EOF"
+<?php
+
+class SetupAlreadyShell extends AppShell {
+  var $uses = array('Co');
+
+  function main() {
+    $args = array();
+    $args['conditions']['Co.name'] = 'COmanage';
+    $args['contain'] = false;
+
+    $co = $this->Co->find('first', $args);
+
+    if(!empty($co)) {
+      $this->error('Setup already');
+    }
+  }
+}
+EOF
+
+pushd /srv/comanage-registry/app > /dev/null 2>&1
+./Console/cake setupAlready > /dev/null 2>&1
+setup_already=$?
+
+rm -f "$SETUP_ALREADY_SCRIPT"
+
+if [ $setup_already -eq 0 ]; then
+    rm -f "$COMANAGE_REGISTRY_DIR/local/Config/security.salt" > /dev/null 2>&1
+    rm -f "$COMANAGE_REGISTRY_DIR/local/Config/security.seed" > /dev/null 2>&1
+    ./Console/cake setup --admin-given-name "${COMANAGE_REGISTRY_ADMIN_GIVEN_NAME}" \
+                         --admin-family-name "${COMANAGE_REGISTRY_ADMIN_FAMILY_NAME}" \
+                         --admin-username "${COMANAGE_REGISTRY_ADMIN_USERNAME}" \
+                         --enable-pooling "${COMANAGE_REGISTRY_ENABLE_POOLING}" > /dev/null 2>&1 
+fi
+
+popd > /dev/null 2>&1
+
+# Running CakePHP console commands generates cache files so 
+# set the ownership of those files appropriately.
+chown -R www-data:www-data "$COMANAGE_REGISTRY_DIR/app/tmp"
+
+# Make sure the directory structure we need is available
+# in the data volume for $COMANAGE_REGISTRY_DIR/local
+mkdir -p "$COMANAGE_REGISTRY_DIR/local/Config"
+mkdir -p "$COMANAGE_REGISTRY_DIR/local/Plugin"
+mkdir -p "$COMANAGE_REGISTRY_DIR/local/View/Pages/public"
+mkdir -p "$COMANAGE_REGISTRY_DIR/local/webroot/img"
+
+# Copy secrets and other deployment specific details into place
+sed -i -e s@%%OIDCClientID%%@`cat ${OIDC_CLIENT_ID_FILE}`@ /etc/apache2/conf-enabled/mod-auth-openidc.conf
+sed -i -e s@%%OIDCClientSecret%%@`cat ${OIDC_CLIENT_SECRET_FILE}`@ /etc/apache2/conf-enabled/mod-auth-openidc.conf
+sed -i -e s@%%OIDCProviderMetadataURL%%@`cat ${OIDC_PROVIDER_METADATA_URL_FILE}`@ /etc/apache2/conf-enabled/mod-auth-openidc.conf
+sed -i -e s@%%OIDCCryptoPassphrase%%@`cat ${OIDC_CRYPTO_PASSPHRASE_FILE}`@ /etc/apache2/conf-enabled/mod-auth-openidc.conf
+
+sed -i -e s@%%REGISTRY_HOST%%@`cat ${REGISTRY_HOST_FILE}`@g /etc/apache2/conf-enabled/mod-auth-openidc.conf
+
+rm /etc/apache2/cert.pem
+cp ${HTTPS_CERT_FILE} /etc/apache2/cert.pem
+chmod 644 /etc/apache2/cert.pem
+
+rm /etc/apache2/privkey.pem
+cp ${HTTPS_PRIVKEY_FILE} /etc/apache2/privkey.pem
+chmod 600 /etc/apache2/privkey.pem
+
+rm /etc/apache2/chain.pem
+cp ${HTTPS_CHAIN_FILE} /etc/apache2/chain.pem
+chmod 644 /etc/apache2/chain.pem
+
+# first arg is `-f` or `--some-option`
+if [ "${1#-}" != "$1" ]; then
+    set -- apache2-foreground "$@"
+fi
+
+exec "$@"

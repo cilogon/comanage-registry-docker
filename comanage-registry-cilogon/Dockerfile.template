@@ -1,0 +1,18 @@
+FROM sphericalcowgroup/comanage-registry:%%COMANAGE_REGISTRY_VERSION%%-mod-auth-openidc
+
+COPY mod-auth-openidc.conf /etc/apache2/conf-enabled/mod-auth-openidc.conf
+
+COPY docker-comanage-entrypoint /usr/local/bin/
+
+# Default values for first administrator bootstrapped
+# into the platform, most likely overridden at build time
+# using build arguments.
+ARG COMANAGE_REGISTRY_ADMIN_GIVEN_NAME
+ARG COMANAGE_REGISTRY_ADMIN_FAMILY_NAME
+ARG COMANAGE_REGISTRY_ADMIN_USERNAME
+ARG COMANAGE_REGISTRY_ENABLE_POOLING
+
+ENV COMANAGE_REGISTRY_ADMIN_GIVEN_NAME ${COMANAGE_REGISTRY_ADMIN_GIVEN_NAME:-Registry}
+ENV COMANAGE_REGISTRY_ADMIN_FAMILY_NAME ${COMANAGE_REGISTRY_ADMIN_FAMILY_NAME:-Admin}
+ENV COMANAGE_REGISTRY_ADMIN_USERNAME ${COMANAGE_REGISTRY_ADMIN_USERNAME:-registry.admin}
+ENV COMANAGE_REGISTRY_ENABLE_POOLING ${COMANAGE_REGISTRY_ENABLE_POOLING:-No}
