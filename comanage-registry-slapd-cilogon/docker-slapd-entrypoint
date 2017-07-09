@@ -200,6 +200,9 @@ EOF
     ldapmodify -Y EXTERNAL -H ldapi:/// -a -f /etc/ldap/schema/eduperson.ldif 2>&1
     ldapmodify -Y EXTERNAL -H ldapi:/// -a -f /etc/ldap/schema/openssh-lpk.ldif 2>&1
 
+    # Add CILogonPerson schema.
+    ldapmodify -Y EXTERNAL -H ldapi:/// -a -f /etc/ldap/schema/cilogonperson.ldif 2>&1
+
     # Stop slapd.
     killall slapd
 

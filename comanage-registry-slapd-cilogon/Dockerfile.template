@@ -10,6 +10,8 @@ ENV OLC_ROOT_PW ${OLC_ROOT_PW:-password}
 
 COPY docker-slapd-entrypoint /usr/local/bin/
 
+COPY cilogonperson.ldif /etc/ldap/schema/cilogonperson.ldif
+
 EXPOSE 389 636
 
 CMD ["slapd", "-d", "32768", "-h", "ldapi:/// ldap:/// ldaps:///", "-u", "openldap", "-g", "openldap"]
