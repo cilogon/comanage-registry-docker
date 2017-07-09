@@ -1,5 +1,21 @@
 FROM sphericalcowgroup/comanage-registry:%%COMANAGE_REGISTRY_VERSION%%-mod-auth-openidc
 
+RUN apt-get update && apt-get install -y \
+      libpcre3-dev \
+      && wget -O oauth.tar.gz https://github.com/cilogon/pecl-web_services-oauth/archive/null_byte.tar.gz \
+      && mkdir -p oauth \
+      && tar zxf oauth.tar.gz -C oauth --strip-components=1 \
+      && rm oauth.tar.gz \
+      && ( \
+          cd oauth \
+          && phpize \
+          && ./configure \
+          && make \
+          && make install \
+          ) \
+      && rm -r oauth \
+      && docker-php-ext-enable oauth
+
 COPY mod-auth-openidc.conf /etc/apache2/conf-enabled/mod-auth-openidc.conf
 
 COPY docker-comanage-entrypoint /usr/local/bin/
