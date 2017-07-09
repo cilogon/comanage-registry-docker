@@ -5,7 +5,7 @@ services:
     comanage-registry-database:
         image: mariadb
         volumes:
-            - /opt/mariadb-data:/var/lib/mysql
+            - /srv/docker/cilogon/var/lib/mysql:/var/lib/mysql
         environment:
             - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password 
             - MYSQL_DATABASE=registry
@@ -22,8 +22,8 @@ services:
     comanage-registry-ldap:
         image: cilogon/comanage-registry-slapd-cilogon
         volumes:
-            - /opt/slapd-data:/var/lib/ldap
-            - /opt/slapd-config:/etc/ldap/slapd.d
+            - /srv/docker/cilogon/var/lib/ldap:/var/lib/ldap
+            - /srv/docker/cilogon/etc/ldap/slapd.d:/etc/ldap/slapd.d
         environment:
             - SLAPD_CERT_FILE=/run/secrets/slapd_cert_file
             - SLAPD_PRIVKEY_FILE=/run/secrets/slapd_privkey_file
@@ -45,9 +45,9 @@ services:
             replicas: 1
 
     comanage-registry:
-        image: cilogon/comanage-registry:2.0.0-rc3
+        image: cilogon/comanage-registry:hotfix-2.0.x
         volumes:
-            - /srv/comanage-registry-mariadb:/local
+            - /srv/docker/cilogon/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/oidc_client_secret 
@@ -56,11 +56,23 @@ services:
             - REGISTRY_HOST_FILE=/run/secrets/registry_host 
             - HTTPS_CERT_FILE=/run/secrets/https_cert_file 
             - HTTPS_PRIVKEY_FILE=/run/secrets/https_privkey_file 
-            - HTTPS_CHAIN_FILE=/run/secrets/https_chain_file 
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=registry
+            - COMANAGE_REGISTRY_DATABASE_HOST=comanage-registry-database
+            - COMANAGE_REGISTRY_DATABASE_USER=registry_user
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_EMAIL_HOST=smtp.ncsa.uiuc.edu
+            - COMANAGE_REGISTRY_EMAIL_PORT=25
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/comanage_registry_security_seed
         secrets:
+            - comanage_registry_database_user_password
+            - comanage_registry_security_salt
+            - comanage_registry_security_seed
             - oidc_client_id
             - oidc_client_secret
             - oidc_provider_metadata_url
@@ -68,16 +80,22 @@ services:
             - registry_host
             - https_cert_file
             - https_privkey_file
-            - https_chain_file
         networks:
             - default
         ports:
             - "80:80"
             - "443:443"
+            - "25:25"
         deploy:
             replicas: 1
 
 secrets:
+    comanage_registry_database_user_password:
+        external: true
+    comanage_registry_security_salt:
+        external: true
+    comanage_registry_security_seed:
+        external: true
     mysql_root_password:
         external: true
     mysql_registry_user_password:
@@ -103,6 +121,4 @@ secrets:
     https_cert_file:
         external: true
     https_privkey_file:
-        external: true
-    https_chain_file:
         external: true
