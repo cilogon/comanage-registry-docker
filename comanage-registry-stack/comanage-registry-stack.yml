@@ -1,5 +1,12 @@
 version: '3.1'
 
+networks:
+    cilogon-multi-tenant:
+        driver: overlay
+        driver_opts:
+            subnet: 10.0.100.0/24
+            encrypted: 1
+
 services:
 
     comanage-registry-database:
@@ -15,7 +22,7 @@ services:
             - mysql_root_password
             - mysql_registry_user_password
         networks:
-            - default
+            - cilogon-multi-tenant
         deploy:
             replicas: 1
 
@@ -37,7 +44,7 @@ services:
             - slapd_chain_file
             - olc_root_pw
         networks:
-            - default
+            - cilogon-multi-tenant
         ports:
             - "636:636"
             - "389:389"
@@ -81,7 +88,7 @@ services:
             - https_cert_file
             - https_privkey_file
         networks:
-            - default
+            - cilogon-multi-tenant
         ports:
             - "80:80"
             - "443:443"
