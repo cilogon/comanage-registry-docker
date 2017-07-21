@@ -1,5 +1,7 @@
 FROM sphericalcowgroup/comanage-registry:%%COMANAGE_REGISTRY_VERSION%%-mod-auth-openidc
 
+COPY 000-comanage.conf /etc/apache2/sites-available/000-comanage.conf
+
 RUN apt-get update && apt-get install -y \
       libpcre3-dev \
       && wget -O oauth.tar.gz https://github.com/cilogon/pecl-web_services-oauth/archive/null_byte.tar.gz \
