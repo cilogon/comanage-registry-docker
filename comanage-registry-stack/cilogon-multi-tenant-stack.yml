@@ -6,6 +6,8 @@ networks:
         driver_opts:
             subnet: 10.0.100.0/24
             encrypted: 1
+    proxy:
+        external: true
 
 services:
 
@@ -89,12 +91,17 @@ services:
             - https_privkey_file
         networks:
             - cilogon-multi-tenant
-        ports:
-            - "80:80"
-            - "443:443"
-            - "25:25"
+            - proxy
         deploy:
             replicas: 1
+            labels:
+                - com.df.notify=true
+                - com.df.distribute=true
+                - com.df.port=80
+                - com.df.servicePath=/
+                - com.df.serviceDomain=registry-dev.cilogon.org
+                - com.df.addReqHeader=X-Forwarded-Port %[dst_port]
+                - com.df.xForwardedProto=true
 
 secrets:
     comanage_registry_database_user_password:
