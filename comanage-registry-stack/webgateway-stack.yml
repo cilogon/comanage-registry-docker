@@ -31,7 +31,15 @@ services:
               protocol: tcp
               mode: host
         deploy:
-            replicas: 1
+            mode: global
+            placement:
+              constraints:
+                - node.role == manager
+            restart_policy:
+              condition: on-failure
+            update_config:
+              parallelism: 1
+              delay: 60s
 
 secrets:
     registry_cilogon_org_https_cert_file:
