@@ -45,7 +45,7 @@ services:
             replicas: 1
 
     comanage-registry:
-        image: cilogon/comanage-registry:hotfix-2.0.x
+        image: cilogon/comanage-registry:3.1.0
         volumes:
             - /srv/docker/cilogon/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
