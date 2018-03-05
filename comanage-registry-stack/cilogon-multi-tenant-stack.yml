@@ -84,7 +84,7 @@ services:
                 - "traefik.backend=comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry.cilogon.org"
+                - "traefik.frontend.rule=Host: registry-dev.cilogon.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
