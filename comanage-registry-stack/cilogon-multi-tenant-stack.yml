@@ -11,30 +11,30 @@ networks:
 
 services:
 
-#    comanage-registry-ldap-master:
-#        image: cilogon/comanage-registry-slapd-cilogon
-#        volumes:
-#            - /srv/docker/cilogon/var/lib/ldap:/var/lib/ldap
-#            - /srv/docker/cilogon/etc/ldap/slapd.d:/etc/ldap/slapd.d
-#        environment:
-#            - SLAPD_CERT_FILE=/run/secrets/cilogon_multi_tenant_slapd_cert_file
-#            - SLAPD_PRIVKEY_FILE=/run/secrets/cilogon_multi_tenant_slapd_privkey_file
-#            - SLAPD_CHAIN_FILE=/run/secrets/cilogon_multi_tenant_slapd_chain_file
-#            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
-#            - OLC_SUFFIX=dc=registry,dc=cilogon,dc=org
-#            - OLC_ROOT_DN=cn=admin,dc=registry,dc=cilogon,dc=org
-#        secrets:
-#            - cilogon_multi_tenant_slapd_cert_file
-#            - cilogon_multi_tenant_slapd_privkey_file
-#            - cilogon_multi_tenant_slapd_chain_file
-#            - cilogon_multi_tenant_olc_root_pw
-#        networks:
-#            - cilogon-multi-tenant
-#        ports:
-#            - "636:636"
-#            - "389:389"
-#        deploy:
-#            replicas: 1
+    comanage-registry-ldap-master:
+        image: cilogon/comanage-registry-slapd-cilogon
+        volumes:
+            - /srv/docker/cilogon_multi_tenant/var/lib/ldap:/var/lib/ldap
+            - /srv/docker/cilogon_multi_tenant/etc/ldap/slapd.d:/etc/ldap/slapd.d
+        environment:
+            - SLAPD_CERT_FILE=/run/secrets/cilogon_multi_tenant_slapd_cert_file
+            - SLAPD_PRIVKEY_FILE=/run/secrets/cilogon_multi_tenant_slapd_privkey_file
+            - SLAPD_CHAIN_FILE=/run/secrets/cilogon_multi_tenant_slapd_chain_file
+            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
+            - OLC_SUFFIX=dc=cilogon,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
+        secrets:
+            - cilogon_multi_tenant_slapd_cert_file
+            - cilogon_multi_tenant_slapd_privkey_file
+            - cilogon_multi_tenant_slapd_chain_file
+            - cilogon_multi_tenant_olc_root_pw
+        networks:
+            - cilogon-multi-tenant
+        ports:
+            - "636:636"
+            - "389:389"
+        deploy:
+            replicas: 1
 
     comanage-registry:
         image: cilogon/comanage-registry:develop
