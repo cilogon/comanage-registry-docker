@@ -38,7 +38,7 @@ services:
                 - "traefik.frontend.rule=Host: aa.gw-astronomy.org"
                 - "traefik.frontend.passTLSCert=true"
                 - "traefik.port=8080"
-            replicas: 1
+            replicas: 3
 
 secrets:
     gw_astronomy_saml_aa_signing_cert:
