@@ -8,10 +8,12 @@ networks:
             encrypted: 1
     webgateway:
         external: true
+    ldapgateway:
+        external: true
 
 services:
 
-    comanage-registry-ldap-master:
+    cilogon-multi-tenant-ldap-master:
         image: cilogon/comanage-registry-slapd-cilogon
         volumes:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap:/var/lib/ldap
@@ -30,9 +32,7 @@ services:
             - cilogon_multi_tenant_olc_root_pw
         networks:
             - cilogon-multi-tenant
-        ports:
-            - "636:636"
-            - "389:389"
+            - ldapgateway
         deploy:
             replicas: 1
 
