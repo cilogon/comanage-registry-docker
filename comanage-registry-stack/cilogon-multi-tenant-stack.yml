@@ -19,16 +19,10 @@ services:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap:/var/lib/ldap
             - /srv/docker/cilogon_multi_tenant/etc/ldap/slapd.d:/etc/ldap/slapd.d
         environment:
-            - SLAPD_CERT_FILE=/run/secrets/cilogon_multi_tenant_slapd_cert_file
-            - SLAPD_PRIVKEY_FILE=/run/secrets/cilogon_multi_tenant_slapd_privkey_file
-            - SLAPD_CHAIN_FILE=/run/secrets/cilogon_multi_tenant_slapd_chain_file
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
             - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
         secrets:
-            - cilogon_multi_tenant_slapd_cert_file
-            - cilogon_multi_tenant_slapd_privkey_file
-            - cilogon_multi_tenant_slapd_chain_file
             - cilogon_multi_tenant_olc_root_pw
         networks:
             - cilogon-multi-tenant
@@ -106,12 +100,6 @@ secrets:
     cilogon_multi_tenant_comanage_registry_security_salt:
         external: true
     cilogon_multi_tenant_comanage_registry_security_seed:
-        external: true
-    cilogon_multi_tenant_slapd_cert_file:
-        external: true
-    cilogon_multi_tenant_slapd_privkey_file:
-        external: true
-    cilogon_multi_tenant_slapd_chain_file:
         external: true
     cilogon_multi_tenant_olc_root_pw:
         external: true

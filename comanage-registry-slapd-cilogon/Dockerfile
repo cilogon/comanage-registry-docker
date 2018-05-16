@@ -12,7 +12,7 @@ COPY docker-slapd-entrypoint /usr/local/bin/
 
 COPY cilogonperson.ldif /etc/ldap/schema/cilogonperson.ldif
 
-EXPOSE 389 636
+EXPOSE 389
 
-CMD ["slapd", "-d", "256", "-h", "ldapi:/// ldap:/// ldaps:///", "-u", "openldap", "-g", "openldap"]
+CMD ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
 
