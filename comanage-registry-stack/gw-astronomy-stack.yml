@@ -8,6 +8,8 @@ networks:
             encrypted: 1
     webgateway:
         external: true
+    ldapgateway:
+        external: true
 
 services:
     aa:
@@ -40,8 +42,28 @@ services:
                 - "traefik.port=8080"
             replicas: 1
 
+    gw-astronomy-ldap-master:
+        image: cilogon/comanage-registry-slapd-cilogon
+        volumes:
+            - /srv/docker/gw-astronomy/var/lib/ldap:/var/lib/ldap
+            - /srv/docker/gw-astronomy/etc/ldap/slapd.d:/etc/ldap/slapd.d
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/gw_astronomy_olc_root_pw
+            - OLC_SUFFIX=dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
+            - OLC_ROOT_DN=cn=admin,dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
+        secrets:
+            - gw_astronomy_olc_root_pw
+        networks:
+            - gw-astronomy
+            - ldapgateway
+        deploy:
+            replicas: 1
+
 secrets:
     gw_astronomy_saml_aa_signing_cert:
         external: true
     gw_astronomy_saml_aa_privkey:
         external: true
+    gw_astronomy_olc_root_pw:
+        external: true
+
