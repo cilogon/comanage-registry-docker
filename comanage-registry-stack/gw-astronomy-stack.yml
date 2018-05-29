@@ -104,7 +104,7 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=comanage-registry"
+                - "traefik.backend=gw-astronomy-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: registry-dev.gw-astronomy.org"

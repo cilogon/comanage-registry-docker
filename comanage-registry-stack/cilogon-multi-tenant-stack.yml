@@ -76,7 +76,7 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=comanage-registry"
+                - "traefik.backend=cilogon-multi-tenant-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: registry-dev.cilogon.org"
