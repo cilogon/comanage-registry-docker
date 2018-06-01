@@ -16,8 +16,8 @@ services:
     cilogon-multi-tenant-ldap-master:
         image: cilogon/comanage-registry-slapd-cilogon
         volumes:
-            - /srv/docker/cilogon_multi_tenant/var/lib/ldap:/var/lib/ldap
-            - /srv/docker/cilogon_multi_tenant/etc/ldap/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_master:/var/lib/ldap
+            - /srv/docker/cilogon_multi_tenant/etc/ldap_master/slapd.d:/etc/ldap/slapd.d
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
