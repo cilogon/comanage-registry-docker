@@ -21,6 +21,7 @@ services:
 
     comanage-registry-ldap:
         image: cilogon/comanage-registry-slapd-cilogon
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:/// ldaps:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/cilogon/var/lib/ldap:/var/lib/ldap
             - /srv/docker/cilogon/etc/ldap/slapd.d:/etc/ldap/slapd.d
