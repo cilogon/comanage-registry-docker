@@ -1,16 +1,15 @@
-# Proxy for CILogon multi-tenant directory.
 dn: olcDatabase=ldap,cn=config
+changetype: add
 objectClass: olcDatabaseConfig
 objectClass: olcLDAPConfig
 olcDatabase: ldap
 olcSuffix: dc=cilogon,dc=org
-olcDbURI: ldap://cilogon-multi-tenant-ldap-master
+olcDbURI: "ldap://cilogon-multi-tenant-ldap-master ldap://cilogon-multi-tenant-ldap-replica-01"
 olcSecurity: tls=256
 olcAccess: {0}to * by * write
 
-# Proxy for gw-astronomy directory.
-# Anonymous binds are allowed so we do not set olcSecurity.
 dn: olcDatabase=ldap,cn=config
+changetype: add
 objectClass: olcDatabaseConfig
 objectClass: olcLDAPConfig
 olcDatabase: ldap
