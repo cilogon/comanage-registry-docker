@@ -1,0 +1,4 @@
+dn: olcDatabase={2}mdb,cn=config
+changetype: modify
+add: olcLimits
+olcLimits: dn.exact="uid=syncrepl,o=system,dc=cilogon,dc=org" size=100000

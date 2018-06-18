@@ -9,12 +9,12 @@ services:
         image: sphericalcowgroup/comanage-registry-slapd-proxy
         command: ["slapd", "-d", "0", "-h", "ldapi:/// ldap:/// ldaps:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/ldapgateway/etc/ldap/ldap_gateway_proxy_config:/etc/ldap/ldap_gateway_proxy_config
+            - /srv/docker/ldapgateway/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/ldapgateway/ldif/config/ldap_gateway_proxy_config.ldif:/ldif/config/ldap_gateway_proxy_config.ldif
         environment:
             - SLAPD_CERT_FILE=/run/secrets/ldap_gateway_slapd_cert_file
             - SLAPD_PRIVKEY_FILE=/run/secrets/ldap_gateway_slapd_privkey_file
             - SLAPD_CHAIN_FILE=/run/secrets/ldap_gateway_slapd_chain_file
-            - SLAPD_LDAP_PROXY_CONFIG_LDIF=/etc/ldap/ldap_gateway_proxy_config
         secrets:
             - ldap_gateway_slapd_cert_file
             - ldap_gateway_slapd_privkey_file

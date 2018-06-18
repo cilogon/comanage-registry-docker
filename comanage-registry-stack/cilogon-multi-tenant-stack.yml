@@ -14,16 +14,50 @@ networks:
 services:
 
     cilogon-multi-tenant-ldap-master:
-        image: cilogon/comanage-registry-slapd-cilogon
+        image: sphericalcowgroup/comanage-registry-slapd
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap_master:/var/lib/ldap
             - /srv/docker/cilogon_multi_tenant/etc/ldap_master/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-master-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-COU_MESS.ldif:/ldif/admin/MESS.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
             - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_olc_root_dn_password
         secrets:
             - cilogon_multi_tenant_olc_root_pw
+            - cilogon_multi_tenant_olc_root_dn_password
+        networks:
+            - cilogon-multi-tenant
+            - ldapgateway
+        deploy:
+            replicas: 1
+
+    cilogon-multi-tenant-ldap-replica-01:
+        image: sphericalcowgroup/comanage-registry-slapd
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_replica_01:/var/lib/ldap
+            - /srv/docker/cilogon_multi_tenant/etc/ldap_replica_01/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-replica_01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
+            - OLC_SUFFIX=dc=cilogon,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_olc_root_dn_password
+        secrets:
+            - cilogon_multi_tenant_olc_root_pw
+            - cilogon_multi_tenant_olc_root_dn_password
         networks:
             - cilogon-multi-tenant
             - ldapgateway
@@ -102,6 +136,8 @@ secrets:
     cilogon_multi_tenant_comanage_registry_security_seed:
         external: true
     cilogon_multi_tenant_olc_root_pw:
+        external: true
+    cilogon_multi_tenant_olc_root_dn_password:
         external: true
     cilogon_multi_tenant_oidc_client_id:
         external: true
