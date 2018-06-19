@@ -1,0 +1,4 @@
+dn: olcDatabase={2}mdb,cn=config
+changetype: modify
+add: olcSyncrepl
+olcSyncrepl: rid=001 provider=ldap://cilogon-multi-tenant-ldap-master bindmethod=simple binddn="uid=syncrepl,o=system,dc=cilogon,dc=org" credentials=%%SYNCREPL_PASSWORD_FILE%% searchbase="dc=cilogon,dc=org" schemachecking=on type=refreshAndPersist retry="60 +"

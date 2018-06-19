@@ -217,9 +217,35 @@ pushd "$COMANAGE_REGISTRY_DIR/app" > "$OUTPUT" 2>&1
 
 popd > "$OUTPUT" 2>&1
 
-# Running CakePHP console commands generates cache files so 
-# set the ownership of those files appropriately.
-chown -R www-data:www-data "$COMANAGE_REGISTRY_DIR/app/tmp"
+# Force a datbase update if requested. This is helpful when deploying
+# a new version of the code that does not result in a change in the
+# version number and so upgradeVersion does not fire. An example
+# of this scenario is when new code is introduced in the develop
+# branch but before a release happens.
+if [ -n "$COMANAGE_REGISTRY_DATABASE_SCHEMA_FORCE" ]; then
+    echo "Forcing a database schema update..." > "$OUTPUT" 2>&1
+    pushd "$COMANAGE_REGISTRY_DIR/app" > "$OUTPUT" 2>&1
+    ./Console/cake database > "$OUTPUT" 2>&1
+    popd > "$OUTPUT" 2>&1
+fi
+
+# Enable any supported non-core plugins if requested.
+if [ -n "$COMANAGE_REGISTRY_ENABLE_PLUGIN" ]; then
+    plugins=(`echo "$COMANAGE_REGISTRY_ENABLE_PLUGIN" | sed -e 's@,@ @'`) > "$OUTPUT" 2>&1
+    for plugin in "${plugins[@]}"; 
+    do 
+        echo "Enabling available plugin $plugin..." > "$OUTPUT" 2>&1
+        pushd "$COMANAGE_REGISTRY_DIR/local/Plugin" > "$OUTPUT" 2>&1
+        ln -s "../../app/AvailablePlugin/$plugin" "$plugin" > "$OUTPUT" 2>&1
+        popd > "$OUTPUT" 2>&1
+        pushd "$COMANAGE_REGISTRY_DIR/app" > "$OUTPUT" 2>&1
+        ./Console/cake database > "$OUTPUT" 2>&1
+        popd > "$OUTPUT" 2>&1
+    done
+fi
+
+# Remove any cache files generated thus far.
+find "$COMANAGE_REGISTRY_DIR/app/tmp/cache" -type f -exec rm -f {} \;
 
 # If defined use configured location of Apache HTTP Server 
 # HTTPS certificate and key files. The certificate file may also
@@ -236,6 +262,15 @@ if [ -n "$HTTPS_PRIVKEY_FILE" ]; then
     cp "$HTTPS_PRIVKEY_FILE" /etc/apache2/privkey.pem
     chown www-data /etc/apache2/privkey.pem
     chmod 0600 /etc/apache2/privkey.pem
+fi
+
+# If SERVER_NAME has not been injected try to determine
+# it from the HTTPS_CERT_FILE.
+if [ -z "$SERVER_NAME" ]; then
+    SERVER_NAME=`openssl x509 -in /etc/apache2/cert.pem -text -noout | sed -n '/X509v3 Subject Alternative Name:/ {n;p}' | sed -E 's/.*DNS:(.*)\s*$/\1/'`
+    if [ -z "$SERVER_NAME" ]; then
+        SERVER_NAME=`openssl x509 -in /etc/apache2/cert.pem -subject -noout | sed -E 's/subject=.*CN=(.*)\s*/\1/'`
+    fi
 fi
 
 # If SERVER_NAME has not been injected try to determine

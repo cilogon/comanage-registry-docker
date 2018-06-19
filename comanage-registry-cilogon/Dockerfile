@@ -1,5 +1,13 @@
-FROM sphericalcowgroup/comanage-registry:%%COMANAGE_REGISTRY_VERSION%%-mod-auth-openidc
+ARG COMANAGE_REGISTRY_VERSION=3.1.0
+FROM sphericalcowgroup/comanage-registry:${COMANAGE_REGISTRY_VERSION}-mod-auth-openidc
 
+# Enable the remoteip module since we run behind load balancer
+COPY remoteip.conf /etc/apache2/mods-available/remoteip.conf
+RUN a2enmod remoteip
+
+COPY 000-comanage.conf /etc/apache2/sites-available/000-comanage.conf
+
+# Required for the MediaWiki Provisioner
 RUN apt-get update && apt-get install -y \
       libpcre3-dev \
       && wget -O oauth.tar.gz https://github.com/cilogon/pecl-web_services-oauth/archive/null_byte.tar.gz \
@@ -40,29 +48,20 @@ RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" \
       && tar -zxf Oa4mpClient.tar.gz -C "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" --strip-components=1 \
       && rm -f Oa4mpClient.tar.gz
 
-# The MediaWikiProvisioner plugin is not part of a COmanage Registry release
-# yet so download it from the feature branch and deploy it.
-ARG COMANAGE_REGISTRY_FEATURE_SRC_URL=https://github.com/Internet2/comanage-registry/archive/feature-3.1.tar.gz
-
-RUN wget -O comanage_registry_feature.tar.gz $COMANAGE_REGISTRY_FEATURE_SRC_URL \
-      && mkdir comanage_registry_feature \
-      && tar -zxf comanage_registry_feature.tar.gz -C comanage_registry_feature --strip-components=1 \
-      && rm -f comanage_registry_feature.tar.gz \
-      && cp -a comanage_registry_feature/app/AvailablePlugin/MediaWikiProvisioner "$COMANAGE_REGISTRY_DIR/app/Plugin/" \
-      && rm -rf comanage_registry_feature
-
 COPY mod-auth-openidc.conf /etc/apache2/conf-enabled/mod-auth-openidc.conf
 
 COPY docker-comanage-entrypoint /usr/local/bin/
 
-# Default values for first administrator bootstrapped
-# into the platform, most likely overridden at build time
-# using build arguments.
+# Allow values for first administrator bootstrapped into the
+# platform to be specified at image build time, in addition to
+# being injected at run time through the entrypoint script.
 ARG COMANAGE_REGISTRY_ADMIN_GIVEN_NAME
 ARG COMANAGE_REGISTRY_ADMIN_FAMILY_NAME
 ARG COMANAGE_REGISTRY_ADMIN_USERNAME
 ARG COMANAGE_REGISTRY_ENABLE_POOLING
 
+# Set simple defaults for first administrator bootstrapped into the
+# platform to make simple evaluation of the platform easier.
 ENV COMANAGE_REGISTRY_ADMIN_GIVEN_NAME ${COMANAGE_REGISTRY_ADMIN_GIVEN_NAME:-Registry}
 ENV COMANAGE_REGISTRY_ADMIN_FAMILY_NAME ${COMANAGE_REGISTRY_ADMIN_FAMILY_NAME:-Admin}
 ENV COMANAGE_REGISTRY_ADMIN_USERNAME ${COMANAGE_REGISTRY_ADMIN_USERNAME:-registry.admin}
