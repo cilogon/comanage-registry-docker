@@ -12,4 +12,4 @@ ou: system
 description: special account for SyncRepl
 objectClass: account
 objectClass: simpleSecurityObject
-userPassword: {CRYPT}$6$rounds=5000$5gOJF0vDJERyPD7t$r4iLU4bVjjDr99tVBlLonZ2mazFoqG.cQWazWGv8LxgyYNo16MJf5Xzbks.zKsEWQaFg2Wjkq4rLHpwI3vHcd1
+userPassword: %%SYNCREPL_USER_PASSWORD_HASH_FILE%%
