@@ -30,9 +30,11 @@ services:
             - OLC_SUFFIX=dc=cilogon,dc=org
             - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
             - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cilogon_multi_tenant_syncrepl_user_password_hash
         secrets:
             - cilogon_multi_tenant_olc_root_pw
             - cilogon_multi_tenant_olc_root_dn_password
+            - cilogon_multi_tenant_syncrepl_user_password_hash
         networks:
             - cilogon-multi-tenant
             - ldapgateway
@@ -55,9 +57,11 @@ services:
             - OLC_SUFFIX=dc=cilogon,dc=org
             - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
             - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cilogon_multi_tenant_syncrepl_user_password_hash
         secrets:
             - cilogon_multi_tenant_olc_root_pw
             - cilogon_multi_tenant_olc_root_dn_password
+            - cilogon_multi_tenant_syncrepl_user_password_hash
         networks:
             - cilogon-multi-tenant
             - ldapgateway
@@ -149,3 +153,6 @@ secrets:
         external: true
     cilogon_multi_tenant_registry_host:
         external: true
+    cilogon_multi_tenant_syncrepl_user_password_hash:
+        external: true
+
