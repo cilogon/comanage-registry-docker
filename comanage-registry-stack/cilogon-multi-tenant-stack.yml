@@ -24,7 +24,12 @@ services:
             - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-master-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-COU_MESS.ldif:/ldif/admin/MESS.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_NANOGrav.ldif:/ldif/admin/NANOGrav.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CILogon.ldif:/ldif/admin/CILogon.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_ImPACT.ldif:/ldif/admin/ImPACT.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CCAST.ldif:/ldif/admin/CCAST.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_OSG.ldif:/ldif/admin/OSG.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_SciDAS.ldif:/ldif/admin/SciDAS.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
@@ -83,25 +88,23 @@ services:
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
-            - COMANAGE_REGISTRY_DATABASE=registry
+            - COMANAGE_REGISTRY_DATABASE=registry_test
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_database_host
-            - COMANAGE_REGISTRY_DATABASE_USER=registry_user
+            - COMANAGE_REGISTRY_DATABASE_USER=registry_usertst
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
             - COMANAGE_REGISTRY_EMAIL_PORT=465
-            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT=registry@cilogon.org
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_email_account_password
-            - COMANAGE_REGISTRY_EMAIL_FROM_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_email_from
+            - COMANAGE_REGISTRY_EMAIL_FROM=registry@cilogon.org
             - COMANAGE_REGISTRY_ENABLE_PLUGIN=MediaWikiProvisioner
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_security_seed
         secrets:
             - cilogon_multi_tenant_comanage_registry_database_user_password
             - cilogon_multi_tenant_comanage_registry_database_host
-            - cilogon_multi_tenant_comanage_registry_email_account
             - cilogon_multi_tenant_comanage_registry_email_account_password
-            - cilogon_multi_tenant_comanage_registry_email_from
             - cilogon_multi_tenant_comanage_registry_security_salt
             - cilogon_multi_tenant_comanage_registry_security_seed
             - cilogon_multi_tenant_oidc_client_id
@@ -117,23 +120,19 @@ services:
                 - "traefik.backend=cilogon-multi-tenant-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.cilogon.org"
+                - "traefik.frontend.rule=Host: registry-test.cilogon.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant_test"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
-            replicas: 1
+            replicas: 2
 
 secrets:
     cilogon_multi_tenant_comanage_registry_database_user_password:
         external: true
     cilogon_multi_tenant_comanage_registry_database_host:
         external: true
-    cilogon_multi_tenant_comanage_registry_email_account:
-        external: true
     cilogon_multi_tenant_comanage_registry_email_account_password:
-        external: true
-    cilogon_multi_tenant_comanage_registry_email_from:
         external: true
     cilogon_multi_tenant_comanage_registry_security_salt:
         external: true
@@ -155,4 +154,3 @@ secrets:
         external: true
     cilogon_multi_tenant_syncrepl_user_password_hash:
         external: true
-
