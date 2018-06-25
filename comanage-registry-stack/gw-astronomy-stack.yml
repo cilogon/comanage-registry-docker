@@ -48,6 +48,8 @@ services:
         volumes:
             - /srv/docker/gw-astronomy/var/lib/ldap_master:/var/lib/ldap
             - /srv/docker/gw-astronomy/etc/ldap_master/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/gw-astronomy/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/gw-astronomy/schema/ligo.ldif:/schema/ligo.ldif
             - /srv/docker/gw-astronomy/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
             - /srv/docker/gw-astronomy/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
             - /srv/docker/gw-astronomy/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
@@ -87,6 +89,8 @@ services:
         volumes:
             - /srv/docker/gw-astronomy/var/lib/ldap_replica_01:/var/lib/ldap
             - /srv/docker/gw-astronomy/etc/ldap_replica_01/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/gw-astronomy/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/gw-astronomy/schema/ligo.ldif:/schema/ligo.ldif
             - /srv/docker/gw-astronomy/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
             - /srv/docker/gw-astronomy/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
             - /srv/docker/gw-astronomy/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
