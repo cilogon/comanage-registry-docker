@@ -114,9 +114,9 @@ services:
                 - "traefik.backend=cilogon-multi-tenant-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-test.cilogon.org"
+                - "traefik.frontend.rule=Host: registry.cilogon.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant_test"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant_prod"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 3
