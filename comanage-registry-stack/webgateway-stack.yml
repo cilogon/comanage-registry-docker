@@ -11,10 +11,12 @@ services:
             - /srv/docker/webgateway/etc/traefik:/etc/traefik
             - /var/run/docker.sock:/var/run/docker.sock
         secrets:
-            - registry_cilogon_org_https_cert_file
-            - registry_cilogon_org_https_privkey_file
             - gw_astronomy_saml_aa_signing_cert
             - gw_astronomy_saml_aa_privkey
+            - registry_cilogon_org_https_cert_file
+            - registry_cilogon_org_https_privkey_file
+            - registry_gw_astronomy_org_https_cert_file
+            - registry_gw_astronomy_org_https_privkey_file
         networks:
             - webgateway
         ports:
@@ -42,11 +44,15 @@ services:
               delay: 60s
 
 secrets:
+    gw_astronomy_saml_aa_signing_cert:
+        external: true
+    gw_astronomy_saml_aa_privkey:
+        external: true
     registry_cilogon_org_https_cert_file:
         external: true
     registry_cilogon_org_https_privkey_file:
         external: true
-    gw_astronomy_saml_aa_signing_cert:
+    registry_gw_astronomy_org_https_cert_file:
         external: true
-    gw_astronomy_saml_aa_privkey:
+    registry_gw_astronomy_org_https_privkey_file:
         external: true

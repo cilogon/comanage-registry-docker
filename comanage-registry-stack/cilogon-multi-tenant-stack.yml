@@ -8,33 +8,70 @@ networks:
             encrypted: 1
     webgateway:
         external: true
+    ldapgateway:
+        external: true
 
 services:
 
-#    comanage-registry-ldap-master:
-#        image: cilogon/comanage-registry-slapd-cilogon
-#        volumes:
-#            - /srv/docker/cilogon/var/lib/ldap:/var/lib/ldap
-#            - /srv/docker/cilogon/etc/ldap/slapd.d:/etc/ldap/slapd.d
-#        environment:
-#            - SLAPD_CERT_FILE=/run/secrets/cilogon_multi_tenant_slapd_cert_file
-#            - SLAPD_PRIVKEY_FILE=/run/secrets/cilogon_multi_tenant_slapd_privkey_file
-#            - SLAPD_CHAIN_FILE=/run/secrets/cilogon_multi_tenant_slapd_chain_file
-#            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
-#            - OLC_SUFFIX=dc=registry,dc=cilogon,dc=org
-#            - OLC_ROOT_DN=cn=admin,dc=registry,dc=cilogon,dc=org
-#        secrets:
-#            - cilogon_multi_tenant_slapd_cert_file
-#            - cilogon_multi_tenant_slapd_privkey_file
-#            - cilogon_multi_tenant_slapd_chain_file
-#            - cilogon_multi_tenant_olc_root_pw
-#        networks:
-#            - cilogon-multi-tenant
-#        ports:
-#            - "636:636"
-#            - "389:389"
-#        deploy:
-#            replicas: 1
+    cilogon-multi-tenant-ldap-master:
+        image: sphericalcowgroup/comanage-registry-slapd
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_master:/var/lib/ldap
+            - /srv/docker/cilogon_multi_tenant/etc/ldap_master/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-master-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_NANOGrav.ldif:/ldif/admin/NANOGrav.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CILogon.ldif:/ldif/admin/CILogon.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_ImPACT.ldif:/ldif/admin/ImPACT.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CCAST.ldif:/ldif/admin/CCAST.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_OSG.ldif:/ldif/admin/OSG.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_SciDAS.ldif:/ldif/admin/SciDAS.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
+            - OLC_SUFFIX=dc=cilogon,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cilogon_multi_tenant_syncrepl_user_password_hash
+        secrets:
+            - cilogon_multi_tenant_olc_root_pw
+            - cilogon_multi_tenant_olc_root_dn_password
+            - cilogon_multi_tenant_syncrepl_user_password_hash
+        networks:
+            - cilogon-multi-tenant
+            - ldapgateway
+        deploy:
+            replicas: 1
+
+    cilogon-multi-tenant-ldap-replica-01:
+        image: sphericalcowgroup/comanage-registry-slapd
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_replica_01:/var/lib/ldap
+            - /srv/docker/cilogon_multi_tenant/etc/ldap_replica_01/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-replica_01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
+            - OLC_SUFFIX=dc=cilogon,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=cilogon,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cilogon_multi_tenant_syncrepl_user_password_hash
+        secrets:
+            - cilogon_multi_tenant_olc_root_pw
+            - cilogon_multi_tenant_olc_root_dn_password
+            - cilogon_multi_tenant_syncrepl_user_password_hash
+        networks:
+            - cilogon-multi-tenant
+            - ldapgateway
+        deploy:
+            replicas: 1
 
     comanage-registry:
         image: cilogon/comanage-registry:3.1.1
@@ -51,24 +88,23 @@ services:
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
-            - COMANAGE_REGISTRY_DATABASE=registry
+            - COMANAGE_REGISTRY_DATABASE=registry_test
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_database_host
-            - COMANAGE_REGISTRY_DATABASE_USER=registry_user
+            - COMANAGE_REGISTRY_DATABASE_USER=registry_usertst
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
             - COMANAGE_REGISTRY_EMAIL_PORT=465
-            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT=registry@cilogon.org
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_email_account_password
-            - COMANAGE_REGISTRY_EMAIL_FROM_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_email_from
+            - COMANAGE_REGISTRY_EMAIL_FROM=registry@cilogon.org
+            - COMANAGE_REGISTRY_ENABLE_PLUGIN=MediaWikiProvisioner
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/cilogon_multi_tenant_comanage_registry_security_seed
         secrets:
             - cilogon_multi_tenant_comanage_registry_database_user_password
             - cilogon_multi_tenant_comanage_registry_database_host
-            - cilogon_multi_tenant_comanage_registry_email_account
             - cilogon_multi_tenant_comanage_registry_email_account_password
-            - cilogon_multi_tenant_comanage_registry_email_from
             - cilogon_multi_tenant_comanage_registry_security_salt
             - cilogon_multi_tenant_comanage_registry_security_seed
             - cilogon_multi_tenant_oidc_client_id
@@ -81,12 +117,12 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=comanage-registry"
+                - "traefik.backend=cilogon-multi-tenant-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry.cilogon.org"
+                - "traefik.frontend.rule=Host: registry-test.cilogon.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant_test"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 3
@@ -96,23 +132,15 @@ secrets:
         external: true
     cilogon_multi_tenant_comanage_registry_database_host:
         external: true
-    cilogon_multi_tenant_comanage_registry_email_account:
-        external: true
     cilogon_multi_tenant_comanage_registry_email_account_password:
-        external: true
-    cilogon_multi_tenant_comanage_registry_email_from:
         external: true
     cilogon_multi_tenant_comanage_registry_security_salt:
         external: true
     cilogon_multi_tenant_comanage_registry_security_seed:
         external: true
-    cilogon_multi_tenant_slapd_cert_file:
-        external: true
-    cilogon_multi_tenant_slapd_privkey_file:
-        external: true
-    cilogon_multi_tenant_slapd_chain_file:
-        external: true
     cilogon_multi_tenant_olc_root_pw:
+        external: true
+    cilogon_multi_tenant_olc_root_dn_password:
         external: true
     cilogon_multi_tenant_oidc_client_id:
         external: true
@@ -123,4 +151,6 @@ secrets:
     cilogon_multi_tenant_oidc_crypto_passphrase:
         external: true
     cilogon_multi_tenant_registry_host:
+        external: true
+    cilogon_multi_tenant_syncrepl_user_password_hash:
         external: true
