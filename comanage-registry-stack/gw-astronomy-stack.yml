@@ -43,16 +43,70 @@ services:
             replicas: 3
 
     gw-astronomy-ldap-master:
-        image: cilogon/comanage-registry-slapd-cilogon
+        image: sphericalcowgroup/comanage-registry-slapd
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/gw-astronomy/var/lib/ldap:/var/lib/ldap
-            - /srv/docker/gw-astronomy/etc/ldap/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/gw-astronomy/var/lib/ldap_master:/var/lib/ldap
+            - /srv/docker/gw-astronomy/etc/ldap_master/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/gw-astronomy/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/gw-astronomy/schema/ligo.ldif:/schema/ligo.ldif
+            - /srv/docker/gw-astronomy/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/gw-astronomy/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/gw-astronomy/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/gw-astronomy/ldif/config-first-master-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_CALICO.ldif:/ldif/admin/CALICO.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_GWHEN.ldif:/ldif/admin/GWHEN.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_gwic-3g-sct.ldif:/ldif/admin/gwic-3g-sct.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_gwic-3g-rdcoord.ldif:/ldif/admin/gwic-3g-rdcoord.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_GWIC.ldif:/ldif/admin/GWIC.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_GWNU.ldif:/ldif/admin/GWNU.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_HTCondor.ldif:/ldif/admin/HTCondor.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_KAGRA-LIGO.ldif:/ldif/admin/KAGRA-LIGO.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_LSC-OSG.ldif:/ldif/admin/LSC-OSG.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_LV-EM.ldif:/ldif/admin/LV-EM.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_openLVEM.ldif:/ldif/admin/openLVEM.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-always-master-CO_OZGRAV.ldif:/ldif/admin/OZGRAV.ldif
+
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/gw_astronomy_olc_root_pw
             - OLC_SUFFIX=dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
             - OLC_ROOT_DN=cn=admin,dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/gw_astronomy_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/gw_astronomy_syncrepl_user_password_hash
         secrets:
             - gw_astronomy_olc_root_pw
+            - gw_astronomy_olc_root_dn_password
+            - gw_astronomy_syncrepl_user_password_hash
+        networks:
+            - gw-astronomy
+            - ldapgateway
+        deploy:
+            replicas: 1
+
+    gw-astronomy-ldap-replica-01:
+        image: sphericalcowgroup/comanage-registry-slapd
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/gw-astronomy/var/lib/ldap_replica_01:/var/lib/ldap
+            - /srv/docker/gw-astronomy/etc/ldap_replica_01/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/gw-astronomy/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/gw-astronomy/schema/ligo.ldif:/schema/ligo.ldif
+            - /srv/docker/gw-astronomy/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/gw-astronomy/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/gw-astronomy/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/gw-astronomy/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/gw-astronomy/ldif/config-first-replica_01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/gw_astronomy_olc_root_pw
+            - OLC_SUFFIX=dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
+            - OLC_ROOT_DN=cn=admin,dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/gw_astronomy_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/gw_astronomy_syncrepl_user_password_hash
+        secrets:
+            - gw_astronomy_olc_root_pw
+            - gw_astronomy_olc_root_dn_password
+            - gw_astronomy_syncrepl_user_password_hash
         networks:
             - gw-astronomy
             - ldapgateway
@@ -143,5 +197,9 @@ secrets:
         external: true
     gw_astronomy_oidc_crypto_passphrase:
         external: true
+    gw_astronomy_olc_root_dn_password:
+        external: true
     gw_astronomy_registry_host:
+        external: true
+    gw_astronomy_syncrepl_user_password_hash:
         external: true
