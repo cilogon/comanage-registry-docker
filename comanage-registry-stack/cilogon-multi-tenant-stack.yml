@@ -24,12 +24,6 @@ services:
             - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-master-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_NANOGrav.ldif:/ldif/admin/NANOGrav.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CILogon.ldif:/ldif/admin/CILogon.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_ImPACT.ldif:/ldif/admin/ImPACT.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CCAST.ldif:/ldif/admin/CCAST.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_OSG.ldif:/ldif/admin/OSG.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_SciDAS.ldif:/ldif/admin/SciDAS.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
