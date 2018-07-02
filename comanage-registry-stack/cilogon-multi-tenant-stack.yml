@@ -24,6 +24,8 @@ services:
             - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-master-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CILogon.ldif:/ldif/admin/CILogon.ldif
+
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
