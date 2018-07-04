@@ -41,6 +41,9 @@ services:
                 - "traefik.frontend.passTLSCert=true"
                 - "traefik.port=8080"
             replicas: 1
+            update_config:
+                parallelism: 1
+                delay: 60s
 
     gw-astronomy-ldap-master:
         image: sphericalcowgroup/comanage-registry-slapd
