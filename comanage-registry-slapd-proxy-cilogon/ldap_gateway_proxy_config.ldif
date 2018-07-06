@@ -14,6 +14,6 @@ objectClass: olcDatabaseConfig
 objectClass: olcLDAPConfig
 olcDatabase: ldap
 olcSuffix: dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
-olcDbURI: "ldap://gw-astronomy-ldap-master ldap://gw-astronomy-ldap-replica-01"
+olcDbURI: "ldap://gw-astronomy-ldap-01 ldap://gw-astronomy-ldap-02"
 olcAccess: {0}to * by * write
 olcLimits: {0}* size=100000
