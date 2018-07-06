@@ -4,7 +4,7 @@ objectClass: olcDatabaseConfig
 objectClass: olcLDAPConfig
 olcDatabase: ldap
 olcSuffix: dc=cilogon,dc=org
-olcDbURI: "ldap://cilogon-multi-tenant-ldap-master ldap://cilogon-multi-tenant-ldap-replica-01"
+olcDbURI: "ldap://cilogon-multi-tenant-ldap-01 ldap://cilogon-multi-tenant-ldap-02"
 olcSecurity: tls=256
 olcAccess: {0}to * by * write
 
