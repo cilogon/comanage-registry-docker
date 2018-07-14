@@ -10,6 +10,8 @@ services:
         command: ["slapd", "-d", "0", "-h", "ldapi:/// ldap:/// ldaps:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/ldapgateway/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/ldapgateway/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/ldapgateway/schema/ligo.ldif:/schema/ligo.ldif
             - /srv/docker/ldapgateway/ldif/config/ldap_gateway_proxy_config.ldif:/ldif/config/ldap_gateway_proxy_config.ldif
         environment:
             - SLAPD_CERT_FILE=/run/secrets/ldap_gateway_slapd_cert_file
