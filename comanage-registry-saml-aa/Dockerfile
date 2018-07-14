@@ -1,4 +1,5 @@
-FROM jetty:9.3.21 AS builder
+ARG JETTY_VERSION=latest
+FROM jetty:${JETTY_VERSION} AS builder
 
 USER root
 
@@ -25,7 +26,7 @@ RUN mkdir -p /opt/shibboleth-idp \
             -silent \
             -Didp.property.file=idp.installer.properties
 
-FROM jetty:9.3.21
+FROM jetty:${JETTY_VERSION}
 
 USER root
 
@@ -83,4 +84,3 @@ WORKDIR ${JETTY_BASE}
 COPY docker-aa-entrypoint /docker-aa-entrypoint
 
 ENTRYPOINT ["/docker-aa-entrypoint"]
-
