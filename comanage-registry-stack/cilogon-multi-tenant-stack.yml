@@ -13,23 +13,24 @@ networks:
 
 services:
 
-    cilogon-multi-tenant-ldap-master:
+    cilogon-multi-tenant-ldap-01:
         image: sphericalcowgroup/comanage-registry-slapd
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_master:/var/lib/ldap
-            - /srv/docker/cilogon_multi_tenant/etc/ldap_master/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_01:/var/lib/ldap
+            - /srv/docker/cilogon_multi_tenant/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
             - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-first-master-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_NANOGrav.ldif:/ldif/admin/NANOGrav.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CILogon.ldif:/ldif/admin/CILogon.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_ImPACT.ldif:/ldif/admin/ImPACT.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_CCAST.ldif:/ldif/admin/CCAST.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_OSG.ldif:/ldif/admin/OSG.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-master-CO_SciDAS.ldif:/ldif/admin/SciDAS.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_NANOGrav.ldif:/ldif/admin/NANOGrav.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_CILogon.ldif:/ldif/admin/CILogon.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_ImPACT.ldif:/ldif/admin/ImPACT.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_CCAST.ldif:/ldif/admin/CCAST.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_OSG.ldif:/ldif/admin/OSG.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_SciDAS.ldif:/ldif/admin/SciDAS.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
@@ -46,17 +47,17 @@ services:
         deploy:
             replicas: 1
 
-    cilogon-multi-tenant-ldap-replica-01:
+    cilogon-multi-tenant-ldap-02:
         image: sphericalcowgroup/comanage-registry-slapd
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_replica_01:/var/lib/ldap
-            - /srv/docker/cilogon_multi_tenant/etc/ldap_replica_01/slapd.d:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_multi_tenant/var/lib/ldap_02:/var/lib/ldap
+            - /srv/docker/cilogon_multi_tenant/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
             - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-first-replica_01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
