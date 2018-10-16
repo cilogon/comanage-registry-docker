@@ -13,7 +13,7 @@ networks:
 
 services:
     aa:
-        image: cilogon/comanage-registry-saml-aa
+        image: cilogon/comanage-registry-saml-aa:2.0.0
         volumes:
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-filter.xml:/opt/shibboleth-idp/conf/attribute-filter.xml
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-resolver.xml:/opt/shibboleth-idp/conf/attribute-resolver.xml
@@ -22,7 +22,7 @@ services:
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem:/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/mdq-beta-cert.pem:/opt/shibboleth-idp/credentials/mdq-beta-cert.pem
         environment:
-            - SAML_AA_ENTITY_ID=https://aa-dev.gw-astronomy.org/aa/shibboleth
+            - SAML_AA_ENTITY_ID=https://aa-test.gw-astronomy.org/aa/shibboleth
             - SAML_AA_SCOPE=gw-astronomy.org
             - SAML_AA_SIGNING_CERT_FILE=/var/run/secrets/gw_astronomy_saml_aa_signing_cert
             - SAML_AA_SIGNING_PRIVKEY_FILE=/var/run/secrets/gw_astronomy_saml_aa_privkey
@@ -37,7 +37,7 @@ services:
                 - "traefik.backend=gw-astronomy-aa"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: aa-dev.gw-astronomy.org"
+                - "traefik.frontend.rule=Host: aa-test.gw-astronomy.org"
                 - "traefik.frontend.passTLSCert=true"
                 - "traefik.port=8080"
             replicas: 1
@@ -132,9 +132,9 @@ services:
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
-            - COMANAGE_REGISTRY_DATABASE=gw_astronomy_registry_dev
+            - COMANAGE_REGISTRY_DATABASE=gw_astronomy_registry_test
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/gw_astronomy_comanage_registry_database_host
-            - COMANAGE_REGISTRY_DATABASE_USER=gw_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER=gw_registry_test
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/gw_astronomy_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
@@ -165,9 +165,9 @@ services:
                 - "traefik.backend=gw-astronomy-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.gw-astronomy.org"
+                - "traefik.frontend.rule=Host: registry-test.gw-astronomy.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_test"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
