@@ -38,7 +38,6 @@ services:
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: aa-dev.gw-astronomy.org"
-                - "traefik.frontend.passTLSCert=true"
                 - "traefik.port=8080"
             replicas: 1
             update_config:
