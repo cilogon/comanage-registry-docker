@@ -6,7 +6,7 @@ networks:
 
 services:
     webgateway:
-        image: traefik:v1.7.5
+        image: traefik:v1.7.6
         volumes:
             - /srv/docker/webgateway/etc/traefik:/etc/traefik
             - /var/run/docker.sock:/var/run/docker.sock
