@@ -166,7 +166,7 @@ services:
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: registry.gw-astronomy.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_test"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 3
