@@ -70,7 +70,7 @@ services:
             replicas: 1
 
     comanage-registry:
-        image: cilogon/comanage-registry:3.1.1_dev_6f6ebb
+        image: cilogon/comanage-registry:3.1.1-2
         volumes:
             - /srv/docker/cilogon_multi_tenant/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
