@@ -13,7 +13,7 @@ networks:
 
 services:
     aa:
-        image: cilogon/comanage-registry-saml-aa:3.0.0
+        image: cilogon/comanage-registry-saml-aa:4.0.0
         volumes:
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-filter.xml:/opt/shibboleth-idp/conf/attribute-filter.xml
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-resolver.xml:/opt/shibboleth-idp/conf/attribute-resolver.xml
