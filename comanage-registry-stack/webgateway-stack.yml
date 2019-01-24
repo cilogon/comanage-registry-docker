@@ -17,6 +17,8 @@ services:
             - registry_cilogon_org_https_privkey_file
             - registry_gw_astronomy_org_https_cert_file
             - registry_gw_astronomy_org_https_privkey_file
+            - orcid_saml_gateway_gw_astronomy_org_https_cert_file
+            - orcid_saml_gateway_gw_astronomy_org_https_privkey_file
         networks:
             - webgateway
         ports:
@@ -55,4 +57,8 @@ secrets:
     registry_gw_astronomy_org_https_cert_file:
         external: true
     registry_gw_astronomy_org_https_privkey_file:
+        external: true
+    orcid_saml_gateway_gw_astronomy_org_https_cert_file:
+        external: true
+    orcid_saml_gateway_gw_astronomy_org_https_privkey_file:
         external: true
