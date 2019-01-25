@@ -173,6 +173,40 @@ services:
                 - "traefik.port=80"
             replicas: 3
 
+    orcid-saml-gateway:
+        image: cilogon/comanage-registry-orcid-saml-gateway:1
+        volumes:
+            - /srv/docker/gw-astronomy/opt/satosa/orcid-saml-gateway-sp-metadata.xml:/opt/satosa/orcid-saml-gateway-sp-metadata.xml
+        environment:
+            - OIDC_CLIENT_ID_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_oidc_client_secret
+            - SATOSA_PROXY_BASE=https://orcid-saml-gateway-dev.gw-astronomy.org
+            - SATOSA_SAML_FRONTEND_ATTRIBUTE_SCOPE=orcid-saml-gateway-dev.gw-astronomy.org
+            - SATOSA_SAML_FRONTEND_CERT_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_cert
+            - SATOSA_SAML_FRONTEND_KEY_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_privkey
+            - SATOSA_SAML_FRONTEND_ENTITYID=https://orcid-saml-gateway-dev.gw-astronomy.org/idp
+            - SATOSA_SAML_FRONTEND_METADATA_FILE=/opt/satosa/orcid-saml-gateway-sp-metadata.xml
+            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_satosa_state_encryption_key
+        secrets:
+            - gw_astronomy_orcid_saml_gateway_oidc_client_id 
+            - gw_astronomy_orcid_saml_gateway_oidc_client_secret
+            - gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_cert
+            - gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_privkey
+            - gw_astronomy_orcid_saml_gateway_satosa_state_encryption_key
+        networks:
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=gw-astronomy-orcid-saml-gateway"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: orcid-saml-gateway-dev.gw-astronomy.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_orcid_saml_gateway_dev"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8000"
+            replicas: 1
+
 secrets:
     gw_astronomy_saml_aa_signing_cert:
         external: true
@@ -203,6 +237,16 @@ secrets:
     gw_astronomy_oidc_crypto_passphrase:
         external: true
     gw_astronomy_olc_root_dn_password:
+        external: true
+    gw_astronomy_orcid_saml_gateway_oidc_client_id:
+        external: true
+    gw_astronomy_orcid_saml_gateway_oidc_client_secret:
+        external: true
+    gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_cert:
+        external: true
+    gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_privkey:
+        external: true
+    gw_astronomy_orcid_saml_gateway_satosa_state_encryption_key:
         external: true
     gw_astronomy_registry_host:
         external: true

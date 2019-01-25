@@ -1,0 +1,11 @@
+module:
+  satosa.micro_services.attribute_generation.AddSyntheticAttributes
+
+name:
+  AddSyntheticAttributes
+
+config:
+    synthetic_attributes:
+        default:
+            default:
+                eppn: '{{subjectclaim}}@%%SATOSA_SAML_FRONTEND_ATTRIBUTE_SCOPE%%'
