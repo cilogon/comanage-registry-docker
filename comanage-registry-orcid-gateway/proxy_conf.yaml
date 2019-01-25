@@ -1,0 +1,46 @@
+BASE: %%SATOSA_PROXY_BASE%%
+
+INTERNAL_ATTRIBUTES: internal_attributes.yaml
+
+COOKIE_STATE_NAME: SATOSA_ORCID_SAML_GATEWAY_STATE
+
+BACKEND_MODULES:
+  - plugins/orcid_backend.yaml
+
+FRONTEND_MODULES:
+  - plugins/saml2_frontend.yaml
+  - plugins/ping_frontend.yaml
+
+MICRO_SERVICES:
+  - plugins/generate_eppn.yaml
+
+CONSENT:
+  enable: No
+
+ACCOUNT_LINKING:
+  enable: No
+
+LOGGING:
+  version: 1
+  formatters:
+    simple:
+      format: "[%(asctime)s] [%(levelname)s] [%(name)s]: %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: simple
+      stream: ext://sys.stderr
+  loggers:
+    saml2:
+      level: DEBUG
+      handlers:
+        - console
+    satosa:
+      level: DEBUG
+      handlers:
+        - console
+      propagate: no
+  root:
+    level: INFO
+    handlers: 
+      - console

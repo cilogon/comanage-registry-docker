@@ -1,0 +1,30 @@
+module:
+  satosa.backends.openid_connect.OpenIDConnectBackend
+
+name:
+  orcid
+
+config:
+    provider_metadata:
+        issuer: https://orcid.org
+    client:
+        auth_req_params:
+            response_type: code
+            scope: [openid]
+        client_metadata:
+            client_id: %%OIDC_CLIENT_ID%%
+            client_secret: %%OIDC_CLIENT_SECRET%%
+            redirect_uris: [<base_url>/<name>]
+    entity_info:
+        organization:
+            display_name:
+                - ["ORCID", "en"]
+            name:
+                - ["ORCID", "en"]
+            url:
+                - ["https:orcid.org/about"]
+            ui_info:
+                description:
+                    - ["ORCID", "en"]
+                display_name:
+                    - ["ORCID", "en"]

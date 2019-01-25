@@ -1,0 +1,18 @@
+attributes:
+  givenname:
+    saml:
+      - givenName
+    openid:
+      - given_name
+
+  surname:
+    saml:
+      - sn
+    openid:
+      - family_name
+  eppn:
+    saml:
+      - eduPersonPrincipalName
+  subjectclaim:
+    openid:
+      - sub
