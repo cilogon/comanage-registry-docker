@@ -206,7 +206,7 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_orcid_saml_gateway_prod"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8000"
-            replicas: 1
+            replicas: 3
 
 secrets:
     gw_astronomy_saml_aa_signing_cert:
