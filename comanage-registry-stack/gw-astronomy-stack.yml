@@ -145,7 +145,7 @@ services:
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/gw_astronomy_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/gw_astronomy_comanage_registry_security_seed
             - GW_ASTRONOMY_GOOGLE_EPPN=1
-            - GW_ASTRONOMY_ORCID_EPPN=orcid-saml-gateway-dev.gw-astronomy.org
+            - GW_ASTRONOMY_ORCID_EPPN_SCOPE=orcid-saml-gateway-test.gw-astronomy.org
         secrets:
             - gw_astronomy_comanage_registry_database_user_password
             - gw_astronomy_comanage_registry_database_host
