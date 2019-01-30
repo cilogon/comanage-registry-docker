@@ -145,7 +145,7 @@ services:
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/gw_astronomy_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/gw_astronomy_comanage_registry_security_seed
             - GW_ASTRONOMY_GOOGLE_EPPN=1
-            - GW_ASTRONOMY_ORCID_EPPN_SCOPE=orcid-saml-gateway-test.gw-astronomy.org
+            - GW_ASTRONOMY_ORCID_EPPN_SCOPE=orcid-saml-gateway.gw-astronomy.org
         secrets:
             - gw_astronomy_comanage_registry_database_user_password
             - gw_astronomy_comanage_registry_database_host
@@ -169,7 +169,7 @@ services:
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: registry.gw-astronomy.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_test"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_prod"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 3
@@ -181,11 +181,11 @@ services:
         environment:
             - OIDC_CLIENT_ID_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_oidc_client_secret
-            - SATOSA_PROXY_BASE=https://orcid-saml-gateway-dev.gw-astronomy.org
-            - SATOSA_SAML_FRONTEND_ATTRIBUTE_SCOPE=orcid-saml-gateway-dev.gw-astronomy.org
+            - SATOSA_PROXY_BASE=https://orcid-saml-gateway.gw-astronomy.org
+            - SATOSA_SAML_FRONTEND_ATTRIBUTE_SCOPE=orcid-saml-gateway.gw-astronomy.org
             - SATOSA_SAML_FRONTEND_CERT_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_cert
             - SATOSA_SAML_FRONTEND_KEY_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_satosa_saml_frontend_privkey
-            - SATOSA_SAML_FRONTEND_ENTITYID=https://orcid-saml-gateway-dev.gw-astronomy.org/idp
+            - SATOSA_SAML_FRONTEND_ENTITYID=https://orcid-saml-gateway.gw-astronomy.org/idp
             - SATOSA_SAML_FRONTEND_METADATA_FILE=/opt/satosa/orcid-saml-gateway-sp-metadata.xml
             - SATOSA_STATE_ENCRYPTION_KEY_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_satosa_state_encryption_key
         secrets:
@@ -201,9 +201,9 @@ services:
                 - "traefik.backend=gw-astronomy-orcid-saml-gateway"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: orcid-saml-gateway-dev.gw-astronomy.org"
+                - "traefik.frontend.rule=Host: orcid-saml-gateway.gw-astronomy.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_orcid_saml_gateway_dev"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_orcid_saml_gateway_prod"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8000"
             replicas: 1
