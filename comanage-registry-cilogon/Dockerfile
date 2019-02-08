@@ -42,7 +42,7 @@ RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" \
       && rm -f CilogonEppnEnroller.tar.gz
 
 # Deploy the Oa4mpClient plugin
-ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/52584e63a9a33dcd0ac72c88fc31671da3bb8176.tar.gz
+ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/master.tar.gz
 
 RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" \
       && wget -O Oa4mpClient.tar.gz $CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL \
