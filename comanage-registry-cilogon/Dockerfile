@@ -53,6 +53,9 @@ COPY mod-auth-openidc.conf /etc/apache2/conf-enabled/mod-auth-openidc.conf
 
 COPY docker-comanage-entrypoint /usr/local/bin/
 
+# Copy customized core.php that sets a session timeout to 8 hours
+COPY core.php "$COMANAGE_REGISTRY_DIR/app/Config/"
+
 # Allow values for first administrator bootstrapped into the
 # platform to be specified at image build time, in addition to
 # being injected at run time through the entrypoint script.
