@@ -46,6 +46,10 @@ services:
             - ldapgateway
         deploy:
             replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
     cilogon-multi-tenant-ldap-02:
         image: sphericalcowgroup/comanage-registry-slapd
@@ -73,6 +77,10 @@ services:
             - ldapgateway
         deploy:
             replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
         image: cilogon/comanage-registry:3.1.1-7
@@ -127,6 +135,10 @@ services:
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 2
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
 secrets:
     cilogon_multi_tenant_comanage_registry_database_user_password:
