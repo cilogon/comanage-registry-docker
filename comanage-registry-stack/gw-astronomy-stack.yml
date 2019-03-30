@@ -43,6 +43,10 @@ services:
             update_config:
                 parallelism: 1
                 delay: 60s
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-01:
         image: sphericalcowgroup/comanage-registry-slapd
@@ -86,6 +90,10 @@ services:
             - ldapgateway
         deploy:
             replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-02:
         image: sphericalcowgroup/comanage-registry-slapd
@@ -115,6 +123,10 @@ services:
             - ldapgateway
         deploy:
             replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
         image: cilogon/comanage-registry:3.1.1-8
@@ -173,6 +185,10 @@ services:
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
     orcid-saml-gateway:
         image: cilogon/comanage-registry-orcid-saml-gateway:1
@@ -207,6 +223,10 @@ services:
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8000"
             replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
 secrets:
     gw_astronomy_saml_aa_signing_cert:
