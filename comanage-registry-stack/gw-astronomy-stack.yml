@@ -21,6 +21,7 @@ services:
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/inc-md-cert.pem:/opt/shibboleth-idp/credentials/inc-md-cert.pem
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem:/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/mdq-beta-cert.pem:/opt/shibboleth-idp/credentials/mdq-beta-cert.pem
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/incommon-mdq.pem:/opt/shibboleth-idp/credentials/incommon-mdq.pem
         environment:
             - SAML_AA_ENTITY_ID=https://aa-dev.gw-astronomy.org/aa/shibboleth
             - SAML_AA_SCOPE=gw-astronomy.org
