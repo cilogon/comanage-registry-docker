@@ -3,13 +3,39 @@ version: "3.2"
 networks:
     webgateway:
         external: true
+    dockersocket:
+        external: true
 
 services:
+    dockersocket:
+        image: cilogon/cilogon-haproxy:1.9.7
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            - SERVICES=1
+            - NETWORKS=1
+            - TASKS=1
+        deploy:
+            mode: global
+            placement:
+              constraints:
+                - node.role == manager
+            restart_policy:
+              condition: on-failure
+            update_config:
+              parallelism: 1
+              delay: 60s
+        networks:
+            - dockersocket
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+          
     webgateway:
         image: traefik:v1.7.8
         volumes:
             - /srv/docker/webgateway/etc/traefik:/etc/traefik
-            - /var/run/docker.sock:/var/run/docker.sock
         secrets:
             - gw_astronomy_saml_aa_signing_cert
             - gw_astronomy_saml_aa_privkey
@@ -21,6 +47,7 @@ services:
             - orcid_saml_gateway_gw_astronomy_org_https_privkey_file
         networks:
             - webgateway
+            - dockersocket
         ports:
             - target: 80
               published: 80
@@ -44,6 +71,10 @@ services:
             update_config:
               parallelism: 1
               delay: 60s
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
 secrets:
     gw_astronomy_saml_aa_signing_cert:
