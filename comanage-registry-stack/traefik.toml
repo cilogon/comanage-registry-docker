@@ -26,7 +26,7 @@ defaultEntryPoints = ["http", "https"]
 [accessLog]
 
 [docker]
-endpoint = "unix:///var/run/docker.sock"
+endpoint = "tcp://dockersocket:2375"
 domain = "docker.localhost"
 watch = true
 swarmmode = true
