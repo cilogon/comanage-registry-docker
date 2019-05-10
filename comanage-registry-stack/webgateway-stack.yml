@@ -46,6 +46,15 @@ services:
             - registry_gw_astronomy_org_https_privkey_file
             - orcid_saml_gateway_gw_astronomy_org_https_cert_file
             - orcid_saml_gateway_gw_astronomy_org_https_privkey_file
+            - registry_ligo_org_https_cert_file
+            - registry_ligo_org_https_privkey_file
+            - federation_proxy_ligo_org_https_cert_file
+            - federation_proxy_ligo_org_https_privkey_file
+            - group_registry_ligo_org_https_cert_file
+            - group_registry_ligo_org_https_privkey_file
+            - login_chooser_ligo_org_https_cert_file
+            - login_chooser_ligo_org_https_privkey_file
+
         networks:
             - webgateway
             - dockersocket
@@ -94,4 +103,20 @@ secrets:
     orcid_saml_gateway_gw_astronomy_org_https_cert_file:
         external: true
     orcid_saml_gateway_gw_astronomy_org_https_privkey_file:
+        external: true
+    registry_ligo_org_https_cert_file:
+        external: true
+    registry_ligo_org_https_privkey_file:
+        external: true
+    federation_proxy_ligo_org_https_cert_file:
+        external: true
+    federation_proxy_ligo_org_https_privkey_file:
+        external: true
+    group_registry_ligo_org_https_cert_file:
+        external: true
+    group_registry_ligo_org_https_privkey_file:
+        external: true
+    login_chooser_ligo_org_https_cert_file:
+        external: true
+    login_chooser_ligo_org_https_privkey_file:
         external: true
