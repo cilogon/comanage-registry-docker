@@ -22,6 +22,18 @@ defaultEntryPoints = ["http", "https"]
       [[entryPoints.https.tls.certificates]]
       certFile = "/run/secrets/orcid_saml_gateway_gw_astronomy_org_https_cert_file"
       keyFile = "/run/secrets/orcid_saml_gateway_gw_astronomy_org_https_privkey_file"
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/run/secrets/registry_ligo_org_https_cert_file"
+      keyFile = "/run/secrets/registry_ligo_org_https_privkey_file"
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/run/secrets/federation_proxy_ligo_org_https_cert_file"
+      keyFile = "/run/secrets/federation_proxy_ligo_org_https_privkey_file"
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/run/secrets/group_registry_ligo_org_https_cert_file"
+      keyFile = "/run/secrets/group_registry_ligo_org_https_privkey_file"
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/run/secrets/login_chooser_ligo_org_https_cert_file"
+      keyFile = "/run/secrets/login_chooser_ligo_org_https_privkey_file"
 
 [accessLog]
 
