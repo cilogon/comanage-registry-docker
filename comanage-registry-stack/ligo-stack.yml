@@ -1,0 +1,275 @@
+version: '3.1'
+
+networks:
+    ligo:
+        driver: overlay
+        driver_opts:
+            subnet: 10.0.102.0/24
+            encrypted: 1
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+services:
+
+    ligo-ldap-01:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/ligo/var/lib/ldap_01:/var/lib/ldap
+            - /srv/docker/ligo/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
+            - /srv/docker/ligo/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/ligo/schema/ligo.ldif:/schema/ligo.ldif
+            - /srv/docker/ligo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/ligo/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/ligo/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/ligo/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/ligo/ldif/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/ligo/ldif/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
+            - /srv/docker/ligo/ldif/admin-always-01-CO_LIGO.ldif:/ldif/admin/02.ldif
+
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/ligo_olc_root_pw
+            - OLC_SUFFIX=dc=directory,dc=ligo,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=directory,dc=ligo,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/ligo_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/ligo_syncrepl_user_password_hash
+        secrets:
+            - ligo_olc_root_pw
+            - ligo_olc_root_dn_password
+            - ligo_syncrepl_user_password_hash
+        networks:
+            - ligo
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    ligo-ldap-02:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/ligo/var/lib/ldap_02:/var/lib/ldap
+            - /srv/docker/ligo/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
+            - /srv/docker/ligo/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/ligo/schema/ligo.ldif:/schema/ligo.ldif
+            - /srv/docker/ligo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/ligo/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/ligo/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/ligo/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/ligo/ldif/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/ligo_olc_root_pw
+            - OLC_SUFFIX=dc=directory,dc=ligo,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=directory,dc=ligo,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/ligo_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/ligo_syncrepl_user_password_hash
+        secrets:
+            - ligo_olc_root_pw
+            - ligo_olc_root_dn_password
+            - ligo_syncrepl_user_password_hash
+        networks:
+            - ligo
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: cilogon/comanage-registry:3.2.1-1
+        volumes:
+            - /srv/docker/ligo/srv/comanage-registry/local:/srv/comanage-registry/local
+        environment:
+            - OIDC_CLIENT_ID_FILE=/run/secrets/ligo_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/run/secrets/ligo_oidc_client_secret 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/ligo_oidc_provider_metadata_url 
+            - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/ligo_oidc_crypto_passphrase 
+            - SERVER_NAME_FILE=/run/secrets/ligo_registry_host 
+            - REGISTRY_HOST_FILE=/run/secrets/ligo_registry_host 
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=ligo_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/ligo_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=lg_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/ligo_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/ligo_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/ligo_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_EMAIL_FROM_FILE=/run/secrets/ligo_comanage_registry_email_from
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/ligo_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/ligo_comanage_registry_security_seed
+        secrets:
+            - ligo_comanage_registry_database_user_password
+            - ligo_comanage_registry_database_host
+            - ligo_comanage_registry_email_account
+            - ligo_comanage_registry_email_account_password
+            - ligo_comanage_registry_email_from
+            - ligo_comanage_registry_security_salt
+            - ligo_comanage_registry_security_seed
+            - ligo_oidc_client_id
+            - ligo_oidc_client_secret
+            - ligo_oidc_provider_metadata_url
+            - ligo_oidc_crypto_passphrase
+            - ligo_registry_host
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=ligo-comanage-registry"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: registry-dev.ligo.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_ligo_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    pyff:
+        image: cilogon/comanage-registry-pyff:1
+        volumes:
+            - /srv/docker/ligo/opt/pyff/ligo_mdx.yaml:/opt/pyff/ligo_mdx.yaml
+            - /srv/docker/ligo/opt/pyff/edugain.xrd:/opt/pyff/edugain.xrd
+            - /srv/docker/ligo/opt/pyff/edugain_transform.xsl:/opt/pyff/edugain_transform.xsl
+            - /srv/docker/ligo/opt/pyff/ligo.xrd:/opt/pyff/ligo.xrd
+            - /srv/docker/ligo/opt/pyff/ligo_transform.xsl:/opt/pyff/ligo_transform.xsl
+            - /srv/docker/ligo/opt/pyff/ligo_extra.xrd:/opt/pyff/ligo_extra.xrd
+            - /srv/docker/ligo/opt/pyff/ligo_extra_transform.xsl:/opt/pyff/ligo_extra_transform.xsl
+            - /srv/docker/ligo/opt/pyff/localconfig.py:/opt/pyff/localconfig.py
+            - /srv/docker/ligo/opt/pyff/ds.html:/opt/pyff/lib/python2.7/site-packages/pyff/templates/ds.html
+            - /srv/docker/ligo/opt/pyff/ligo_only.html:/opt/pyff/lib/python2.7/site-packages/pyff/templates/ligo_only.html
+            - /srv/docker/ligo/opt/pyff/ligo_and_kagra.html:/opt/pyff/lib/python2.7/site-packages/pyff/templates/ligo_and_kagra.html
+            - /srv/docker/ligo/opt/pyff/edugain.html:/opt/pyff/lib/python2.7/site-packages/pyff/templates/edugain.html
+        environment:
+            - PYFF_PIPELINE=ligo_mdx.yaml
+            - PYFF_UPDATE_FREQUENCY=28800
+            - PYFF_LOGLEVEL=INFO
+            - PYTHONPATH=/opt/pyff
+            - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/ligo_metadata_signer_cert_file
+            - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/ligo_metadata_signer_privkey_file
+        secrets:
+            - ligo_metadata_signer_cert_file
+            - ligo_metadata_signer_privkey_file
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=ligo-pyff"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: login-chooser-dev.ligo.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_login_chooser_dev_ligo_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8080"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa:
+        image: cilogon/comanage-registry-satosa:1
+        volumes:
+            - /srv/docker/ligo/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
+            - /srv/docker/ligo/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
+            - /srv/docker/ligo/opt/satosa/ligo-metadata-signer.crt:/opt/satosa/ligo-metadata-signer.crt
+            - /srv/docker/ligo/opt/satosa/attributemaps:/opt/satosa/attributemaps
+            - /srv/docker/ligo/opt/satosa/plugins:/opt/satosa/plugins
+        environment:
+            - SATOSA_BACKEND_CERT_FILE=/run/secrets/ligo_satosa_saml_backend_cert_file
+            - SATOSA_BACKEND_PRIVKEY_FILE=/run/secrets/ligo_satosa_saml_backend_privkey_file
+            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/ligo_satosa_saml_frontend_cert_file
+            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/ligo_satosa_saml_frontend_privkey_file
+            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/ligo_satosa_ldap_bind_password
+            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/ligo_satosa_state_encryption_key
+        secrets:
+            - ligo_satosa_ldap_bind_password
+            - ligo_satosa_saml_backend_cert_file
+            - ligo_satosa_saml_backend_privkey_file
+            - ligo_satosa_saml_frontend_cert_file
+            - ligo_satosa_saml_frontend_privkey_file
+            - ligo_satosa_state_encryption_key
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=ligo-satosa"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.ligo.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_ligo_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8080"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    ligo_olc_root_pw:
+        external: true
+    ligo_comanage_registry_database_user_password:
+        external: true
+    ligo_comanage_registry_database_host:
+        external: true
+    ligo_comanage_registry_email_account:
+        external: true
+    ligo_comanage_registry_email_account_password:
+        external: true
+    ligo_comanage_registry_email_from:
+        external: true
+    ligo_comanage_registry_security_salt:
+        external: true
+    ligo_comanage_registry_security_seed:
+        external: true
+    ligo_metadata_signer_cert_file:
+        external: true
+    ligo_metadata_signer_privkey_file:
+        external: true
+    ligo_oidc_client_id:
+        external: true
+    ligo_oidc_client_secret:
+        external: true
+    ligo_oidc_provider_metadata_url:
+        external: true
+    ligo_oidc_crypto_passphrase:
+        external: true
+    ligo_olc_root_dn_password:
+        external: true
+    ligo_registry_host:
+        external: true
+    ligo_satosa_ldap_bind_password:
+        external: true
+    ligo_satosa_saml_backend_cert_file:
+        external: true
+    ligo_satosa_saml_backend_privkey_file:
+        external: true
+    ligo_satosa_saml_frontend_cert_file:
+        external: true
+    ligo_satosa_saml_frontend_privkey_file:
+        external: true
+    ligo_satosa_state_encryption_key:
+        external: true
+    ligo_syncrepl_user_password_hash:
+        external: true
