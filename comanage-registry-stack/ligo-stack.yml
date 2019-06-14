@@ -156,6 +156,9 @@ services:
             - /srv/docker/ligo/opt/pyff/ligo_only.html:/opt/pyff/lib/python2.7/site-packages/pyff/templates/ligo_only.html
             - /srv/docker/ligo/opt/pyff/ligo_and_kagra.html:/opt/pyff/lib/python2.7/site-packages/pyff/templates/ligo_and_kagra.html
             - /srv/docker/ligo/opt/pyff/edugain.html:/opt/pyff/lib/python2.7/site-packages/pyff/templates/edugain.html
+            - /srv/docker/ligo/opt/pyff/federation-proxy-dev.ligo.org-idp-metadata.xml:/opt/pyff/federation-proxy-dev.ligo.org-idp-metadata.xml
+            - /srv/docker/ligo/opt/pyff/federation-proxy-dev.ligo.org-sp-metadata.xml:/opt/pyff/federation-proxy-dev.ligo.org-sp-metadata.xml
+            - /srv/docker/ligo/opt/pyff/group-registry-dev.ligo.org-metadata.xml:/opt/pyff/group-registry-dev.ligo.org-metadata.xml
         environment:
             - PYFF_PIPELINE=ligo_mdx.yaml
             - PYFF_UPDATE_FREQUENCY=28800
@@ -226,6 +229,66 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
+    grouper-ui:
+        image: tier/grouper:2.4.0-a29-u14-w3-p2-20190217
+        command: ["bash", "-c", "while ! curl -s ldaps://ldap-dev.cilogon.org:636 > /dev/null; do echo waiting for LDAP to start; sleep 3; done; exec ui"]
+        volumes:
+            - /srv/docker/ligo/opt/grouper/conf/grouper.hibernate.properties:/opt/grouper/conf/grouper.hibernate.properties
+            - /srv/docker/ligo/opt/grouper/conf/subject.properties:/opt/grouper/conf/subject.properties
+            - /srv/docker/ligo/opt/grouper/conf/grouper.properties:/opt/grouper/conf/grouper.properties
+            - /srv/docker/ligo/opt/grouper/conf/grouper-loader.properties:/opt/grouper/conf/grouper-loader.properties
+            - /srv/docker/ligo/etc/httpd/conf.d/grouper-www-ui.conf:/etc/httpd/conf.d/grouper-www.conf
+            - /srv/docker/ligo/etc/httpd/conf.d/grouper-ssl-enabled.conf:/etc/httpd/conf.d/ssl-enabled.conf
+            - /srv/docker/ligo/etc/shibboleth/grouper-shibboleth2.xml:/etc/shibboleth/shibboleth2.xml
+            - /srv/docker/ligo/etc/shibboleth/grouper-attribute-map.xml:/etc/shibboleth/attribute-map.xml
+            - /srv/docker/ligo/etc/shibboleth/ligo-metadata-signer.crt:/etc/shibboleth/ligo-metadata-signer.crt
+        environment:
+            - GROUPER_DATABASE_PASSWORD_FILE=/run/secrets/ligo_grouper_database_password
+            - GROUPER_SUBJECT_LDAP_BIND_PASSWORD_FILE=/run/secrets/ligo_grouper_subject_ldap_bind_password
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - ligo_grouper_database_password
+            - ligo_grouper_subject_ldap_bind_password
+            - source: ligo_grouper_shibboleth_sp_encryption_cert
+              target: shib_sp-encrypt-cert.pem
+              uid: '997'
+              gid: '996'
+              mode: 0644
+            - source: ligo_grouper_shibboleth_sp_encryption_privkey
+              target: shib_sp-encrypt-key.pem
+              uid: '997'
+              gid: '996'
+              mode: 0400
+            - source: ligo_grouper_shibboleth_sp_signing_cert
+              target: shib_sp-signing-cert.pem
+              uid: '997'
+              gid: '996'
+              mode: 0644
+            - source: ligo_grouper_shibboleth_sp_signing_privkey
+              target: shib_sp-signing-key.pem
+              uid: '997'
+              gid: '996'
+              mode: 0400
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=ligo-grouper-ui"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: group-registry-dev.ligo.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_dev_ligo_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
 secrets:
     ligo_olc_root_pw:
         external: true
@@ -242,6 +305,18 @@ secrets:
     ligo_comanage_registry_security_salt:
         external: true
     ligo_comanage_registry_security_seed:
+        external: true
+    ligo_grouper_database_password:
+        external: true
+    ligo_grouper_shibboleth_sp_encryption_cert:
+        external: true
+    ligo_grouper_shibboleth_sp_encryption_privkey:
+        external: true
+    ligo_grouper_shibboleth_sp_signing_cert:
+        external: true
+    ligo_grouper_shibboleth_sp_signing_privkey:
+        external: true
+    ligo_grouper_subject_ldap_bind_password:
         external: true
     ligo_metadata_signer_cert_file:
         external: true
