@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.7"
 
 networks:
     webgateway:
@@ -16,7 +16,8 @@ services:
             - NETWORKS=1
             - TASKS=1
         deploy:
-            mode: global
+            mode: replicated
+            replicas: 1
             placement:
               constraints:
                 - node.role == manager
@@ -33,7 +34,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
           
     webgateway:
-        image: traefik:v1.7.8
+        image: traefik:v1.7.12
         volumes:
             - /srv/docker/webgateway/etc/traefik:/etc/traefik
         secrets:
@@ -62,7 +63,8 @@ services:
               protocol: tcp
               mode: host
         deploy:
-            mode: global
+            mode: replicated
+            replicas: 1
             placement:
               constraints:
                 - node.role == manager
