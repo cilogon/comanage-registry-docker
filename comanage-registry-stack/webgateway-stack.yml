@@ -17,7 +17,7 @@ services:
             - TASKS=1
         deploy:
             mode: replicated
-            replicas: 1
+            replicas: 2
             placement:
               constraints:
                 - node.role == manager
@@ -64,7 +64,7 @@ services:
               mode: host
         deploy:
             mode: replicated
-            replicas: 1
+            replicas: 2
             placement:
               constraints:
                 - node.role == manager
