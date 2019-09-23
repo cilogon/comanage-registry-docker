@@ -54,6 +54,8 @@ services:
             - group_registry_ligo_org_https_privkey_file
             - login_chooser_ligo_org_https_cert_file
             - login_chooser_ligo_org_https_privkey_file
+            - mdq_ligo_org_https_cert_file
+            - mdq_ligo_org_https_privkey_file
 
         networks:
             - webgateway
@@ -119,4 +121,8 @@ secrets:
     login_chooser_ligo_org_https_cert_file:
         external: true
     login_chooser_ligo_org_https_privkey_file:
+        external: true
+    mdq_ligo_org_https_cert_file:
+        external: true
+    mdq_ligo_org_https_privkey_file:
         external: true
