@@ -34,6 +34,9 @@ defaultEntryPoints = ["http", "https"]
       [[entryPoints.https.tls.certificates]]
       certFile = "/run/secrets/login_chooser_ligo_org_https_cert_file"
       keyFile = "/run/secrets/login_chooser_ligo_org_https_privkey_file"
+      [[entryPoints.https.tls.certificates]]
+      certFile = "/run/secrets/mdq_ligo_org_https_cert_file"
+      keyFile = "/run/secrets/mdq_ligo_org_https_privkey_file"
 
 [accessLog]
 
