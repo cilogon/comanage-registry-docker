@@ -1,32 +1,30 @@
-FROM debian:stretch
+FROM redis:5.0.5-buster
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         python-virtualenv \
+        redis-tools \
+        supervisor \
         virtualenv 
 
-# Use specific commit from ra21-l2 branch.
-ENV PYFF_SRC_URL=git+https://github.com/IdentityPython/pyFF.git@0917ff73181a62e1eb959c67c23db5eb4dfb07ad
+# Use specific commit from pyFF repostory.
+ENV PYFF_SRC_URL=git+https://github.com/IdentityPython/pyFF.git@bbdf245ccdb0be8ce45dda8c0cef06a6d33e2755
 
 RUN mkdir -p /opt/pyff \
     && adduser --home /opt/pyff --no-create-home --system pyff --group \
-    && virtualenv /opt/pyff --no-site-packages \
+    && virtualenv /opt/pyff --no-site-packages --python=python3 \
     && . /opt/pyff/bin/activate \
+    && pip install --upgrade pip \
     && pip install ${PYFF_SRC_URL} \
-    && mkdir -p /opt/pyff/lib/python2.7/site-packages/pyff/site/static/logos \
     && chown -R pyff:pyff /opt/pyff \
     && apt-get remove -y --purge \
         git \
     && apt-get clean
 
-COPY start.sh /usr/local/sbin/pyff-start.sh
-
-# Copy in local changes that permit different templates to be used
-# for different discovery endpoints provided the template is whitelisted.
-COPY mdx.py /opt/pyff/lib/python2.7/site-packages/pyff/mdx.py
-COPY constants.py /opt/pyff/lib/python2.7/site-packages/pyff/constants.py
+COPY supervisord.conf /usr/local/etc/supervisord.conf
+COPY logger.ini /opt/pyff/logger.ini
+COPY pyff-start.sh /usr/local/bin/pyff-start.sh
 
 WORKDIR /opt/pyff
-USER pyff
 
-ENTRYPOINT ["/usr/local/sbin/pyff-start.sh"]
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/usr/local/etc/supervisord.conf"]
