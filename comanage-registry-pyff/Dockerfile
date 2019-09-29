@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         virtualenv 
 
 # Use specific commit from pyFF repostory.
-ENV PYFF_SRC_URL=git+https://github.com/IdentityPython/pyFF.git@bbdf245ccdb0be8ce45dda8c0cef06a6d33e2755
+ENV PYFF_SRC_URL=git+https://github.com/IdentityPython/pyFF.git@479cca3eb57c5fde7ef8e0c8cf5384bf301fb305
 
 RUN mkdir -p /opt/pyff \
     && adduser --home /opt/pyff --no-create-home --system pyff --group \
