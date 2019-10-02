@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         xmlsec1
 
 # Use specific commit from HEAD of SATOSA
-ENV SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@86537fbbc40dc4533430ae35c9ce5dcef4fb4c80
+ENV SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@803bf24afc49565da8d4d023962515874cfba2f7
 
 RUN mkdir -p /opt/satosa \
     && adduser --home /opt/satosa --no-create-home --system satosa --group \
-    && virtualenv --python=python3.5 /opt/satosa --no-site-packages \
+    && virtualenv --python=python3.7 /opt/satosa --no-site-packages \
     && . /opt/satosa/bin/activate \
     && pip install ldap3 \
     && pip install ${SATOSA_SRC_URL} \
