@@ -215,8 +215,6 @@ services:
         image: cilogon/comanage-registry-nginx-satosa-proxy:1
         volumes:
             - /srv/docker/ligo/usr/share/nginx/html:/usr/share/nginx/html
-        environment:
-            - SATOSA_BASE_URL=http://satosa:8080
         networks:
             - webgateway
             - ligo
@@ -225,9 +223,7 @@ services:
                 - "traefik.backend=satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.ligo.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_ligo_org"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.ligo.org;PathPrefix: /favicon.ico,/sp-info/"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
@@ -262,6 +258,15 @@ services:
             - ligo
             - webgateway
         deploy:
+            labels:
+                - "traefik.backend=satosa"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.ligo.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_ligo_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8080"
             replicas: 1
         logging:
             driver: journald
