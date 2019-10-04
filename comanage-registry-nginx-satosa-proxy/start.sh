@@ -31,14 +31,8 @@ http {
 
       location / {
          root /usr/share/nginx/html;
-         try_files \$uri @satosa;
-      }
-
-      location @satosa {
-         proxy_pass ${SATOSA_BASE_URL};
       }
    }
-
 }
 EOF
 
