@@ -205,7 +205,7 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_login_chooser_test_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
-            replicas: 1
+            replicas: 2
         logging:
             driver: journald
             options:
@@ -226,7 +226,7 @@ services:
                 - "traefik.frontend.rule=Host: federation-proxy-test.ligo.org;PathPrefix: /favicon.ico,/sp-info/"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
-            replicas: 1
+            replicas: 2
         logging:
             driver: journald
             options:
@@ -267,7 +267,7 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8080"
-            replicas: 1
+            replicas: 2
         logging:
             driver: journald
             options:
