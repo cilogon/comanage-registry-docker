@@ -165,9 +165,9 @@ services:
         deploy:
             resources:
               limits:
-                memory: 3.2G
+                memory: 2G
               reservations:
-                memory: 3.2G
+                memory: 2G
             labels:
                 - "traefik.backend=ligo-pyff"
                 - "traefik.docker.network=webgateway"
