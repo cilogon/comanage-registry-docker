@@ -167,7 +167,7 @@ services:
               limits:
                 memory: 2G
               reservations:
-                memory: 2G
+                memory: 1G
             labels:
                 - "traefik.backend=ligo-pyff"
                 - "traefik.docker.network=webgateway"
