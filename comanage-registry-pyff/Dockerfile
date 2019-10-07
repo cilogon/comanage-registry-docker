@@ -24,6 +24,8 @@ RUN mkdir -p /opt/pyff \
 COPY supervisord.conf /usr/local/etc/supervisord.conf
 COPY logger.ini /opt/pyff/logger.ini
 COPY pyff-start.sh /usr/local/bin/pyff-start.sh
+COPY gunicorn_sighup.py /opt/pyff/gunicorn_sighup.py
+COPY gunicorn_sighup_logger.yaml /opt/pyff/gunicorn_sighup_logger.yaml
 
 WORKDIR /opt/pyff
 

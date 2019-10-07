@@ -6,6 +6,7 @@
 injectable_config_vars=( 
     PYFF_GUNICORN_BIND
     PYFF_GUNICORN_LOG_CONFIG
+    PYFF_GUNICORN_PID_FILE
     PYFF_GUNICORN_THREADS
     PYFF_PIPELINE
     PYFF_PUBLIC_URL
@@ -23,6 +24,10 @@ if [ -z "${PYFF_GUNICORN_LOG_CONFIG}" ]; then
     PYFF_GUNICORN_LOG_CONFIG=logger.ini
 fi
 
+if [ -z "${PYFF_GUNICORN_PID_FILE}" ]; then
+    PYFF_GUNICORN_PID_FILE=/tmp/gunicorn.pid
+fi
+
 if [ -z "${PYFF_GUNICORN_THREADS}" ]; then
     PYFF_GUNICORN_THREADS=4
 fi
@@ -36,7 +41,7 @@ if [ -z "${PYFF_SCHEDULER_JOB_STORE}" ]; then
 fi
 
 if [ -z "${PYFF_UPDATE_FREQUENCY}" ]; then
-    PYFF_UPDATE_FREQUENCY=3600
+    PYFF_UPDATE_FREQUENCY=28800
 fi
 
 # If the file associated with a configuration variable is present then 
@@ -95,4 +100,5 @@ exec gunicorn \
     --worker-class=gthread \
     --threads ${PYFF_GUNICORN_THREADS} \
     --worker-tmp-dir=/dev/shm \
+    --pid ${PYFF_GUNICORN_PID_FILE} \
     pyff.wsgi:app
