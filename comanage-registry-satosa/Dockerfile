@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         xmlsec1
 
 # Use specific commit from HEAD of SATOSA
-ENV SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@803bf24afc49565da8d4d023962515874cfba2f7
+ENV SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@22053f9f5928c4d04210f70a64b9f3300d2b200d
 
 RUN mkdir -p /opt/satosa \
     && adduser --home /opt/satosa --no-create-home --system satosa --group \
