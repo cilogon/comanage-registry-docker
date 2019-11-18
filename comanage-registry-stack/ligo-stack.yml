@@ -233,7 +233,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:2
+        image: cilogon/comanage-registry-satosa:3
         volumes:
             - /srv/docker/ligo/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
             - /srv/docker/ligo/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
