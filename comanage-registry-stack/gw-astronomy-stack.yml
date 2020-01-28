@@ -130,7 +130,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:3bed8940c0708b43a04a35b5cf649b80cdc4de3b-1
+        image: cilogon/comanage-registry:3bed8940c0708b43a04a35b5cf649b80cdc4de3b-2
         volumes:
             - /srv/docker/gw-astronomy/srv/comanage-registry/local:/srv/comanage-registry/local
             - /srv/docker/gw-astronomy/srv/comanage-registry/app/webroot/favicon.ico:/srv/comanage-registry/app/webroot/favicon.ico
