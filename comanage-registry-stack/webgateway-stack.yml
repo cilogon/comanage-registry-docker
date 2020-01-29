@@ -34,9 +34,10 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
           
     webgateway:
-        image: traefik:v1.7.12
+        image: traefik:v1.7.20
         volumes:
             - /srv/docker/webgateway/etc/traefik:/etc/traefik
+            - /srv/docker/webgateway/etc/letsencrypt:/etc/letsencrypt
         secrets:
             - gw_astronomy_saml_aa_signing_cert
             - gw_astronomy_saml_aa_privkey
@@ -79,6 +80,36 @@ services:
             placement:
               constraints:
                 - node.role == manager
+            restart_policy:
+              condition: on-failure
+            update_config:
+              parallelism: 1
+              delay: 60s
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    getssl:
+        image: cilogon/comanage-registry-getssl:1
+        volumes:
+            - /srv/docker/webgateway/opt/getssl:/opt/getssl
+            - /srv/docker/webgateway/etc/letsencrypt:/etc/letsencrypt
+        networks:
+            - webgateway
+        deploy:
+            mode: replicated
+            replicas: 1
+            labels:
+                - "traefik.backend=webgateway-getssl"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=PathPrefix: /.well-known/acme-challenge"
+                - "traefik.frontend.priority=100"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_webgateway_dev"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
             restart_policy:
               condition: on-failure
             update_config:
