@@ -51,3 +51,7 @@ exposedbydefault = false
 dashboard = true
 
 [ping]
+
+[file]
+filename = "/etc/traefik/tls_certificates.toml"
+watch = true
