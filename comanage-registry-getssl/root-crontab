@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=""
+19 3 * * * root getssl -w /opt/getssl -a > /proc/1/fd/1 2>&1
