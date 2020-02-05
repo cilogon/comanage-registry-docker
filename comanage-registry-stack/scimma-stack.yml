@@ -1,0 +1,285 @@
+version: '3.1'
+
+networks:
+    scimma:
+        driver: overlay
+        driver_opts:
+            subnet: 10.0.103.0/24
+            encrypted: 1
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+services:
+    pyff:
+        image: cilogon/comanage-registry-pyff:3
+        volumes:
+            - /srv/docker/scimma/opt/pyff/scimma_mdx.yaml:/opt/pyff/scimma_mdx.yaml
+            - /srv/docker/scimma/opt/pyff/federation-proxy-dev.scimma.org-idp-metadata.xml:/opt/pyff/federation-proxy-dev.scimma.org-idp-metadata.xml
+            # REMOVE THIS AFTER TESTING
+            - /srv/docker/scimma/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
+        environment:
+            - PYFF_PIPELINE=scimma_mdx.yaml
+            - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/scimma_metadata_signer_cert_file
+            - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/scimma_metadata_signer_privkey_file
+        secrets:
+            - scimma_metadata_signer_cert_file
+            - scimma_metadata_signer_privkey_file
+        networks:
+            - scimma
+            - webgateway
+        deploy:
+            resources:
+              limits:
+                memory: 512M
+              reservations:
+                memory: 512M
+            labels:
+                - "traefik.backend=scimma-pyff"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: mdq-dev.scimma.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_scimma_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8080"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa:
+        image: cilogon/comanage-registry-satosa:5
+        volumes:
+            - /srv/docker/scimma/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
+            - /srv/docker/scimma/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
+            - /srv/docker/scimma/opt/satosa/scimma-metadata-signer.crt:/opt/satosa/scimma-metadata-signer.crt
+            - /srv/docker/scimma/opt/satosa/attributemaps:/opt/satosa/attributemaps
+            - /srv/docker/scimma/opt/satosa/plugins:/opt/satosa/plugins
+        environment:
+            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/scimma_satosa_saml_frontend_cert_file
+            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/scimma_satosa_saml_frontend_privkey_file
+            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/scimma_satosa_ldap_bind_password
+            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/scimma_satosa_state_encryption_key
+        secrets:
+            - scimma_satosa_ldap_bind_password
+            - scimma_satosa_saml_frontend_cert_file
+            - scimma_satosa_saml_frontend_privkey_file
+            - scimma_satosa_state_encryption_key
+        networks:
+            - scimma
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa-proxy:
+        image: cilogon/comanage-registry-apache-satosa-proxy:1
+        volumes:
+            - /srv/docker/scimma/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+        environment:
+            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
+        networks:
+            - webgateway
+            - scimma
+        deploy:
+            labels:
+                - "traefik.backend=satosa-proxy"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.scimma.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_scimma_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: cilogon/comanage-registry:cb494c2752d20b92052cc3edfb3e28381262f590-1
+        volumes:
+            - /srv/docker/scimma/srv/comanage-registry/local:/srv/comanage-registry/local
+        environment:
+            - OIDC_CLIENT_ID_FILE=/run/secrets/scimma_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/run/secrets/scimma_oidc_client_secret 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/scimma_oidc_provider_metadata_url 
+            - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/scimma_oidc_crypto_passphrase 
+            - SERVER_NAME_FILE=/run/secrets/scimma_registry_host 
+            - REGISTRY_HOST_FILE=/run/secrets/scimma_registry_host 
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=scimma_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/scimma_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=sc_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/scimma_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/scimma_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/scimma_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_EMAIL_FROM_FILE=/run/secrets/scimma_comanage_registry_email_from
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/scimma_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/scimma_comanage_registry_security_seed
+        secrets:
+            - scimma_comanage_registry_database_user_password
+            - scimma_comanage_registry_database_host
+            - scimma_comanage_registry_email_account
+            - scimma_comanage_registry_email_account_password
+            - scimma_comanage_registry_email_from
+            - scimma_comanage_registry_security_salt
+            - scimma_comanage_registry_security_seed
+            - scimma_oidc_client_id
+            - scimma_oidc_client_secret
+            - scimma_oidc_provider_metadata_url
+            - scimma_oidc_crypto_passphrase
+            - scimma_registry_host
+        networks:
+            - scimma
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=scimma-comanage-registry"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: registry-dev.scimma.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_scimma_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    scimma-ldap-01:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/scimma/var/lib/ldap_01:/var/lib/ldap
+            - /srv/docker/scimma/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
+            - /srv/docker/scimma/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/scimma/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/scimma/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/scimma/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/scimma/ldif/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/scimma/ldif/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
+            - /srv/docker/scimma/ldif/admin-always-01-CO_SCiMMA.ldif:/ldif/admin/02.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/scimma_olc_root_pw
+            - OLC_SUFFIX=dc=scimma,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=scimma,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/scimma_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/scimma_syncrepl_user_password_hash
+        secrets:
+            - scimma_olc_root_pw
+            - scimma_olc_root_dn_password
+            - scimma_syncrepl_user_password_hash
+        networks:
+            - scimma
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    scimma-ldap-02:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/scimma/var/lib/ldap_02:/var/lib/ldap
+            - /srv/docker/scimma/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
+            - /srv/docker/scimma/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/scimma/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/scimma/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/scimma/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/scimma/ldif/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/scimma_olc_root_pw
+            - OLC_SUFFIX=dc=scimma,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=scimma,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/scimma_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/scimma_syncrepl_user_password_hash
+        secrets:
+            - scimma_olc_root_pw
+            - scimma_olc_root_dn_password
+            - scimma_syncrepl_user_password_hash
+        networks:
+            - scimma
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: sphericalcowgroup/comanage-registry-cron:3bed8940c0708b43a04a35b5cf649b80cdc4de3b-1
+        volumes:
+            - /srv/docker/scimma/srv/comanage-registry/local:/srv/comanage-registry/local
+        networks:
+            - scimma
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    scimma_metadata_signer_cert_file:
+        external: true
+    scimma_metadata_signer_privkey_file:
+        external: true
+    scimma_satosa_ldap_bind_password:
+        external: true
+    scimma_satosa_saml_frontend_cert_file:
+        external: true
+    scimma_satosa_saml_frontend_privkey_file:
+        external: true
+    scimma_satosa_state_encryption_key:
+        external: true
+    scimma_comanage_registry_database_user_password:
+        external: true
+    scimma_comanage_registry_database_host:
+        external: true
+    scimma_comanage_registry_email_account:
+        external: true
+    scimma_comanage_registry_email_account_password:
+        external: true
+    scimma_comanage_registry_email_from:
+        external: true
+    scimma_comanage_registry_security_salt:
+        external: true
+    scimma_comanage_registry_security_seed:
+        external: true
+    scimma_oidc_client_id:
+        external: true
+    scimma_oidc_client_secret:
+        external: true
+    scimma_oidc_provider_metadata_url:
+        external: true
+    scimma_oidc_crypto_passphrase:
+        external: true
+    scimma_registry_host:
+        external: true
+    scimma_olc_root_pw:
+        external: true
+    scimma_olc_root_dn_password:
+        external: true
+    scimma_syncrepl_user_password_hash:
+        external: true
