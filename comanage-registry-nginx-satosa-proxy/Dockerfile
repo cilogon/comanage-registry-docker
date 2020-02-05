@@ -1,4 +1,4 @@
-FROM nginx:1.17.4
+FROM nginx:1.17.8
 
 COPY start.sh /usr/local/bin/nginx-start.sh
 
