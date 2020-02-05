@@ -1,4 +1,4 @@
-FROM redis:5.0.5-buster
+FROM redis:5.0.7-buster
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         virtualenv 
 
 # Use specific commit from pyFF repostory.
-ENV PYFF_SRC_URL=git+https://github.com/IdentityPython/pyFF.git@479cca3eb57c5fde7ef8e0c8cf5384bf301fb305
+ENV PYFF_SRC_URL=git+https://github.com/IdentityPython/pyFF.git@a17e5435392f1bef5a3d5854fbd2ebbdbfa2dfbe
 
 RUN mkdir -p /opt/pyff \
     && adduser --home /opt/pyff --no-create-home --system pyff --group \
