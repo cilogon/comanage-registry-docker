@@ -107,7 +107,7 @@ services:
                 - "traefik.frontend.rule=PathPrefix: /.well-known/acme-challenge"
                 - "traefik.frontend.priority=100"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_webgateway_dev"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_webgateway_test"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             restart_policy:
