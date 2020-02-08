@@ -14,7 +14,7 @@ networks:
 services:
 
     cilogon-multi-tenant-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd
+        image: sphericalcowgroup/comanage-registry-slapd:2
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap_01:/var/lib/ldap
@@ -55,7 +55,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-multi-tenant-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd
+        image: sphericalcowgroup/comanage-registry-slapd:2
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap_02:/var/lib/ldap
