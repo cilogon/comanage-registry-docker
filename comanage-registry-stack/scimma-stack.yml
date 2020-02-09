@@ -51,7 +51,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:5
+        image: cilogon/comanage-registry-satosa:6
         volumes:
             - /srv/docker/scimma/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
             - /srv/docker/scimma/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
@@ -59,11 +59,13 @@ services:
             - /srv/docker/scimma/opt/satosa/attributemaps:/opt/satosa/attributemaps
             - /srv/docker/scimma/opt/satosa/plugins:/opt/satosa/plugins
         environment:
+            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/scimma_satosa_cilogon_backend_client_secret
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/scimma_satosa_saml_frontend_cert_file
             - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/scimma_satosa_saml_frontend_privkey_file
             - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/scimma_satosa_ldap_bind_password
             - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/scimma_satosa_state_encryption_key
         secrets:
+            - scimma_satosa_cilogon_backend_client_secret
             - scimma_satosa_ldap_bind_password
             - scimma_satosa_saml_frontend_cert_file
             - scimma_satosa_saml_frontend_privkey_file
@@ -244,6 +246,8 @@ secrets:
     scimma_metadata_signer_cert_file:
         external: true
     scimma_metadata_signer_privkey_file:
+        external: true
+    scimma_satosa_cilogon_backend_client_secret:
         external: true
     scimma_satosa_ldap_bind_password:
         external: true
