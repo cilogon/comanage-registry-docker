@@ -259,7 +259,7 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=satosa"
+                - "traefik.backend=ligo-satosa"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: federation-proxy-test.ligo.org"
