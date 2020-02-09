@@ -16,7 +16,7 @@ services:
         image: cilogon/comanage-registry-pyff:3
         volumes:
             - /srv/docker/scimma/opt/pyff/scimma_mdx.yaml:/opt/pyff/scimma_mdx.yaml
-            - /srv/docker/scimma/opt/pyff/federation-proxy-dev.scimma.org-idp-metadata.xml:/opt/pyff/federation-proxy-dev.scimma.org-idp-metadata.xml
+            - /srv/docker/scimma/opt/pyff/federation-proxy.scimma.org-idp-metadata.xml:/opt/pyff/federation-proxy.scimma.org-idp-metadata.xml
             # REMOVE THIS AFTER TESTING
             - /srv/docker/scimma/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
         environment:
@@ -39,12 +39,12 @@ services:
                 - "traefik.backend=scimma-pyff"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq-dev.scimma.org"
+                - "traefik.frontend.rule=Host: mdq.scimma.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_scimma_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_prod_scimma_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8080"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -71,7 +71,7 @@ services:
         networks:
             - scimma
         deploy:
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -91,12 +91,12 @@ services:
                 - "traefik.backend=satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.scimma.org"
+                - "traefik.frontend.rule=Host: federation-proxy.scimma.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_scimma_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_prod_scimma_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -117,9 +117,9 @@ services:
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
-            - COMANAGE_REGISTRY_DATABASE=scimma_registry_dev
+            - COMANAGE_REGISTRY_DATABASE=scimma_registry
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/scimma_comanage_registry_database_host
-            - COMANAGE_REGISTRY_DATABASE_USER=sc_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER=sc_registry
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/scimma_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
@@ -150,12 +150,12 @@ services:
                 - "traefik.backend=scimma-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.scimma.org"
+                - "traefik.frontend.rule=Host: registry.scimma.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_scimma_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_prod_scimma_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
