@@ -220,7 +220,7 @@ services:
             - ligo
         deploy:
             labels:
-                - "traefik.backend=satosa-proxy"
+                - "traefik.backend=ligo-satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: federation-proxy-test.ligo.org;PathPrefix: /favicon.ico,/sp-info/"
