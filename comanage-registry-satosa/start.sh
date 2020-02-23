@@ -11,10 +11,7 @@ set -e
 # variables or the contents of files.
 
 injectable_config_vars=( 
-    SATOSA_CILOGON_BACKEND_CLIENT_SECRET
-    SATOSA_LDAP_BIND_PASSWORD
     SATOSA_STATE_ENCRYPTION_KEY
-    SATOSA_USER_ID_HASH_SALT
 )
 
 # If the file associated with a configuration variable is present then 
@@ -44,19 +41,6 @@ fi
 # Export SATOSA sensitive environment variables.
 if [ -n "${SATOSA_STATE_ENCRYPTION_KEY}" ]; then
     export SATOSA_STATE_ENCRYPTION_KEY
-fi
-
-if [ -n "${SATOSA_USER_ID_HASH_SALT}" ]; then
-    export SATOSA_USER_ID_HASH_SALT
-fi
-
-# Inject secrets into yaml configurations.
-if [ -f "${DATA_DIR}/plugins/ldap_attribute_store.yaml" ]; then
-    sed -i -e s@%%SATOSA_LDAP_BIND_PASSWORD%%@"${SATOSA_LDAP_BIND_PASSWORD}"@ "${DATA_DIR}/plugins/ldap_attribute_store.yaml"
-fi
-
-if [ -f "${DATA_DIR}/plugins/cilogon_backend.yaml" ]; then
-    sed -i -e s@%%SATOSA_CILOGON_BACKEND_CLIENT_SECRET%%@"${SATOSA_CILOGON_BACKEND_CLIENT_SECRET}"@ "${DATA_DIR}/plugins/cilogon_backend.yaml"
 fi
 
 # Copy SAML certificates and associated private keys into place.
