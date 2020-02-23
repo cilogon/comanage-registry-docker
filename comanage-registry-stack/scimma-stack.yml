@@ -90,7 +90,7 @@ services:
             - scimma
         deploy:
             labels:
-                - "traefik.backend=satosa-proxy"
+                - "traefik.backend=scimma-satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: federation-proxy-dev.scimma.org"
