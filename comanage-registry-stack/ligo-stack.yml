@@ -181,7 +181,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: cilogon/comanage-registry-apache-satosa-proxy:1
+        image: cilogon/comanage-registry-apache-satosa-proxy:2
         volumes:
             - /srv/docker/ligo/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
         environment:
