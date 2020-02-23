@@ -140,18 +140,15 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     pyff:
-        image: cilogon/comanage-registry-pyff:2
+        image: cilogon/comanage-registry-pyff:3
         volumes:
             - /srv/docker/ligo/opt/pyff/ligo_mdx.yaml:/opt/pyff/ligo_mdx.yaml
-            - /srv/docker/ligo/opt/pyff/edugain.xrd:/opt/pyff/edugain.xrd
-            - /srv/docker/ligo/opt/pyff/edugain_transform.xsl:/opt/pyff/edugain_transform.xsl
             - /srv/docker/ligo/opt/pyff/ligo.xrd:/opt/pyff/ligo.xrd
             - /srv/docker/ligo/opt/pyff/ligo_transform.xsl:/opt/pyff/ligo_transform.xsl
-            - /srv/docker/ligo/opt/pyff/ligo_extra.xrd:/opt/pyff/ligo_extra.xrd
-            - /srv/docker/ligo/opt/pyff/ligo_extra_transform.xsl:/opt/pyff/ligo_extra_transform.xsl
             - /srv/docker/ligo/opt/pyff/federation-proxy-test.ligo.org-idp-metadata.xml:/opt/pyff/federation-proxy-test.ligo.org-idp-metadata.xml
-            - /srv/docker/ligo/opt/pyff/federation-proxy-test.ligo.org-sp-metadata.xml:/opt/pyff/federation-proxy-test.ligo.org-sp-metadata.xml
             - /srv/docker/ligo/opt/pyff/group-registry-test.ligo.org-metadata.xml:/opt/pyff/group-registry-test.ligo.org-metadata.xml
+            # REMOVE THIS AFTER TESTING
+            - /srv/docker/ligo/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
         environment:
             - PYFF_PIPELINE=ligo_mdx.yaml
             - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/ligo_metadata_signer_cert_file
@@ -165,9 +162,9 @@ services:
         deploy:
             resources:
               limits:
-                memory: 2G
+                memory: 512M
               reservations:
-                memory: 1G
+                memory: 512M
             labels:
                 - "traefik.backend=ligo-pyff"
                 - "traefik.docker.network=webgateway"
@@ -177,34 +174,6 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_test_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8080"
-            replicas: 1
-        logging:
-            driver: journald
-            options:
-                tag: "cilogon_docker_{{.Name}}"
-
-    ds:
-        image: cilogon/thiss-js:1
-        volumes:
-            - /srv/docker/ligo/dist:/dist
-        environment:
-            - BASE_URL=https://login-chooser-test.ligo.org
-            - PERSISTENCE_URL=https://login-chooser-test.ligo.org/ps
-            - MDQ_URL=https://mdq-test.ligo.org/entities/
-            - SEARCH_URL=https://mdq-test.ligo.org/api/search
-            - DEFAULT_CONTEXT=ligo.org
-        networks:
-            - webgateway
-        deploy:
-            labels:
-                - "traefik.backend=ligo-ds"
-                - "traefik.docker.network=webgateway"
-                - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: login-chooser-test.ligo.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_login_chooser_test_ligo_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
             replicas: 2
         logging:
             driver: journald
@@ -212,9 +181,11 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: cilogon/comanage-registry-nginx-satosa-proxy:1
+        image: cilogon/comanage-registry-apache-satosa-proxy:1
         volumes:
-            - /srv/docker/ligo/usr/share/nginx/html:/usr/share/nginx/html
+            - /srv/docker/ligo/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+        environment:
+            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
         networks:
             - webgateway
             - ligo
@@ -223,7 +194,9 @@ services:
                 - "traefik.backend=ligo-satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-test.ligo.org;PathPrefix: /favicon.ico,/sp-info/"
+                - "traefik.frontend.rule=Host: federation-proxy-test.ligo.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 2
@@ -233,7 +206,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:4
+        image: cilogon/comanage-registry-satosa:7
         volumes:
             - /srv/docker/ligo/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
             - /srv/docker/ligo/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
@@ -241,32 +214,22 @@ services:
             - /srv/docker/ligo/opt/satosa/attributemaps:/opt/satosa/attributemaps
             - /srv/docker/ligo/opt/satosa/plugins:/opt/satosa/plugins
         environment:
-            - SATOSA_BACKEND_CERT_FILE=/run/secrets/ligo_satosa_saml_backend_cert_file
-            - SATOSA_BACKEND_PRIVKEY_FILE=/run/secrets/ligo_satosa_saml_backend_privkey_file
+            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/ligo_satosa_cilogon_backend_client_secret
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/ligo_satosa_saml_frontend_cert_file
             - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/ligo_satosa_saml_frontend_privkey_file
-            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/ligo_satosa_ldap_bind_password
+            - SATOSA_LDAP_LIGO_BIND_PASSWORD_FILE=/run/secrets/ligo_satosa_ligo_ldap_bind_password
+            - SATOSA_LDAP_KAGRA_BIND_PASSWORD_FILE=/run/secrets/ligo_satosa_kagra_ldap_bind_password
             - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/ligo_satosa_state_encryption_key
         secrets:
-            - ligo_satosa_ldap_bind_password
-            - ligo_satosa_saml_backend_cert_file
-            - ligo_satosa_saml_backend_privkey_file
+            - ligo_satosa_cilogon_backend_client_secret
+            - ligo_satosa_ligo_ldap_bind_password
+            - ligo_satosa_kagra_ldap_bind_password
             - ligo_satosa_saml_frontend_cert_file
             - ligo_satosa_saml_frontend_privkey_file
             - ligo_satosa_state_encryption_key
         networks:
             - ligo
-            - webgateway
         deploy:
-            labels:
-                - "traefik.backend=ligo-satosa"
-                - "traefik.docker.network=webgateway"
-                - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-test.ligo.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_ligo_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8080"
             replicas: 2
         logging:
             driver: journald
@@ -378,11 +341,11 @@ secrets:
         external: true
     ligo_registry_host:
         external: true
-    ligo_satosa_ldap_bind_password:
+    ligo_satosa_cilogon_backend_client_secret:
         external: true
-    ligo_satosa_saml_backend_cert_file:
+    ligo_satosa_ligo_ldap_bind_password:
         external: true
-    ligo_satosa_saml_backend_privkey_file:
+    ligo_satosa_kagra_ldap_bind_password:
         external: true
     ligo_satosa_saml_frontend_cert_file:
         external: true
