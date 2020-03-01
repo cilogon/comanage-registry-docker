@@ -1,0 +1,110 @@
+version: '3.7'
+
+networks:
+    cloudbank:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.104.0/24
+    webgateway:
+        external: true
+
+services:
+    pyff:
+        image: cilogon/comanage-registry-pyff:3
+        volumes:
+            - /srv/docker/cloudbank/opt/pyff/cloudbank_mdx.yaml:/opt/pyff/cloudbank_mdx.yaml
+            - /srv/docker/cloudbank/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
+            - /srv/docker/cloudbank/opt/pyff/federation-proxy-dev.cloudbank.org-idp-metadata.xml:/opt/pyff/federation-proxy-dev.cloudbank.org-idp-metadata.xml
+            # REMOVE THIS AFTER TESTING
+            - /srv/docker/cloudbank/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
+        environment:
+            - PYFF_PIPELINE=cloudbank_mdx.yaml
+            - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/cloudbank_metadata_signer_cert_file
+            - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/cloudbank_metadata_signer_privkey_file
+        secrets:
+            - cloudbank_metadata_signer_cert_file
+            - cloudbank_metadata_signer_privkey_file
+        networks:
+            - cloudbank
+        deploy:
+            resources:
+              limits:
+                memory: 512M
+              reservations:
+                memory: 512M
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa-proxy:
+        image: cilogon/comanage-registry-apache-satosa-proxy:2
+        volumes:
+            - /srv/docker/cloudbank/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+        environment:
+            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
+        networks:
+            - webgateway
+            - cloudbank
+        deploy:
+            labels:
+                - "traefik.backend=cloudbank-satosa-proxy"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.cloudbank.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_cloudbank_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa:
+        image: cilogon/comanage-registry-satosa:7
+        volumes:
+            - /srv/docker/cloudbank/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
+            - /srv/docker/cloudbank/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
+            - /srv/docker/cloudbank/opt/satosa/cloudbank-metadata-signer.crt:/opt/satosa/cloudbank-metadata-signer.crt
+            - /srv/docker/cloudbank/opt/satosa/attributemaps:/opt/satosa/attributemaps
+            - /srv/docker/cloudbank/opt/satosa/plugins:/opt/satosa/plugins
+        environment:
+            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/cloudbank_satosa_cilogon_backend_client_secret
+            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/cloudbank_satosa_saml_frontend_cert_file
+            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/cloudbank_satosa_saml_frontend_privkey_file
+            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/cloudbank_satosa_ldap_bind_password
+            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/cloudbank_satosa_state_encryption_key
+        secrets:
+            - cloudbank_satosa_cilogon_backend_client_secret
+            - cloudbank_satosa_ldap_bind_password
+            - cloudbank_satosa_saml_frontend_cert_file
+            - cloudbank_satosa_saml_frontend_privkey_file
+            - cloudbank_satosa_state_encryption_key
+        networks:
+            - cloudbank
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    cloudbank_metadata_signer_cert_file:
+        external: true
+    cloudbank_metadata_signer_privkey_file:
+        external: true
+    cloudbank_satosa_cilogon_backend_client_secret:
+        external: true
+    cloudbank_satosa_ldap_bind_password:
+        external: true
+    cloudbank_satosa_saml_frontend_cert_file:
+        external: true
+    cloudbank_satosa_saml_frontend_privkey_file:
+        external: true
+    cloudbank_satosa_state_encryption_key:
+        external: true
