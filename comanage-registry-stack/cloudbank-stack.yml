@@ -15,7 +15,7 @@ services:
         volumes:
             - /srv/docker/cloudbank/opt/pyff/cloudbank_mdx.yaml:/opt/pyff/cloudbank_mdx.yaml
             - /srv/docker/cloudbank/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
-            - /srv/docker/cloudbank/opt/pyff/federation-proxy-dev.cloudbank.org-idp-metadata.xml:/opt/pyff/federation-proxy-dev.cloudbank.org-idp-metadata.xml
+            - /srv/docker/cloudbank/opt/pyff/federation-proxy.cloudbank.org-idp-metadata.xml:/opt/pyff/federation-proxy.cloudbank.org-idp-metadata.xml
             # REMOVE THIS AFTER TESTING
             - /srv/docker/cloudbank/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
         environment:
@@ -33,7 +33,7 @@ services:
                 memory: 512M
               reservations:
                 memory: 512M
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -53,12 +53,12 @@ services:
                 - "traefik.backend=cloudbank-satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.cloudbank.org"
+                - "traefik.frontend.rule=Host: federation-proxy.cloudbank.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_cloudbank_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_cloudbank_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -87,7 +87,7 @@ services:
         networks:
             - cloudbank
         deploy:
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
