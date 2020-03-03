@@ -10,6 +10,7 @@ defaultEntryPoints = ["http", "https"]
   [entryPoints.https]
   address = ":443"
     [entryPoints.https.tls]
+    minVersion = "VersionTLS12"
       [[entryPoints.https.tls.certificates]]
       certFile = "/run/secrets/registry_cilogon_org_https_cert_file"
       keyFile = "/run/secrets/registry_cilogon_org_https_privkey_file"
