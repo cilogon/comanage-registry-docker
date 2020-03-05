@@ -43,6 +43,7 @@ services:
         image: cilogon/comanage-registry-apache-satosa-proxy:2
         volumes:
             - /srv/docker/cloudbank/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+            - /srv/docker/cloudbank/usr/local/apache2/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
         environment:
             - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
         networks:
