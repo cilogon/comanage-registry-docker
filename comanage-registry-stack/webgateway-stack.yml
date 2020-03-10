@@ -34,7 +34,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
           
     webgateway:
-        image: traefik:v1.7.20
+        image: traefik:v1.7.21
         volumes:
             - /srv/docker/webgateway/etc/traefik:/etc/traefik
             - /srv/docker/webgateway/etc/letsencrypt:/etc/letsencrypt
