@@ -1,0 +1,290 @@
+version: '3.7'
+
+networks:
+    cilogon_demo:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.105.0/24
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+services:
+    cilogon_demo-ldap-01:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/cilogon_demo/var/lib/ldap_01:/var/lib/ldap
+            - /srv/docker/cilogon_demo/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_demo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/cilogon_demo/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_demo/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_demo/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_demo/ldif/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_demo/ldif/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
+            - /srv/docker/cilogon_demo/ldif/admin-always-01-CO_CILogon.ldif:/ldif/admin/02.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_demo_olc_root_pw
+            - OLC_SUFFIX=dc=democilogon,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=democilogon,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_demo_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cilogon_demo_syncrepl_user_password_hash
+        secrets:
+            - cilogon_demo_olc_root_pw
+            - cilogon_demo_olc_root_dn_password
+            - cilogon_demo_syncrepl_user_password_hash
+        networks:
+            - cilogon_demo
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    cilogon_demo-ldap-02:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/cilogon_demo/var/lib/ldap_02:/var/lib/ldap
+            - /srv/docker/cilogon_demo/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
+            - /srv/docker/cilogon_demo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/cilogon_demo/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_demo/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_demo/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_demo/ldif/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/cilogon_demo_olc_root_pw
+            - OLC_SUFFIX=dc=democilogon,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=democilogon,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cilogon_demo_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cilogon_demo_syncrepl_user_password_hash
+        secrets:
+            - cilogon_demo_olc_root_pw
+            - cilogon_demo_olc_root_dn_password
+            - cilogon_demo_syncrepl_user_password_hash
+        networks:
+            - cilogon_demo
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: cilogon/comanage-registry:9f183485dd595f0d3ef8c4ae32258d69b2806d18-1
+        volumes:
+            - /srv/docker/cilogon_demo/srv/comanage-registry/local:/srv/comanage-registry/local
+        environment:
+            - OIDC_CLIENT_ID_FILE=/run/secrets/cilogon_demo_registry_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/run/secrets/cilogon_demo_registry_oidc_client_secret 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/cilogon_demo_registry_oidc_provider_metadata_url 
+            - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/cilogon_demo_registry_oidc_crypto_passphrase 
+            - SERVER_NAME_FILE=/run/secrets/cilogon_demo_registry_host 
+            - REGISTRY_HOST_FILE=/run/secrets/cilogon_demo_registry_host 
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=cilogon_demo_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/cilogon_demo_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=cd_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/cilogon_demo_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/cilogon_demo_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/cilogon_demo_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_EMAIL_FROM_FILE=/run/secrets/cilogon_demo_comanage_registry_email_from
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/cilogon_demo_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/cilogon_demo_comanage_registry_security_seed
+        secrets:
+            - cilogon_demo_comanage_registry_database_user_password
+            - cilogon_demo_comanage_registry_database_host
+            - cilogon_demo_comanage_registry_email_account
+            - cilogon_demo_comanage_registry_email_account_password
+            - cilogon_demo_comanage_registry_email_from
+            - cilogon_demo_comanage_registry_security_salt
+            - cilogon_demo_comanage_registry_security_seed
+            - cilogon_demo_registry_oidc_client_id
+            - cilogon_demo_registry_oidc_client_secret
+            - cilogon_demo_registry_oidc_provider_metadata_url
+            - cilogon_demo_registry_oidc_crypto_passphrase
+            - cilogon_demo_registry_host
+        networks:
+            - cilogon_demo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=cilogon_demo-comanage-registry"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: registry-dev.demo.cilogon.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_cilogon_demo_cilogon_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: sphericalcowgroup/comanage-registry-cron:9f183485dd595f0d3ef8c4ae32258d69b2806d18-1
+        volumes:
+            - /srv/docker/cilogon_demo/srv/comanage-registry/local:/srv/comanage-registry/local
+        networks:
+            - cilogon_demo
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    pyff:
+        image: cilogon/comanage-registry-pyff:3
+        volumes:
+            - /srv/docker/cilogon_demo/opt/pyff/cilogon_demo_mdx.yaml:/opt/pyff/cilogon_demo_mdx.yaml
+            - /srv/docker/cilogon_demo/opt/pyff/federation-proxy-dev.demo.cilogon.org-idp-metadata.xml:/opt/pyff/federation-proxy-dev.demo.cilogon.org-idp-metadata.xml
+            - /srv/docker/cilogon_demo/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
+            # REMOVE THIS AFTER TESTING
+            - /srv/docker/cilogon_demo/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
+        environment:
+            - PYFF_PIPELINE=cilogon_demo_mdx.yaml
+            - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/cilogon_demo_metadata_signer_cert_file
+            - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/cilogon_demo_metadata_signer_privkey_file
+        secrets:
+            - cilogon_demo_metadata_signer_cert_file
+            - cilogon_demo_metadata_signer_privkey_file
+        networks:
+            - cilogon_demo
+            - webgateway
+        deploy:
+            resources:
+              limits:
+                memory: 512M
+              reservations:
+                memory: 512M
+            labels:
+                - "traefik.backend=cilogon_demo-pyff"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: mdq-dev.demo.cilogon.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_demo_cilogon_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8080"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa-proxy:
+        image: cilogon/comanage-registry-apache-satosa-proxy:2
+        volumes:
+            - /srv/docker/cilogon_demo/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+        environment:
+            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
+        networks:
+            - webgateway
+            - cilogon_demo
+        deploy:
+            labels:
+                - "traefik.backend=cilogon_demo-satosa-proxy"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.demo.cilogon.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_cilogon_demo_cilogon_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa:
+        image: cilogon/comanage-registry-satosa:7
+        volumes:
+            - /srv/docker/cilogon_demo/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
+            - /srv/docker/cilogon_demo/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
+            - /srv/docker/cilogon_demo/opt/satosa/cilogon_demo-metadata-signer.crt:/opt/satosa/cilogon_demo-metadata-signer.crt
+            - /srv/docker/cilogon_demo/opt/satosa/attributemaps:/opt/satosa/attributemaps
+            - /srv/docker/cilogon_demo/opt/satosa/plugins:/opt/satosa/plugins
+        environment:
+            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/cilogon_demo_satosa_cilogon_backend_client_secret
+            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/cilogon_demo_satosa_saml_frontend_cert_file
+            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/cilogon_demo_satosa_saml_frontend_privkey_file
+            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/cilogon_demo_satosa_ldap_bind_password
+            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/cilogon_demo_satosa_state_encryption_key
+        secrets:
+            - cilogon_demo_satosa_cilogon_backend_client_secret
+            - cilogon_demo_satosa_ldap_bind_password
+            - cilogon_demo_satosa_saml_frontend_cert_file
+            - cilogon_demo_satosa_saml_frontend_privkey_file
+            - cilogon_demo_satosa_state_encryption_key
+        networks:
+            - cilogon_demo
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    cilogon_demo_olc_root_pw:
+        external: true
+    cilogon_demo_comanage_registry_database_user_password:
+        external: true
+    cilogon_demo_comanage_registry_database_host:
+        external: true
+    cilogon_demo_comanage_registry_email_account:
+        external: true
+    cilogon_demo_comanage_registry_email_account_password:
+        external: true
+    cilogon_demo_comanage_registry_email_from:
+        external: true
+    cilogon_demo_comanage_registry_security_salt:
+        external: true
+    cilogon_demo_comanage_registry_security_seed:
+        external: true
+    cilogon_demo_metadata_signer_cert_file:
+        external: true
+    cilogon_demo_metadata_signer_privkey_file:
+        external: true
+    cilogon_demo_registry_oidc_client_id:
+        external: true
+    cilogon_demo_registry_oidc_client_secret:
+        external: true
+    cilogon_demo_registry_oidc_provider_metadata_url:
+        external: true
+    cilogon_demo_registry_oidc_crypto_passphrase:
+        external: true
+    cilogon_demo_olc_root_dn_password:
+        external: true
+    cilogon_demo_registry_host:
+        external: true
+    cilogon_demo_satosa_cilogon_backend_client_secret:
+        external: true
+    cilogon_demo_satosa_ldap_bind_password:
+        external: true
+    cilogon_demo_satosa_saml_frontend_cert_file:
+        external: true
+    cilogon_demo_satosa_saml_frontend_privkey_file:
+        external: true
+    cilogon_demo_satosa_state_encryption_key:
+        external: true
+    cilogon_demo_syncrepl_user_password_hash:
+        external: true
