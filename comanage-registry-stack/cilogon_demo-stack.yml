@@ -77,7 +77,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:9f183485dd595f0d3ef8c4ae32258d69b2806d18-1
+        image: cilogon/comanage-registry:355ef62fab2155a44756dcd622e1a5cf7d7ab796-1
         volumes:
             - /srv/docker/cilogon_demo/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
@@ -136,7 +136,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:9f183485dd595f0d3ef8c4ae32258d69b2806d18-1
+        image: sphericalcowgroup/comanage-registry-cron:355ef62fab2155a44756dcd622e1a5cf7d7ab796-1
         volumes:
             - /srv/docker/cilogon_demo/srv/comanage-registry/local:/srv/comanage-registry/local
         networks:
