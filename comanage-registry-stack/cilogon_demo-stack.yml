@@ -77,7 +77,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:9f183485dd595f0d3ef8c4ae32258d69b2806d18-1
+        image: cilogon/comanage-registry:9f183485dd595f0d3ef8c4ae32258d69b2806d18-2
         volumes:
             - /srv/docker/cilogon_demo/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
@@ -91,9 +91,9 @@ services:
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
-            - COMANAGE_REGISTRY_DATABASE=cilogon_demo_registry_dev
+            - COMANAGE_REGISTRY_DATABASE=cilogon_demo_registry_test
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/cilogon_demo_comanage_registry_database_host
-            - COMANAGE_REGISTRY_DATABASE_USER=cd_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER=cd_registry_tst
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/cilogon_demo_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
@@ -124,9 +124,9 @@ services:
                 - "traefik.backend=cilogon_demo-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.demo.cilogon.org"
+                - "traefik.frontend.rule=Host: registry-test.demo.cilogon.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_cilogon_demo_cilogon_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_test_cilogon_demo_cilogon_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
@@ -136,9 +136,11 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:9f183485dd595f0d3ef8c4ae32258d69b2806d18-1
+        image: sphericalcowgroup/comanage-registry-cron:9f183485dd595f0d3ef8c4ae32258d69b2806d18-2
         volumes:
             - /srv/docker/cilogon_demo/srv/comanage-registry/local:/srv/comanage-registry/local
+        environment:
+            - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
         networks:
             - cilogon_demo
         deploy:
@@ -154,7 +156,7 @@ services:
         image: cilogon/comanage-registry-pyff:3
         volumes:
             - /srv/docker/cilogon_demo/opt/pyff/cilogon_demo_mdx.yaml:/opt/pyff/cilogon_demo_mdx.yaml
-            - /srv/docker/cilogon_demo/opt/pyff/federation-proxy-dev.demo.cilogon.org-idp-metadata.xml:/opt/pyff/federation-proxy-dev.demo.cilogon.org-idp-metadata.xml
+            - /srv/docker/cilogon_demo/opt/pyff/federation-proxy-test.demo.cilogon.org-idp-metadata.xml:/opt/pyff/federation-proxy-test.demo.cilogon.org-idp-metadata.xml
             - /srv/docker/cilogon_demo/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
             # REMOVE THIS AFTER TESTING
             - /srv/docker/cilogon_demo/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
@@ -178,9 +180,9 @@ services:
                 - "traefik.backend=cilogon_demo-pyff"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq-dev.demo.cilogon.org"
+                - "traefik.frontend.rule=Host: mdq-test.demo.cilogon.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_demo_cilogon_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_test_demo_cilogon_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8080"
             replicas: 1
@@ -203,9 +205,9 @@ services:
                 - "traefik.backend=cilogon_demo-satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.demo.cilogon.org"
+                - "traefik.frontend.rule=Host: federation-proxy-test.demo.cilogon.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_cilogon_demo_cilogon_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_cilogon_demo_cilogon_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
