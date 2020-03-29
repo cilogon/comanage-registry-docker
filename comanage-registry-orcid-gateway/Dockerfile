@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 ARG SATOSA_DIR=/opt/satosa
 ENV SATOSA_DIR ${SATOSA_DIR}
@@ -22,7 +22,7 @@ RUN useradd --home-dir ${SATOSA_DIR} --no-create-home --system ${SATOSA_USER} \
     && mkdir -p ${SATOSA_DIR}/attributemaps \
     && chown -R ${SATOSA_USER}:${SATOSA_GROUP} ${SATOSA_DIR}
 
-ARG SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@2de1c81d64eb5831f65e7f0758dbd83a38b7f78d
+ARG SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@8daddcb938d4da634dc3a2b25b03fe8812450dd2
 ENV SATOSA_SRC_URL ${SATOSA_SRC_URL}
 LABEL satosa_src_url=${SATOSA_SRC_URL}
 

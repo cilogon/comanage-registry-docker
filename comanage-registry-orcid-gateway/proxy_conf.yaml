@@ -4,6 +4,9 @@ INTERNAL_ATTRIBUTES: internal_attributes.yaml
 
 COOKIE_STATE_NAME: SATOSA_ORCID_SAML_GATEWAY_STATE
 
+cookies_samesite_compat:
+    - ["SATOSA_ORCID_SAML_GATEWAY_STATE", "SATOSA_ORCID_SAML_GATEWAY_STATE_LEGACY"]
+
 BACKEND_MODULES:
   - plugins/orcid_backend.yaml
 
@@ -24,7 +27,7 @@ LOGGING:
   version: 1
   formatters:
     simple:
-      format: "[%(asctime)s] [%(levelname)s] [%(name)s]: %(message)s"
+      format: "[%(asctime)s] [PID %(process)d] [%(levelname)s] [%(name)s]: %(message)s"
   handlers:
     console:
       class: logging.StreamHandler

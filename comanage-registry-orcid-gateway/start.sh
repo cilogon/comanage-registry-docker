@@ -16,6 +16,11 @@ injectable_config_vars=(
     SATOSA_DIR
     SATOSA_GUNICORN_HOST
     SATOSA_GUNICORN_PORT
+    SATOSA_GUNICORN_WORKERS
+    SATOSA_GUNICORN_WORKER_CLASS
+    SATOSA_GUNICORN_THREADS
+    SATOSA_GUNICORN_MAX_REQUESTS
+    SATOSA_GUNICORN_MAX_REQUESTS_JITTER
     SATOSA_PROXY_BASE
     SATOSA_SAML_FRONTEND_ATTRIBUTE_SCOPE
     SATOSA_SAML_FRONTEND_ENTITYID
@@ -97,7 +102,14 @@ fi
 
 cd "${SATOSA_DIR}"
 
-exec ${SATOSA_DIR}/bin/gunicorn \
-    -b${SATOSA_GUNICORN_HOST:-0.0.0.0}:${SATOSA_GUNICORN_PORT:-8000} \
-    --forwarded-allow-ips='*' \
-    satosa.wsgi:app
+gunicorn=(${SATOSA_DIR}/bin/gunicorn)
+gunicorn+=(-b${SATOSA_GUNICORN_HOST:-0.0.0.0}:${SATOSA_GUNICORN_PORT:-8000})
+gunicorn+=(--forwarded-allow-ips='*')
+gunicorn+=(--workers ${SATOSA_GUNICORN_WORKERS:-2})
+gunicorn+=(--worker-class ${SATOSA_GUNICORN_WORKER_CLASS:-gthread})
+gunicorn+=(--threads ${SATOSA_GUNICORN_THREADS:-4})
+gunicorn+=(--max-requests ${SATOSA_GUNICORN_MAX_REQUESTS:-720})
+gunicorn+=(--max-requests-jitter ${SATOSA_GUNICORN_MAX_REQUESTS_JITTER:-10})
+gunicorn+=(satosa.wsgi:app)
+
+exec "${gunicorn[@]}"
