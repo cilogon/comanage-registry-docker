@@ -30,28 +30,30 @@ do
 done
 
 # Define and create DATA_DIR if it does not already exist.
-if [ -z "${DATA_DIR}" ]; then
+if [[ -z "${DATA_DIR}" ]]; then
    DATA_DIR=/opt/satosa
 fi
 
-if [ ! -d "${DATA_DIR}" ]; then
+if [[ ! -d "${DATA_DIR}" ]]; then
    mkdir -p "${DATA_DIR}"
 fi
 
 # Export SATOSA sensitive environment variables.
-if [ -n "${SATOSA_STATE_ENCRYPTION_KEY}" ]; then
+if [[ -n "${SATOSA_STATE_ENCRYPTION_KEY}" ]]; then
     export SATOSA_STATE_ENCRYPTION_KEY
 fi
 
 # Copy SAML certificates and associated private keys into place.
-if [ -n "${SATOSA_FRONTEND_CERT_FILE}" ] && [ -n "${SATOSA_FRONTEND_PRIVKEY_FILE}" ]; then
+if [[ -n "${SATOSA_FRONTEND_CERT_FILE}" &&
+      -n "${SATOSA_FRONTEND_PRIVKEY_FILE}" ]]; then
     cp "${SATOSA_FRONTEND_CERT_FILE}" "${DATA_DIR}/frontend.crt"
     cp "${SATOSA_FRONTEND_PRIVKEY_FILE}" "${DATA_DIR}/frontend.key"
     chmod 644 "${DATA_DIR}/frontend.crt"
     chmod 600 "${DATA_DIR}/frontend.key"
 fi
 
-if [ -n "${SATOSA_BACKEND_CERT_FILE}" ] && [ -n "${SATOSA_BACKEND_PRIVKEY_FILE}" ]; then
+if [[ -n "${SATOSA_BACKEND_CERT_FILE}" &&
+      -n "${SATOSA_BACKEND_PRIVKEY_FILE}" ]]; then
     cp "${SATOSA_BACKEND_CERT_FILE}" "${DATA_DIR}/backend.crt"
     cp "${SATOSA_BACKEND_PRIVKEY_FILE}" "${DATA_DIR}/backend.key"
     chmod 644 "${DATA_DIR}/backend.crt"
@@ -59,18 +61,19 @@ if [ -n "${SATOSA_BACKEND_CERT_FILE}" ] && [ -n "${SATOSA_BACKEND_PRIVKEY_FILE}"
 fi
 
 # Copy HTTPS certificate and key into place.
-if [ -n "${SATOSA_HTTPS_CERT_FILE}" ] && [ -n "${SATOSA_HTTPS_KEY_FILE}" ]; then
+if [[ -n "${SATOSA_HTTPS_CERT_FILE}" &&
+      -n "${SATOSA_HTTPS_KEY_FILE}" ]]; then
     cp "${SATOSA_HTTPS_CERT_FILE}" "${DATA_DIR}/https.crt"
     cp "${SATOSA_HTTPS_KEY_FILE}" "${DATA_DIR}/https.key"
     chmod 644 "${DATA_DIR}/https.crt"
     chmod 600 "${DATA_DIR}/https.key"
 fi
 
-if [ -z "${PROXY_PORT}" ]; then
+if [[ -z "${PROXY_PORT}" ]]; then
    PROXY_PORT="8080"
 fi
 
-if [ -z "${METADATA_DIR}" ]; then
+if [[ -z "${METADATA_DIR}" ]]; then
    METADATA_DIR="${DATA_DIR}"
 fi
 
@@ -78,9 +81,19 @@ cd ${DATA_DIR}
 
 mkdir -p ${METADATA_DIR}
 
-# start the proxy
-if [[ -f https.key && -f https.crt ]]; then # if HTTPS cert is available, use it
-  exec /opt/satosa/bin/gunicorn -b0.0.0.0:${PROXY_PORT} --keyfile https.key --certfile https.crt satosa.wsgi:app
+gunicorn=(/opt/satosa/bin/gunicorn -b0.0.0.0:${PROXY_PORT})
+gunicorn+=(--workers ${GUNICORN_WORKERS:-2})
+gunicorn+=(--worker-class ${GUNICORN_WORKER_CLASS:-gthread})
+gunicorn+=(--threads ${GUNICORN_THREADS:-4})
+gunicorn+=(--max-requests ${GUNICORN_MAX_REQUESTS:-720})
+gunicorn+=(--max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER:-10})
+
+if [[ -f https.key && -f https.crt ]]; then
+    gunicorn+=(--keyfile https.key --certfile https.crt)
 else
-  exec /opt/satosa/bin/gunicorn -b0.0.0.0:${PROXY_PORT} --forwarded-allow-ips='*' satosa.wsgi:app
+    gunicorn+=(--forwarded-allow-ips='*')
 fi
+
+gunicorn+=(satosa.wsgi:app)
+
+exec "${gunicorn[@]}"

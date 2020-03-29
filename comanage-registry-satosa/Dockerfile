@@ -7,8 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         virtualenv \
         xmlsec1
 
-# Use reference to PR 316 until it is merged.
-ENV SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@refs/pull/316/merge
+ENV SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@8daddcb938d4da634dc3a2b25b03fe8812450dd2
 
 RUN mkdir -p /opt/satosa \
     && adduser --home /opt/satosa --no-create-home --system satosa --group \
@@ -22,10 +21,6 @@ RUN mkdir -p /opt/satosa \
     && apt-get clean
 
 COPY start.sh /usr/local/sbin/satosa-start.sh
-
-# Copy in updated LDAP attribute store code until 
-# PR 317 is merged.
-COPY ldap_attribute_store.py /opt/satosa/lib/python3.7/site-packages/satosa/micro_services/ldap_attribute_store.py
 
 WORKDIR /opt/satosa
 USER satosa
