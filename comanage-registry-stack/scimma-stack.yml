@@ -3,9 +3,9 @@ version: '3.1'
 networks:
     scimma:
         driver: overlay
-        driver_opts:
-            subnet: 10.0.103.0/24
-            encrypted: 1
+        ipam:
+            config:
+                - subnet: 10.0.103.0/24
     webgateway:
         external: true
     ldapgateway:
