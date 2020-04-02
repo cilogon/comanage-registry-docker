@@ -130,6 +130,7 @@ services:
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/scimma_comanage_registry_email_account
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/scimma_comanage_registry_email_account_password
             - COMANAGE_REGISTRY_EMAIL_FROM_FILE=/run/secrets/scimma_comanage_registry_email_from
+            - COMANAGE_REGISTRY_ENABLE_PLUGIN=AnnouncementsWidget,ServicesWidget
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/scimma_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/scimma_comanage_registry_security_seed
         secrets:
