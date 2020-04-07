@@ -16,6 +16,7 @@ services:
             - /srv/docker/cloudbank/opt/pyff/cloudbank_mdx.yaml:/opt/pyff/cloudbank_mdx.yaml
             - /srv/docker/cloudbank/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
             - /srv/docker/cloudbank/opt/pyff/federation-proxy.cloudbank.org-idp-metadata.xml:/opt/pyff/federation-proxy.cloudbank.org-idp-metadata.xml
+            - /srv/docker/cloudbank/opt/pyff/google-cloudbank-saml-metadata.xml:/opt/pyff/google-cloudbank-saml-metadata.xml
             # REMOVE THIS AFTER TESTING
             - /srv/docker/cloudbank/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
         environment:
