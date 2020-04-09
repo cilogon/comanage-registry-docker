@@ -84,6 +84,7 @@ services:
         secrets:
             - cloudbank_satosa_cilogon_backend_client_secret
             - cloudbank_satosa_ldap_bind_password
+            - cloudbank_satosa_ldap_bind_password_test
             - cloudbank_satosa_saml_frontend_cert_file
             - cloudbank_satosa_saml_frontend_privkey_file
             - cloudbank_satosa_state_encryption_key
@@ -104,6 +105,8 @@ secrets:
     cloudbank_satosa_cilogon_backend_client_secret:
         external: true
     cloudbank_satosa_ldap_bind_password:
+        external: true
+    cloudbank_satosa_ldap_bind_password_test:
         external: true
     cloudbank_satosa_saml_frontend_cert_file:
         external: true
