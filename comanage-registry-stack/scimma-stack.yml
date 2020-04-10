@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 
 networks:
     scimma:
@@ -11,16 +11,40 @@ networks:
     ldapgateway:
         external: true
 
+volumes:
+    pyff_configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/opt/pyff"
+
+    satosa_configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/opt/satosa"
+
+    satosa_proxy_htdocs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/usr/local/apache2/htdocs"
+
+    comanage_registry_local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/srv/comanage-registry/local"
+        
 services:
     pyff:
         image: cilogon/comanage-registry-pyff:3
         volumes:
-            - /srv/docker/scimma/opt/pyff/scimma_mdx.yaml:/opt/pyff/scimma_mdx.yaml
-            - /srv/docker/scimma/opt/pyff/federation-proxy-test.scimma.org-idp-metadata.xml:/opt/pyff/federation-proxy-test.scimma.org-idp-metadata.xml
-            - /srv/docker/scimma/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
-            - /srv/docker/scimma/opt/pyff/ilert-saml-metadata.xml:/opt/pyff/ilert-saml-metadata.xml
-            # REMOVE THIS AFTER TESTING
-            - /srv/docker/scimma/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
+            - pyff_configs:/opt/pyff
         environment:
             - PYFF_PIPELINE=scimma_mdx.yaml
             - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/scimma_metadata_signer_cert_file
@@ -55,12 +79,9 @@ services:
     satosa:
         image: cilogon/comanage-registry-satosa:8
         volumes:
-            - /srv/docker/scimma/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
-            - /srv/docker/scimma/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
-            - /srv/docker/scimma/opt/satosa/scimma-metadata-signer.crt:/opt/satosa/scimma-metadata-signer.crt
-            - /srv/docker/scimma/opt/satosa/attributemaps:/opt/satosa/attributemaps
-            - /srv/docker/scimma/opt/satosa/plugins:/opt/satosa/plugins
+            - satosa_configs:/etc/satosa
         environment:
+            - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
             - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/scimma_satosa_cilogon_backend_client_secret
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/scimma_satosa_saml_frontend_cert_file
             - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/scimma_satosa_saml_frontend_privkey_file
@@ -84,7 +105,7 @@ services:
     satosa-proxy:
         image: cilogon/comanage-registry-apache-satosa-proxy:1
         volumes:
-            - /srv/docker/scimma/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+            - satosa_proxy_htdocs:/usr/local/apache2/htdocs
         environment:
             - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
         networks:
@@ -109,7 +130,7 @@ services:
     comanage-registry:
         image: cilogon/comanage-registry:hotfix-3.3.x-2
         volumes:
-            - /srv/docker/scimma/srv/comanage-registry/local:/srv/comanage-registry/local
+            - comanage_registry_local:/srv/comanage-registry/local
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/scimma_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/scimma_oidc_client_secret 
@@ -226,7 +247,7 @@ services:
     comanage-registry-cron:
         image: sphericalcowgroup/comanage-registry-cron:hotfix-3.3.x-1
         volumes:
-            - /srv/docker/scimma/srv/comanage-registry/local:/srv/comanage-registry/local
+            - comanage_registry_local:/srv/comanage-registry/local
         networks:
             - scimma
         deploy:
