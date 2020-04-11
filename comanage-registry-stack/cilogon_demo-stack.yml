@@ -16,77 +16,77 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/var/lib/ldap_01"
 
     ldap-state-02:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/var/lib/ldap_02"
 
     ldap-config-01:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/etc/slapd.d/ldap_01"
 
     ldap-config-02:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/etc/slapd.d/ldap_02"
 
     ldap-ldif-01:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/ldif/ldap_01"
 
     ldap-ldif-02:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/ldif/ldap_02"
 
     ldap-schema:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/schema"
 
     comanage-registry-local:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/srv/comanage-registry/local"
 
     pyff-configs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/etc/pyff"
 
     satosa-proxy-htdocs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/usr/local/apache2/htdocs"
 
     satosa-configs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_demo/etc/satosa"
 
 services:
