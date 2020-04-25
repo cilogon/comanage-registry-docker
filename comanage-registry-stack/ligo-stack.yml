@@ -21,12 +21,12 @@ services:
             - /srv/docker/ligo/schema/kerberos.ldif:/schema/kerberos.ldif
             - /srv/docker/ligo/schema/ligo.ldif:/schema/ligo.ldif
             - /srv/docker/ligo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/ligo/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/ligo/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/ligo/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/ligo/ldif/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/ligo/ldif/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
-            - /srv/docker/ligo/ldif/admin-always-01-CO_LIGO.ldif:/ldif/admin/02.ldif
+            - /srv/docker/ligo/ldif/ldap_01/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/ligo/ldif/ldap_01/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/ligo/ldif/ldap_01/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/ligo/ldif/ldap_01/config/first/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/ligo/ldif/ldap_01/admin/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
+            - /srv/docker/ligo/ldif/ldap_01/admin/admin-always-01-CO_LIGO.ldif:/ldif/admin/02.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/ligo_olc_root_pw
             - OLC_SUFFIX=dc=directory,dc=ligo,dc=org
@@ -56,10 +56,10 @@ services:
             - /srv/docker/ligo/schema/kerberos.ldif:/schema/kerberos.ldif
             - /srv/docker/ligo/schema/ligo.ldif:/schema/ligo.ldif
             - /srv/docker/ligo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/ligo/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/ligo/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/ligo/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/ligo/ldif/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/ligo/ldif/ldap_02/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/ligo/ldif/ldap_02/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/ligo/ldif/ldap_02/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/ligo/ldif/ldap_02/config/first/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/ligo_olc_root_pw
             - OLC_SUFFIX=dc=directory,dc=ligo,dc=org
