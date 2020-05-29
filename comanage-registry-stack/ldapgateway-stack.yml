@@ -16,11 +16,11 @@ services:
         environment:
             - SLAPD_CERT_FILE=/run/secrets/ldap_gateway_slapd_cert_file
             - SLAPD_PRIVKEY_FILE=/run/secrets/ldap_gateway_slapd_privkey_file
-            - SLAPD_CHAIN_FILE=/run/secrets/ldap_gateway_slapd_chain_file
+            - SLAPD_CHAIN_FILE=/run/secrets/ldap_gateway_slapd_chain_file_v2
         secrets:
             - ldap_gateway_slapd_cert_file
             - ldap_gateway_slapd_privkey_file
-            - ldap_gateway_slapd_chain_file
+            - ldap_gateway_slapd_chain_file_v2
         networks:
             - ldapgateway
         ports:
@@ -48,5 +48,5 @@ secrets:
         external: true
     ldap_gateway_slapd_privkey_file:
         external: true
-    ldap_gateway_slapd_chain_file:
+    ldap_gateway_slapd_chain_file_v2:
         external: true
