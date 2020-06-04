@@ -6,11 +6,34 @@ networks:
     dockersocket:
         external: true
 
+volumes:
+    traefik:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/webgateway/etc/traefik"
+    letsencrypt:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/webgateway/etc/letsencrypt"
+    getssl:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/webgateway/opt/getssl"
+
 services:
     dockersocket:
         image: cilogon/cilogon-haproxy:1.9.7
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
+            - type: bind
+              source: /var/run/docker.sock
+              target: /var/run/docker.sock
+              read_only: false
         environment:
             - SERVICES=1
             - NETWORKS=1
@@ -36,8 +59,18 @@ services:
     webgateway:
         image: traefik:v1.7.21
         volumes:
-            - /srv/docker/webgateway/etc/traefik:/etc/traefik
-            - /srv/docker/webgateway/etc/letsencrypt:/etc/letsencrypt
+            - type: volume
+              source: traefik
+              target: /etc/traefik
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: letsencrypt
+              target: /etc/letsencrypt
+              read_only: true
+              volume:
+                nocopy: true
         secrets:
             - gw_astronomy_saml_aa_signing_cert
             - gw_astronomy_saml_aa_privkey
@@ -93,8 +126,18 @@ services:
     getssl:
         image: cilogon/comanage-registry-getssl:1
         volumes:
-            - /srv/docker/webgateway/opt/getssl:/opt/getssl
-            - /srv/docker/webgateway/etc/letsencrypt:/etc/letsencrypt
+            - type: volume
+              source: getssl
+              target: /opt/getssl
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: letsencrypt
+              target: /etc/letsencrypt
+              read_only: false
+              volume:
+                nocopy: true
         networks:
             - webgateway
         deploy:
