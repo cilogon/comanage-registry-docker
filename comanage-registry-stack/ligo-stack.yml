@@ -251,6 +251,169 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
+    grouper-ui:
+        image: i2incommon/grouper:2.5.29
+        command: ["bash", "-c", "exec ui"]
+        volumes:
+            - /srv/docker/ligo/etc/httpd/conf.d/grouper-www.conf:/etc/httpd/conf.d/grouper-www.conf
+            - /srv/docker/ligo/etc/httpd/conf.d/ssl-enabled.conf:/etc/httpd/conf.d/ssl-enabled.conf
+            - /srv/docker/ligo/etc/shibboleth/shibboleth2.xml:/etc/shibboleth/shibboleth2.xml
+            - /srv/docker/ligo/etc/shibboleth/attribute-map.xml:/etc/shibboleth/attribute-map.xml
+            - /srv/docker/ligo/etc/shibboleth/ligo-metadata-signer.crt:/etc/shibboleth/ligo-metadata-signer.crt
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=ligo_grouper
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
+            - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
+            - GROUPER_UI=true
+            - GROUPER_RUN_APACHE=true
+            - GROUPER_RUN_SHIB_SP=true
+            - GROUPER_RUN_TOMEE=true
+            - GROUPER_SELF_SIGNED_CERT=false
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: ligo_grouper_database_password
+              target: grouper_database_password
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_morphstring_encrypt_key
+              target: grouper_morphstring_encrypt_key
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_shibboleth_sp_encryption_cert
+              target: shib_sp-encrypt-cert.pem
+              uid: '999'
+              gid: '998'
+              mode: 0644
+            - source: ligo_grouper_shibboleth_sp_encryption_privkey
+              target: shib_sp-encrypt-key.pem
+              uid: '999'
+              gid: '998'
+              mode: 0400
+            - source: ligo_grouper_shibboleth_sp_signing_cert
+              target: shib_sp-signing-cert.pem
+              uid: '999'
+              gid: '998'
+              mode: 0644
+            - source: ligo_grouper_shibboleth_sp_signing_privkey
+              target: shib_sp-signing-key.pem
+              uid: '999'
+              gid: '998'
+              mode: 0400
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=ligo-grouper-ui"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host:group-registry-dev.ligo.org"
+                - "traefik.frontend.priority=50"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_dev_ligo_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8000"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    grouper-ws:
+        image: i2incommon/grouper:2.5.29
+        command: ["bash", "-c", "exec ws"]
+        volumes:
+            - /srv/docker/ligo/etc/httpd/conf.d/grouper-www-ws.conf:/etc/httpd/conf.d/grouper-www.conf
+            - /srv/docker/ligo/etc/httpd/conf.d/ssl-enabled.conf:/etc/httpd/conf.d/ssl-enabled.conf
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=ligo_grouper
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
+            - GROUPER_WS=true
+            - GROUPER_RUN_APACHE=true
+            - GROUPER_RUN_SHIB_SP=false
+            - GROUPER_RUN_TOMEE=true
+            - GROUPER_SELF_SIGNED_CERT=false
+            - GROUPER_USE_SSL=false
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: ligo_grouper_database_password
+              target: grouper_database_password
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_morphstring_encrypt_key
+              target: grouper_morphstring_encrypt_key
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_ws_httpd_basic_auth
+              target: ligo_grouper_ws_httpd_basic_auth
+              uid: '0'
+              gid: '0'
+              mode: 0644
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=ligo-grouper-ws"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host:group-registry-dev.ligo.org;PathPrefix:/grouper-ws"
+                - "traefik.frontend.priority=100"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_dev_ligo_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8000"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    grouper-daemon:
+        image: i2incommon/grouper:2.5.29
+        command: ["bash", "-c", "exec daemon"]
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=ligo_grouper
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
+            - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
+            - GROUPER_DAEMON=true
+            - GROUPER_RUN_APACHE=false
+            - GROUPER_RUN_SHIB_SP=false
+            - GROUPER_RUN_TOMEE=true
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: ligo_grouper_database_password
+              target: grouper_database_password
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_morphstring_encrypt_key
+              target: grouper_morphstring_encrypt_key
+              uid: '998'
+              gid: '998'
+              mode: 0600
+        networks:
+            - ligo
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
 secrets:
     ligo_olc_root_pw:
         external: true
@@ -270,6 +433,8 @@ secrets:
         external: true
     ligo_grouper_database_password:
         external: true
+    ligo_grouper_morphstring_encrypt_key:
+        external: true
     ligo_grouper_shibboleth_sp_encryption_cert:
         external: true
     ligo_grouper_shibboleth_sp_encryption_privkey:
@@ -278,7 +443,7 @@ secrets:
         external: true
     ligo_grouper_shibboleth_sp_signing_privkey:
         external: true
-    ligo_grouper_subject_ldap_bind_password:
+    ligo_grouper_ws_httpd_basic_auth:
         external: true
     ligo_metadata_signer_cert_file:
         external: true
