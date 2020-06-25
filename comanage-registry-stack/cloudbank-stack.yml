@@ -18,6 +18,7 @@ services:
             - /srv/docker/cloudbank/opt/pyff/federation-proxy.cloudbank.org-idp-metadata.xml:/opt/pyff/federation-proxy.cloudbank.org-idp-metadata.xml
             - /srv/docker/cloudbank/opt/pyff/google-cloudbank-saml-metadata.xml:/opt/pyff/google-cloudbank-saml-metadata.xml
             - /srv/docker/cloudbank/opt/pyff/microsoft-cloudbank-saml-metadata.xml:/opt/pyff/microsoft-cloudbank-saml-metadata.xml
+            - /srv/docker/cloudbank/opt/pyff/nutanix-saml-metadata.xml:/opt/pyff/nutanix-saml-metadata.xml
             # REMOVE THIS AFTER TESTING
             - /srv/docker/cloudbank/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
         environment:
