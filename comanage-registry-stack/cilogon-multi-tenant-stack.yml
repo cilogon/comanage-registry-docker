@@ -20,20 +20,26 @@ services:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap_01:/var/lib/ldap
             - /srv/docker/cilogon_multi_tenant/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
             - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_CCAST.ldif:/ldif/admin/CCAST.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_CILogon.ldif:/ldif/admin/CILogon.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_IceCube.ldif:/ldif/admin/IceCube.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_ImPACT.ldif:/ldif/admin/ImPACT.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_MGHPCC.ldif:/ldif/admin/MGHPCC.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_NANOGrav.ldif:/ldif/admin/NANOGrav.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_OSG.ldif:/ldif/admin/OSG.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_SciDAS.ldif:/ldif/admin/SciDAS.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-always-01-CO_XSEDE.ldif:/ldif/admin/XSEDE.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/config/first/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_01.ldif:/ldif/admin/admin-always-01-CO_01.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_AUS.ldif:/ldif/admin/admin-always-01-CO_AUS.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_CCAST.ldif:/ldif/admin/admin-always-01-CO_CCAST.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_CILogon.ldif:/ldif/admin/admin-always-01-CO_CILogon.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_CloudBank.ldif:/ldif/admin/admin-always-01-CO_CloudBank.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_FABRIC.ldif:/ldif/admin/admin-always-01-CO_FABRIC.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_GalaxyTest.ldif:/ldif/admin/admin-always-01-CO_GalaxyTest.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_IceCube.ldif:/ldif/admin/admin-always-01-CO_IceCube.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_ImPACT.ldif:/ldif/admin/admin-always-01-CO_ImPACT.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_MESS.ldif:/ldif/admin/admin-always-01-CO_MESS.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_MGHPCC.ldif:/ldif/admin/admin-always-01-CO_MGHPCC.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_NANOGrav.ldif:/ldif/admin/admin-always-01-CO_NANOGrav.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_OpenIRIS.ldif:/ldif/admin/admin-always-01-CO_OpenIRIS.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_OSG.ldif:/ldif/admin/admin-always-01-CO_OSG.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_SciDAS.ldif:/ldif/admin/admin-always-01-CO_SciDAS.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_XSEDE.ldif:/ldif/admin/admin-always-01-CO_XSEDE.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
@@ -61,10 +67,10 @@ services:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap_02:/var/lib/ldap
             - /srv/docker/cilogon_multi_tenant/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
             - /srv/docker/cilogon_multi_tenant/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/cilogon_multi_tenant/ldif/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_02/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_02/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_02/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_02/config/first/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
             - OLC_SUFFIX=dc=cilogon,dc=org
