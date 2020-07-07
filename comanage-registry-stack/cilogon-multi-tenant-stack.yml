@@ -39,6 +39,7 @@ services:
             - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_OpenIRIS.ldif:/ldif/admin/admin-always-01-CO_OpenIRIS.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_OSG.ldif:/ldif/admin/admin-always-01-CO_OSG.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_SciDAS.ldif:/ldif/admin/admin-always-01-CO_SciDAS.ldif
+            - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_Template.ldif:/ldif/admin/admin-always-01-CO_Template.ldif
             - /srv/docker/cilogon_multi_tenant/ldif/ldap_01/admin/admin-always-01-CO_XSEDE.ldif:/ldif/admin/admin-always-01-CO_XSEDE.ldif
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/cilogon_multi_tenant_olc_root_pw
