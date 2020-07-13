@@ -130,7 +130,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:d36096-1
+        image: cilogon/comanage-registry:3.3.0-rc1-1
         volumes:
             - /srv/docker/gw-astronomy/srv/comanage-registry/local:/srv/comanage-registry/local
             - /srv/docker/gw-astronomy/srv/comanage-registry/app/webroot/favicon.ico:/srv/comanage-registry/app/webroot/favicon.ico
@@ -191,7 +191,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:d36096-1
+        image: sphericalcowgroup/comanage-registry-cron:3.3.0-rc1-1
         volumes:
             - /srv/docker/gw-astronomy/srv/comanage-registry/local:/srv/comanage-registry/local
         networks:
