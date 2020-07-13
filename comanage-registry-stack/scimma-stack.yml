@@ -128,7 +128,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:089610bc-2
+        image: cilogon/comanage-registry:d36096-2
         volumes:
             - comanage_registry_local:/srv/comanage-registry/local
         environment:
@@ -193,14 +193,9 @@ services:
         volumes:
             - /srv/docker/scimma/var/lib/ldap_01:/var/lib/ldap
             - /srv/docker/scimma/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
-            - /srv/docker/scimma/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/scimma/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/scimma/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/scimma/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/scimma/ldif/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/scimma/ldif/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
-            - /srv/docker/scimma/ldif/admin-always-01-CO_SCiMMA.ldif:/ldif/admin/02.ldif
-            - /srv/docker/scimma/ldif/config-always-all-olcAttributeOptions.ldif:/ldif/config/olcAttributeOptions.ldif
+            - /srv/docker/scimma/schema:/schema
+            - /srv/docker/scimma/ldif/ldap_01/admin:/ldif/admin
+            - /srv/docker/scimma/ldif/ldap_01/config:/ldif/config
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/scimma_olc_root_pw
             - OLC_SUFFIX=dc=scimma,dc=org
@@ -227,12 +222,9 @@ services:
         volumes:
             - /srv/docker/scimma/var/lib/ldap_02:/var/lib/ldap
             - /srv/docker/scimma/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
-            - /srv/docker/scimma/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/scimma/ldif/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/scimma/ldif/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/scimma/ldif/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/scimma/ldif/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/scimma/ldif/config-always-all-olcAttributeOptions.ldif:/ldif/config/olcAttributeOptions.ldif
+            - /srv/docker/scimma/schema:/schema
+            - /srv/docker/scimma/ldif/ldap_02/admin:/ldif/admin
+            - /srv/docker/scimma/ldif/ldap_02/config:/ldif/config
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/scimma_olc_root_pw
             - OLC_SUFFIX=dc=scimma,dc=org
