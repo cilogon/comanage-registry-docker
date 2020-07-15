@@ -81,7 +81,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:3.2.5-1
+        image: cilogon/comanage-registry:3.3.0-rc1-1
         volumes:
             - /srv/docker/ligo/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
@@ -133,6 +133,21 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: sphericalcowgroup/comanage-registry-cron:3.3.0-rc1-1
+        volumes:
+            - /srv/docker/ligo/srv/comanage-registry/local:/srv/comanage-registry/local
+        networks:
+            - ligo
+        deploy:
+            labels:
+                - "traefik.enable=false"
             replicas: 1
         logging:
             driver: journald
