@@ -128,7 +128,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:d36096-2
+        image: cilogon/comanage-registry:3.3.0-rc2-1
         volumes:
             - comanage_registry_local:/srv/comanage-registry/local
         environment:
