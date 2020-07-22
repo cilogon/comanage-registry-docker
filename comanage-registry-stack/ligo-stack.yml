@@ -261,8 +261,8 @@ services:
             - /srv/docker/ligo/etc/shibboleth/attribute-map.xml:/etc/shibboleth/attribute-map.xml
             - /srv/docker/ligo/etc/shibboleth/ligo-metadata-signer.crt:/etc/shibboleth/ligo-metadata-signer.crt
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
-            - GROUPER_DATABASE_USERNAME=ligo_grouper
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lg_grouper_test
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
             - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
@@ -312,10 +312,10 @@ services:
                 - "traefik.backend=ligo-grouper-ui"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host:group-registry-dev.ligo.org"
+                - "traefik.frontend.rule=Host:group-registry-test.ligo.org"
                 - "traefik.frontend.priority=50"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_dev_ligo_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_test_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8000"
             replicas: 1
@@ -331,8 +331,8 @@ services:
             - /srv/docker/ligo/etc/httpd/conf.d/grouper-www-ws.conf:/etc/httpd/conf.d/grouper-www.conf
             - /srv/docker/ligo/etc/httpd/conf.d/ssl-enabled.conf:/etc/httpd/conf.d/ssl-enabled.conf
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
-            - GROUPER_DATABASE_USERNAME=ligo_grouper
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lg_grouper_test
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
             - GROUPER_WS=true
@@ -367,10 +367,10 @@ services:
                 - "traefik.backend=ligo-grouper-ws"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host:group-registry-dev.ligo.org;PathPrefix:/grouper-ws"
+                - "traefik.frontend.rule=Host:group-registry-test.ligo.org;PathPrefix:/grouper-ws"
                 - "traefik.frontend.priority=100"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_dev_ligo_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_test_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8000"
             replicas: 1
@@ -383,8 +383,8 @@ services:
         image: i2incommon/grouper:2.5.29
         command: ["bash", "-c", "exec daemon"]
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
-            - GROUPER_DATABASE_USERNAME=ligo_grouper
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lg_grouper_test
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
             - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
