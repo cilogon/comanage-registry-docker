@@ -1,0 +1,419 @@
+version: '3.7'
+
+networks:
+    xsede:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.106.0/24
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+volumes:
+    ldap-state-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/var/lib/ldap_01"
+
+    ldap-state-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/var/lib/ldap_02"
+
+    ldap-config-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/etc/slapd.d/ldap_01"
+
+    ldap-config-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/etc/slapd.d/ldap_02"
+
+    ldap-ldif-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/ldif/ldap_01"
+
+    ldap-ldif-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/ldif/ldap_02"
+
+    ldap-schema:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/schema"
+
+    comanage-registry-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/srv/comanage-registry/local"
+
+    pyff-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/etc/pyff"
+
+    satosa-proxy-htdocs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/usr/local/apache2/htdocs"
+
+    satosa-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/xsede/etc/satosa"
+
+services:
+    xsede-ldap-01:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/xsede_olc_root_pw
+            - OLC_SUFFIX=dc=xsede,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=xsede,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/xsede_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/xsede_syncrepl_user_password_hash
+        secrets:
+            - xsede_olc_root_pw
+            - xsede_olc_root_dn_password
+            - xsede_syncrepl_user_password_hash
+        networks:
+            - xsede
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    xsede-ldap-02:
+        image: sphericalcowgroup/comanage-registry-slapd:2
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/xsede_olc_root_pw
+            - OLC_SUFFIX=dc=xsede,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=xsede,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/xsede_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/xsede_syncrepl_user_password_hash
+        secrets:
+            - xsede_olc_root_pw
+            - xsede_olc_root_dn_password
+            - xsede_syncrepl_user_password_hash
+        networks:
+            - xsede
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: cilogon/comanage-registry:7ac971-1
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - OIDC_CLIENT_ID_FILE=/run/secrets/xsede_registry_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/run/secrets/xsede_registry_oidc_client_secret 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/xsede_registry_oidc_provider_metadata_url 
+            - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/xsede_registry_oidc_crypto_passphrase 
+            - SERVER_NAME_FILE=/run/secrets/xsede_registry_host 
+            - REGISTRY_HOST_FILE=/run/secrets/xsede_registry_host 
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=xsede_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/xsede_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=xe_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/xsede_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/xsede_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/xsede_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=XSEDE Registry DEV
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/xsede_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/xsede_comanage_registry_security_seed
+        secrets:
+            - xsede_comanage_registry_database_user_password
+            - xsede_comanage_registry_database_host
+            - xsede_comanage_registry_email_account
+            - xsede_comanage_registry_email_account_password
+            - xsede_comanage_registry_email_from
+            - xsede_comanage_registry_security_salt
+            - xsede_comanage_registry_security_seed
+            - xsede_registry_oidc_client_id
+            - xsede_registry_oidc_client_secret
+            - xsede_registry_oidc_provider_metadata_url
+            - xsede_registry_oidc_crypto_passphrase
+            - xsede_registry_host
+        networks:
+            - xsede
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=xsede-comanage-registry"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: registry-dev.xsede.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_xsede_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: sphericalcowgroup/comanage-registry-cron:089610bc-1
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        networks:
+            - xsede
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    pyff:
+        image: cilogon/comanage-registry-pyff:3
+        volumes:
+            - type: volume
+              source: pyff-configs
+              target: /etc/pyff
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - PYFF_PIPELINE=/etc/pyff/xsede_mdx.yaml
+            - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/xsede_metadata_signer_cert_file
+            - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/xsede_metadata_signer_privkey_file
+        secrets:
+            - xsede_metadata_signer_cert_file
+            - xsede_metadata_signer_privkey_file
+        networks:
+            - xsede
+            - webgateway
+        deploy:
+            resources:
+              limits:
+                memory: 512M
+              reservations:
+                memory: 512M
+            labels:
+                - "traefik.backend=xsede-pyff"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: mdq-dev.xsede.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_xsede_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8080"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa-proxy:
+        image: cilogon/comanage-registry-apache-satosa-proxy:2
+        volumes:
+            - type: volume
+              source: satosa-proxy-htdocs
+              target: /usr/local/apache2/htdocs
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
+        networks:
+            - webgateway
+            - xsede
+        deploy:
+            labels:
+                - "traefik.backend=xsede-satosa-proxy"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.xsede.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_xsede_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa:
+        image: cilogon/comanage-registry-satosa:8
+        volumes:
+            - type: volume
+              source: satosa-configs
+              target: /etc/satosa
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
+            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/xsede_satosa_cilogon_backend_client_secret
+            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/xsede_satosa_saml_frontend_cert_file
+            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/xsede_satosa_saml_frontend_privkey_file
+            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/xsede_satosa_ldap_bind_password
+            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/xsede_satosa_state_encryption_key
+        secrets:
+            - xsede_satosa_cilogon_backend_client_secret
+            - xsede_satosa_ldap_bind_password
+            - xsede_satosa_saml_frontend_cert_file
+            - xsede_satosa_saml_frontend_privkey_file
+            - xsede_satosa_state_encryption_key
+        networks:
+            - xsede
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    xsede_olc_root_pw:
+        external: true
+    xsede_comanage_registry_database_user_password:
+        external: true
+    xsede_comanage_registry_database_host:
+        external: true
+    xsede_comanage_registry_email_account:
+        external: true
+    xsede_comanage_registry_email_account_password:
+        external: true
+    xsede_comanage_registry_email_from:
+        external: true
+    xsede_comanage_registry_security_salt:
+        external: true
+    xsede_comanage_registry_security_seed:
+        external: true
+    xsede_metadata_signer_cert_file:
+        external: true
+    xsede_metadata_signer_privkey_file:
+        external: true
+    xsede_registry_oidc_client_id:
+        external: true
+    xsede_registry_oidc_client_secret:
+        external: true
+    xsede_registry_oidc_provider_metadata_url:
+        external: true
+    xsede_registry_oidc_crypto_passphrase:
+        external: true
+    xsede_olc_root_dn_password:
+        external: true
+    xsede_registry_host:
+        external: true
+    xsede_satosa_cilogon_backend_client_secret:
+        external: true
+    xsede_satosa_ldap_bind_password:
+        external: true
+    xsede_satosa_saml_frontend_cert_file:
+        external: true
+    xsede_satosa_saml_frontend_privkey_file:
+        external: true
+    xsede_satosa_state_encryption_key:
+        external: true
+    xsede_syncrepl_user_password_hash:
+        external: true
