@@ -206,15 +206,15 @@ services:
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
-            - COMANAGE_REGISTRY_DATABASE=xsede_registry_dev
+            - COMANAGE_REGISTRY_DATABASE=xsede_registry_test
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/xsede_comanage_registry_database_host
-            - COMANAGE_REGISTRY_DATABASE_USER=xe_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER=xe_registry_tst
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/xsede_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/xsede_comanage_registry_email_account
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/xsede_comanage_registry_email_account_password
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
             - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
-            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=XSEDE Registry DEV
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=XSEDE Registry TEST
             - COMANAGE_REGISTRY_EMAIL_PORT=465
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/xsede_comanage_registry_security_salt
@@ -240,9 +240,9 @@ services:
                 - "traefik.backend=xsede-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.xsede.org"
+                - "traefik.frontend.rule=Host: registry-test.xsede.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_xsede_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_test_xsede_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
@@ -300,9 +300,9 @@ services:
                 - "traefik.backend=xsede-pyff"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq-dev.xsede.org"
+                - "traefik.frontend.rule=Host: mdq-test.xsede.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_xsede_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_test_xsede_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8080"
             replicas: 1
@@ -330,9 +330,9 @@ services:
                 - "traefik.backend=xsede-satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.xsede.org"
+                - "traefik.frontend.rule=Host: federation-proxy-test.xsede.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_xsede_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_xsede_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
