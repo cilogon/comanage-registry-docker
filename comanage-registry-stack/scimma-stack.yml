@@ -245,7 +245,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:089610bc-1
+        image: sphericalcowgroup/comanage-registry-cron:3.3.0-rc3-1
         volumes:
             - comanage_registry_local:/srv/comanage-registry/local
         networks:
