@@ -187,7 +187,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:089610bc-1
+        image: cilogon/comanage-registry:3.3.0-rc3-2
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -200,7 +200,6 @@ services:
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/cilogon_demo_registry_oidc_client_secret 
             - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/cilogon_demo_registry_oidc_provider_metadata_url 
             - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/cilogon_demo_registry_oidc_crypto_passphrase 
-            - SERVER_NAME_FILE=/run/secrets/cilogon_demo_registry_host 
             - REGISTRY_HOST_FILE=/run/secrets/cilogon_demo_registry_host 
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
@@ -218,7 +217,8 @@ services:
             - COMANAGE_REGISTRY_EMAIL_FROM_FILE=/run/secrets/cilogon_demo_comanage_registry_email_from
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/cilogon_demo_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/cilogon_demo_comanage_registry_security_seed
-            #- COMANAGE_REGISTRY_ENABLE_PLUGIN=AnnouncementsWidget,ServicesWidget
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/cilogon_demo_registry_host
+            - COMANAGE_REGISTRY_ENABLE_PLUGIN=AnnouncementsWidget,ServicesWidget,UnixCluster
         secrets:
             - cilogon_demo_comanage_registry_database_user_password
             - cilogon_demo_comanage_registry_database_host
@@ -252,7 +252,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:089610bc-1
+        image: sphericalcowgroup/comanage-registry-cron:3.3.0-rc3-1
         volumes:
             - type: volume
               source: comanage-registry-local
