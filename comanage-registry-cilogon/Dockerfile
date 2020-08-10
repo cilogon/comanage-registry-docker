@@ -25,14 +25,6 @@ RUN apt-get update && apt-get install -y \
       && rm -r oauth \
       && docker-php-ext-enable oauth
 
-# Deploy the CILogon LDAP schema plugin
-ARG CILOGON_LDAP_SCHEMA_PLUGIN_SRC_URL=https://github.com/cilogon/CilogonLdapSchema/archive/master.tar.gz
-
-RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonLdapSchema" \
-      && wget -O CilogonLdapSchema.tar.gz $CILOGON_LDAP_SCHEMA_PLUGIN_SRC_URL \
-      && tar -zxf CilogonLdapSchema.tar.gz -C "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonLdapSchema" --strip-components=1 \
-      && rm -f CilogonLdapSchema.tar.gz
-
 # Deploy the CILogon ePPN enroller plugin
 ARG CILOGON_EPPN_ENROLLER_PLUGIN_SRC_URL=https://github.com/cilogon/CilogonEppnEnroller/archive/master.tar.gz
 
