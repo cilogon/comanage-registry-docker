@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 
 networks:
     gw-astronomy:
@@ -10,6 +10,63 @@ networks:
         external: true
     ldapgateway:
         external: true
+
+volumes:
+    ldap-state-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/var/lib/ldap_01"
+
+    ldap-state-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/var/lib/ldap_02"
+
+    ldap-config-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/etc/slapd.d/ldap_01"
+
+    ldap-config-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/etc/slapd.d/ldap_02"
+
+    ldap-ldif-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/ldif/ldap_01"
+
+    ldap-ldif-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/ldif/ldap_02"
+
+    ldap-schema:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/schema"
+
+    comanage-registry-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/gw-astronomy/srv/comanage-registry/local"
 
 services:
     aa:
@@ -53,29 +110,30 @@ services:
         image: sphericalcowgroup/comanage-registry-slapd
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/gw-astronomy/var/lib/ldap_01:/var/lib/ldap
-            - /srv/docker/gw-astronomy/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
-            - /srv/docker/gw-astronomy/schema/kerberos.ldif:/schema/kerberos.ldif
-            - /srv/docker/gw-astronomy/schema/ligo.ldif:/schema/ligo.ldif
-            - /srv/docker/gw-astronomy/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/config/first/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_CALICO.ldif:/ldif/admin/CALICO.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_GWHEN.ldif:/ldif/admin/GWHEN.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_gwic-3g-sct.ldif:/ldif/admin/gwic-3g-sct.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_gwic-3g-rdcoord.ldif:/ldif/admin/gwic-3g-rdcoord.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_GWIC.ldif:/ldif/admin/GWIC.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_GWNU.ldif:/ldif/admin/GWNU.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_HTCondor.ldif:/ldif/admin/HTCondor.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_KAGRA-LIGO.ldif:/ldif/admin/KAGRA-LIGO.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_LSC-OSG.ldif:/ldif/admin/LSC-OSG.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_LV-EM.ldif:/ldif/admin/LV-EM.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_openLVEM.ldif:/ldif/admin/openLVEM.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_01/admin/admin-always-01-CO_OZGRAV.ldif:/ldif/admin/OZGRAV.ldif
-
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/gw_astronomy_olc_root_pw
             - OLC_SUFFIX=dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
@@ -100,15 +158,31 @@ services:
         image: sphericalcowgroup/comanage-registry-slapd
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/gw-astronomy/var/lib/ldap_02:/var/lib/ldap
-            - /srv/docker/gw-astronomy/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
-            - /srv/docker/gw-astronomy/schema/kerberos.ldif:/schema/kerberos.ldif
-            - /srv/docker/gw-astronomy/schema/ligo.ldif:/schema/ligo.ldif
-            - /srv/docker/gw-astronomy/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_02/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_02/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_02/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/gw-astronomy/ldif/ldap_02/config/first/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/gw_astronomy_olc_root_pw
             - OLC_SUFFIX=dc=gwastronomy-data,dc=cgca,dc=uwm,dc=edu
@@ -132,7 +206,12 @@ services:
     comanage-registry:
         image: cilogon/comanage-registry:3.3.0-rc3-1
         volumes:
-            - /srv/docker/gw-astronomy/srv/comanage-registry/local:/srv/comanage-registry/local
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
             - /srv/docker/gw-astronomy/srv/comanage-registry/app/webroot/favicon.ico:/srv/comanage-registry/app/webroot/favicon.ico
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/gw_astronomy_oidc_client_id 
@@ -194,7 +273,12 @@ services:
     comanage-registry-cron:
         image: sphericalcowgroup/comanage-registry-cron:3.3.0-rc3-1
         volumes:
-            - /srv/docker/gw-astronomy/srv/comanage-registry/local:/srv/comanage-registry/local
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
         networks:
             - gw-astronomy
         deploy:
