@@ -91,7 +91,7 @@ volumes:
 
 services:
     xsede-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd:2
+        image: sphericalcowgroup/comanage-registry-slapd:3
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -139,7 +139,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     xsede-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd:2
+        image: sphericalcowgroup/comanage-registry-slapd:3
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
