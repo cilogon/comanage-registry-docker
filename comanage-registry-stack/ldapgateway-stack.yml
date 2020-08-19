@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.7"
 
 networks:
     ldapgateway:
@@ -6,7 +6,7 @@ networks:
 
 services:
     ldapgateway:
-        image: sphericalcowgroup/comanage-registry-slapd-proxy:2
+        image: sphericalcowgroup/comanage-registry-slapd-proxy:3
         command: ["slapd", "-d", "0", "-h", "ldapi:/// ldap:/// ldaps:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/ldapgateway/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
