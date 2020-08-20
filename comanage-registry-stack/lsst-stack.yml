@@ -1,0 +1,286 @@
+version: '3.7'
+
+networks:
+    lsst:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.107.0/24
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+volumes:
+    ldap-state-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/var/lib/ldap_01"
+
+    ldap-state-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/var/lib/ldap_02"
+
+    ldap-config-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/etc/slapd.d/ldap_01"
+
+    ldap-config-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/etc/slapd.d/ldap_02"
+
+    ldap-ldif-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/ldif/ldap_01"
+
+    ldap-ldif-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/ldif/ldap_02"
+
+    ldap-schema:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/schema"
+
+    comanage-registry-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/srv/comanage-registry/local"
+
+services:
+    lsst-ldap-01:
+        image: sphericalcowgroup/comanage-registry-slapd:4
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/lsst_olc_root_pw
+            - OLC_SUFFIX=dc=lsst,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=lsst,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/lsst_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/lsst_syncrepl_user_password_hash
+        secrets:
+            - lsst_olc_root_pw
+            - lsst_olc_root_dn_password
+            - lsst_syncrepl_user_password_hash
+        networks:
+            - lsst
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    lsst-ldap-02:
+        image: sphericalcowgroup/comanage-registry-slapd:3
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/lsst_olc_root_pw
+            - OLC_SUFFIX=dc=lsst,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=lsst,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/lsst_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/lsst_syncrepl_user_password_hash
+        secrets:
+            - lsst_olc_root_pw
+            - lsst_olc_root_dn_password
+            - lsst_syncrepl_user_password_hash
+        networks:
+            - lsst
+            - ldapgateway
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: cilogon/comanage-registry:3.3.0-2
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - OIDC_CLIENT_ID_FILE=/run/secrets/lsst_registry_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/run/secrets/lsst_registry_oidc_client_secret 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/lsst_registry_oidc_provider_metadata_url 
+            - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/lsst_registry_oidc_crypto_passphrase 
+            - SERVER_NAME_FILE=/run/secrets/lsst_registry_host 
+            - REGISTRY_HOST_FILE=/run/secrets/lsst_registry_host 
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=lsst_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/lsst_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=lt_registry_dev
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/lsst_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/lsst_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/lsst_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=LSST Registry DEV
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/lsst_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/lsst_comanage_registry_security_seed
+        secrets:
+            - lsst_comanage_registry_database_user_password
+            - lsst_comanage_registry_database_host
+            - lsst_comanage_registry_email_account
+            - lsst_comanage_registry_email_account_password
+            - lsst_comanage_registry_email_from
+            - lsst_comanage_registry_security_salt
+            - lsst_comanage_registry_security_seed
+            - lsst_registry_oidc_client_id
+            - lsst_registry_oidc_client_secret
+            - lsst_registry_oidc_provider_metadata_url
+            - lsst_registry_oidc_crypto_passphrase
+            - lsst_registry_host
+        networks:
+            - lsst
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=lsst-comanage-registry"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: registry-dev.lsst.org"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_lsst_org"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: sphericalcowgroup/comanage-registry-cron:3.3.0-2
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
+        networks:
+            - lsst
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+
+secrets:
+    lsst_olc_root_pw:
+        external: true
+    lsst_comanage_registry_database_user_password:
+        external: true
+    lsst_comanage_registry_database_host:
+        external: true
+    lsst_comanage_registry_email_account:
+        external: true
+    lsst_comanage_registry_email_account_password:
+        external: true
+    lsst_comanage_registry_email_from:
+        external: true
+    lsst_comanage_registry_security_salt:
+        external: true
+    lsst_comanage_registry_security_seed:
+        external: true
+    lsst_registry_oidc_client_id:
+        external: true
+    lsst_registry_oidc_client_secret:
+        external: true
+    lsst_registry_oidc_provider_metadata_url:
+        external: true
+    lsst_registry_oidc_crypto_passphrase:
+        external: true
+    lsst_olc_root_dn_password:
+        external: true
+    lsst_registry_host:
+        external: true
+    lsst_syncrepl_user_password_hash:
+        external: true
