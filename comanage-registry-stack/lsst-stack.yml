@@ -54,13 +54,6 @@ volumes:
             o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/lsst/ldif/ldap_02"
 
-    ldap-schema:
-        driver: local
-        driver_opts:
-            type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/lsst/schema"
-
     comanage-registry-local:
         driver: local
         driver_opts:
@@ -88,12 +81,6 @@ services:
             - type: volume
               source: ldap-ldif-01
               target: /ldif
-              read_only: true
-              volume:
-                nocopy: true
-            - type: volume
-              source: ldap-schema
-              target: /schema
               read_only: true
               volume:
                 nocopy: true
@@ -136,12 +123,6 @@ services:
             - type: volume
               source: ldap-ldif-02
               target: /ldif
-              read_only: true
-              volume:
-                nocopy: true
-            - type: volume
-              source: ldap-schema
-              target: /schema
               read_only: true
               volume:
                 nocopy: true
@@ -219,9 +200,9 @@ services:
                 - "traefik.backend=lsst-comanage-registry"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.lsst.org"
+                - "traefik.frontend.rule=Host: registry-dev.lsst.codes"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_lsst_org"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_lsst_codes"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
