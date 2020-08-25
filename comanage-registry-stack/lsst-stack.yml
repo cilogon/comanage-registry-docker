@@ -174,7 +174,7 @@ services:
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/lsst_comanage_registry_email_account_password
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
             - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
-            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=LSST Registry DEV
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=LSST Registry TEST
             - COMANAGE_REGISTRY_EMAIL_PORT=465
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_ENABLE_PLUGIN=ServicesWidget,AnnouncementsWidget
