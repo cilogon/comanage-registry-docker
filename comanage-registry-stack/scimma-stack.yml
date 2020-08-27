@@ -18,6 +18,7 @@ services:
             - /srv/docker/scimma/opt/pyff/scimma_mdx.yaml:/opt/pyff/scimma_mdx.yaml
             - /srv/docker/scimma/opt/pyff/federation-proxy.scimma.org-idp-metadata.xml:/opt/pyff/federation-proxy.scimma.org-idp-metadata.xml
             - /srv/docker/scimma/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
+            - /srv/docker/scimma/opt/pyff/ilert-saml-metadata.xml:/opt/pyff/ilert-saml-metadata.xml
             # REMOVE THIS AFTER TESTING
             - /srv/docker/scimma/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
         environment:
