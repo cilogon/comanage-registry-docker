@@ -14,7 +14,7 @@ networks:
 services:
 
     cilogon-multi-tenant-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd
+        image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap_01:/var/lib/ldap
@@ -47,7 +47,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-multi-tenant-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd
+        image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/cilogon_multi_tenant/var/lib/ldap_02:/var/lib/ldap
@@ -78,7 +78,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:3.2.5-4
+        image: cilogon/comanage-registry:hotfix-3.3.x-1
         volumes:
             - /srv/docker/cilogon_multi_tenant/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
@@ -129,6 +129,21 @@ services:
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 3
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: sphericalcowgroup/comanage-registry-cron:hotfix-3.3.x-1
+        volumes:
+            - /srv/docker/cilogon_multi_tenant/srv/comanage-registry/local:/srv/comanage-registry/local
+        networks:
+            - cilogon-multi-tenant
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
         logging:
             driver: journald
             options:
