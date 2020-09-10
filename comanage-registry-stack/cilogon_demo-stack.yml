@@ -187,7 +187,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:3.3.0-rc3-2
+        image: cilogon/comanage-registry:hotfix-3.3.x-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -252,7 +252,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:3.3.0-rc3-1
+        image: sphericalcowgroup/comanage-registry-cron:hotfix-3.3.x-1
         volumes:
             - type: volume
               source: comanage-registry-local
