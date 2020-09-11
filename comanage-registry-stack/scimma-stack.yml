@@ -107,7 +107,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:hotfix-3.3.x-1
+        image: cilogon/comanage-registry:hotfix-3.3.x-2
         volumes:
             - /srv/docker/scimma/srv/comanage-registry/local:/srv/comanage-registry/local
         environment:
