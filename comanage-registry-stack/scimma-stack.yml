@@ -138,7 +138,7 @@ services:
             - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/scimma_oidc_crypto_passphrase 
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
-            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverA/users/22981
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
             - COMANAGE_REGISTRY_DATABASE=scimma_registry_dev
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/scimma_comanage_registry_database_host
