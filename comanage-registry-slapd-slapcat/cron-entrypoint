@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [[ -z "${LDIF_BACKUP_FILE_PREFIX}" ]] ; then
+    echo "LDIF_BACKUP_FILE_PREFIX environment variable is required"
+    exit 1
+fi
+
+# Deploy the crontab file
+if [[ -n "$LDIF_CRONTAB" ]] ; then
+    crontab="$LDIF_CRONTAB"
+else
+    crontab="/usr/local/etc/openldap-crontab"
+fi
+
+if [[ -f "$crontab" ]] ; then
+    echo "Deploying crontab $crontab..."
+    /usr/bin/crontab -u openldap $crontab
+fi
+
+# Create the backup script run by cron from the template.
+/usr/bin/envsubst < /usr/local/src/ldap_backup.sh.template > /usr/local/bin/ldap_backup.sh \
+    && chmod 0755 /usr/local/bin/ldap_backup.sh
+
+# Start syslogd from busybox for use with cron
+/sbin/syslogd -O /proc/1/fd/1 -S
+
+# Start cron
+exec "$@"
