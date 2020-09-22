@@ -18,7 +18,10 @@ if [[ -f "$crontab" ]] ; then
 fi
 
 # Create the backup script run by cron from the template.
-/usr/bin/envsubst < /usr/local/src/ldap_backup.sh.template > /usr/local/bin/ldap_backup.sh \
+/usr/bin/envsubst \
+    '$LDIF_BACKUP_FILE_PREFIX $LDIF_BACKUP_DIR LDIF_BACKUP_DBNUM' \
+    < /usr/local/src/ldap_backup.sh.template \
+    > /usr/local/bin/ldap_backup.sh \
     && chmod 0755 /usr/local/bin/ldap_backup.sh
 
 # Start syslogd from busybox for use with cron

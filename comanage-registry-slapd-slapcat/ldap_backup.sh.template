@@ -1,6 +1,8 @@
 #!/bin/bash
 
+$ldif_file=${LDIF_BACKUP_DIR}/${LDIF_BACKUP_FILE_PREFIX}-`date +%F-%H.%M.%S`.ldif
+
 /usr/sbin/slapcat \
     -n${LDIF_BACKUP_DBNUM} \
-    > ${LDIF_BACKUP_DIR}/${LDIF_BACKUP_FILE_PREFIX}-`date +%F-%H.%M.%S`.ldif \
-    && /bin/bzip2 ${LDIF_BACKUP_DIR}/${LDIF_BACKUP_FILE_PREFIX}-`date +%F-%H.%M.%S`.ldif
+    > $ldif_file \
+    && /bin/bzip2 $ldif_file
