@@ -19,7 +19,7 @@ fi
 
 # Create the backup script run by cron from the template.
 /usr/bin/envsubst \
-    '$LDIF_BACKUP_FILE_PREFIX $LDIF_BACKUP_DIR LDIF_BACKUP_DBNUM' \
+    '$LDIF_BACKUP_FILE_PREFIX $LDIF_BACKUP_DIR $LDIF_BACKUP_DBNUM' \
     < /usr/local/src/ldap_backup.sh.template \
     > /usr/local/bin/ldap_backup.sh \
     && chmod 0755 /usr/local/bin/ldap_backup.sh
