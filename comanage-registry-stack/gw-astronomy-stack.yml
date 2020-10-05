@@ -107,7 +107,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd
+        image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -155,7 +155,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd
+        image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
         volumes:
