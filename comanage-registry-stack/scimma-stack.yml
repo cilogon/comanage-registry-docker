@@ -16,21 +16,21 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/opt/pyff"
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/etc/pyff"
 
     satosa_configs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/opt/satosa"
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/etc/satosa"
 
     satosa_proxy_htdocs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/usr/local/apache2/htdocs"
 
     ldap-state-01:
@@ -107,21 +107,16 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/srv/comanage-registry/local"
         
 services:
     pyff:
         image: cilogon/comanage-registry-pyff:3
         volumes:
-            - /srv/docker/scimma/opt/pyff/scimma_mdx.yaml:/opt/pyff/scimma_mdx.yaml
-            - /srv/docker/scimma/opt/pyff/federation-proxy.scimma.org-idp-metadata.xml:/opt/pyff/federation-proxy.scimma.org-idp-metadata.xml
-            - /srv/docker/scimma/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
-            - /srv/docker/scimma/opt/pyff/ilert-saml-metadata.xml:/opt/pyff/ilert-saml-metadata.xml
-            # REMOVE THIS AFTER TESTING
-            - /srv/docker/scimma/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
+            - pyff_configs:/etc/pyff
         environment:
-            - PYFF_PIPELINE=scimma_mdx.yaml
+            - PYFF_PIPELINE=/etc/pyff/scimma_mdx.yaml
             - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/scimma_metadata_signer_cert_file
             - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/scimma_metadata_signer_privkey_file
         secrets:
@@ -154,7 +149,7 @@ services:
     satosa:
         image: cilogon/comanage-registry-satosa:8
         volumes:
-            - satosa_configs:/opt/satosa
+            - satosa_configs:/etc/satosa
         environment:
             - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/scimma_satosa_cilogon_backend_client_secret
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/scimma_satosa_saml_frontend_cert_file
