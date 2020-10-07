@@ -16,21 +16,21 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/opt/pyff"
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/etc/pyff"
 
     satosa_configs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/opt/satosa"
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/scimma/etc/satosa"
 
     satosa_proxy_htdocs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/usr/local/apache2/htdocs"
 
     ldap-state-01:
@@ -107,16 +107,16 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/srv/comanage-registry/local"
         
 services:
     pyff:
         image: cilogon/comanage-registry-pyff:3
         volumes:
-            - pyff_configs:/opt/pyff
+            - pyff_configs:/etc/pyff
         environment:
-            - PYFF_PIPELINE=scimma_mdx.yaml
+            - PYFF_PIPELINE=/etc/pyff/scimma_mdx.yaml
             - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/scimma_metadata_signer_cert_file
             - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/scimma_metadata_signer_privkey_file
         secrets:
@@ -149,7 +149,7 @@ services:
     satosa:
         image: cilogon/comanage-registry-satosa:8
         volumes:
-            - satosa_configs:/opt/satosa
+            - satosa_configs:/etc/satosa
         environment:
             - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
             - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/scimma_satosa_cilogon_backend_client_secret
