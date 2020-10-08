@@ -262,7 +262,7 @@ services:
             - /srv/docker/ligo/etc/shibboleth/ligo-metadata-signer.crt:/etc/shibboleth/ligo-metadata-signer.crt
         environment:
             - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper?CharSet=utf8&useUnicode=true&characterEncoding=utf8
-            - GROUPER_DATABASE_USERNAME=ligo_grouper
+            - GROUPER_DATABASE_USERNAME=lg_grouper_prod
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
             - GROUPER_MAX_MEMORY=512m
