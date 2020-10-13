@@ -13,7 +13,7 @@ networks:
 
 services:
     ligo-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd:2
+        image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/ligo/var/lib/ldap_01:/var/lib/ldap
@@ -48,7 +48,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     ligo-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd:2
+        image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/ligo/var/lib/ldap_02:/var/lib/ldap
