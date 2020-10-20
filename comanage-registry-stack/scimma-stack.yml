@@ -114,7 +114,12 @@ services:
     pyff:
         image: cilogon/comanage-registry-pyff:3
         volumes:
-            - pyff_configs:/etc/pyff
+            - type: volume
+              source: pyff_configs
+              target: /etc/pyff
+              read_only: false
+              volume:
+                nocopy: true
         environment:
             - PYFF_PIPELINE=/etc/pyff/scimma_mdx.yaml
             - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/scimma_metadata_signer_cert_file
@@ -149,7 +154,12 @@ services:
     satosa:
         image: cilogon/comanage-registry-satosa:8
         volumes:
-            - satosa_configs:/etc/satosa
+            - type: volume
+              source: satosa_configs
+              target: /etc/satosa
+              read_only: false
+              volume:
+                nocopy: true
         environment:
             - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
             - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/scimma_satosa_cilogon_backend_client_secret
@@ -175,7 +185,12 @@ services:
     satosa-proxy:
         image: cilogon/comanage-registry-apache-satosa-proxy:1
         volumes:
-            - satosa_proxy_htdocs:/usr/local/apache2/htdocs
+            - type: volume
+              source: satosa_proxy_htdocs
+              target: /usr/local/apache2/htdocs
+              read_only: false
+              volume:
+                nocopy: true
         environment:
             - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
         networks:
@@ -200,7 +215,12 @@ services:
     comanage-registry:
         image: cilogon/comanage-registry:hotfix-3.3.x-2
         volumes:
-            - comanage_registry_local:/srv/comanage-registry/local
+            - type: volume
+              source: comanage_registry_local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/scimma_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/scimma_oidc_client_secret 
@@ -433,7 +453,12 @@ services:
     comanage-registry-cron:
         image: sphericalcowgroup/comanage-registry-cron:hotfix-3.3.x-1
         volumes:
-            - comanage_registry_local:/srv/comanage-registry/local
+            - type: volume
+              source: comanage_registry_local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
         networks:
             - scimma
         deploy:
