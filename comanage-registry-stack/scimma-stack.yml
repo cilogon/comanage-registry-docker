@@ -16,21 +16,21 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/etc/pyff"
 
     satosa_configs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/etc/satosa"
 
     satosa_proxy_htdocs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/usr/local/apache2/htdocs"
 
     ldap-state-01:
@@ -107,7 +107,7 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=fs-876896fe.efs.us-east-2.amazonaws.com,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/srv/comanage-registry/local"
         
 services:
