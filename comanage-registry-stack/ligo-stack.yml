@@ -338,6 +338,7 @@ services:
             - GROUPER_MAX_MEMORY=512m
             - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
             - GROUPER_WS=true
+            - GROUPER_WS_GROUPER_AUTH=true
             - GROUPER_RUN_APACHE=true
             - GROUPER_RUN_SHIB_SP=false
             - GROUPER_RUN_TOMEE=true
