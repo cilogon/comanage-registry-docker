@@ -61,6 +61,27 @@ volumes:
             o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/biocommons/schema"
 
+    ldap-backups-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/biocommons/ldif/01"
+
+    ldap-backups-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/biocommons/ldif/02"
+
+    ldap-backups-usr-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/biocommons/usr/local/slapcat"
+
     comanage-registry-local:
         driver: local
         driver_opts:
@@ -205,6 +226,84 @@ services:
               failure_action: rollback
               monitor: 5s
               order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    biocommons-ldif-backup-01:
+        image: cilogon/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-01
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=biocommons-01
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - biocommons
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    biocommons-ldif-backup-02:
+        image: cilogon/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-02
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=biocommons-02
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - biocommons
+        deploy:
+            replicas: 1
         logging:
             driver: journald
             options:
