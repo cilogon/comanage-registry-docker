@@ -11,22 +11,148 @@ networks:
     ldapgateway:
         external: true
 
+volumes:
+    ldap-state-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/var/lib/ldap_01"
+
+    ldap-state-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/var/lib/ldap_02"
+
+    ldap-config-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/etc/slapd.d/ldap_01"
+
+    ldap-config-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/etc/slapd.d/ldap_02"
+
+    ldap-ldif-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/ldif/ldap_01"
+
+    ldap-ldif-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/ldif/ldap_02"
+
+    ldap-schema:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/schema"
+
+    ldap-backups-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/ldif/01"
+
+    ldap-backups-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/ldif/02"
+
+    ldap-backups-usr-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/usr/local/slapcat"
+
+    comanage-registry-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/srv/comanage-registry/local"
+
+    pyff-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/etc/pyff"
+
+    satosa-proxy-htdocs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/usr/local/apache2/htdocs"
+
+    satosa-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/etc/satosa"
+
+    grouper-ui-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/grouper-ui/slashRoot"
+
+    grouper-ws-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/grouper-ws/slashRoot"
+
 services:
     ligo-ldap-01:
         image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/ligo/var/lib/ldap_01:/var/lib/ldap
-            - /srv/docker/ligo/etc/slapd.d/ldap_01:/etc/ldap/slapd.d
-            - /srv/docker/ligo/schema/kerberos.ldif:/schema/kerberos.ldif
-            - /srv/docker/ligo/schema/ligo.ldif:/schema/ligo.ldif
-            - /srv/docker/ligo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/ligo/ldif/ldap_01/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/ligo/ldif/ldap_01/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/ligo/ldif/ldap_01/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/ligo/ldif/ldap_01/config/first/config-first-01-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
-            - /srv/docker/ligo/ldif/ldap_01/admin/admin-always-01-CO_01.ldif:/ldif/admin/01.ldif
-            - /srv/docker/ligo/ldif/ldap_01/admin/admin-always-01-CO_LIGO.ldif:/ldif/admin/02.ldif
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/ligo_olc_root_pw
             - OLC_SUFFIX=dc=directory,dc=ligo,dc=org
@@ -51,15 +177,30 @@ services:
         image: sphericalcowgroup/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-            - /srv/docker/ligo/var/lib/ldap_02:/var/lib/ldap
-            - /srv/docker/ligo/etc/slapd.d/ldap_02:/etc/ldap/slapd.d
-            - /srv/docker/ligo/schema/kerberos.ldif:/schema/kerberos.ldif
-            - /srv/docker/ligo/schema/ligo.ldif:/schema/ligo.ldif
-            - /srv/docker/ligo/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
-            - /srv/docker/ligo/ldif/ldap_02/admin/first/admin-first-all-create_syncrepl_user.ldif:/ldif/admin/first/create_syncrepl_user.ldif
-            - /srv/docker/ligo/ldif/ldap_02/config/config-always-all-olcAccess.ldif:/ldif/config/olcAccess.ldif
-            - /srv/docker/ligo/ldif/ldap_02/config/first/config-first-all-olcLimits.ldif:/ldif/config/first/olcLimits.ldif
-            - /srv/docker/ligo/ldif/ldap_02/config/first/config-first-02-olcServerID.ldif:/ldif/config/first/olcServerID.ldif
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
         environment:
             - OLC_ROOT_PW_FILE=/run/secrets/ligo_olc_root_pw
             - OLC_SUFFIX=dc=directory,dc=ligo,dc=org
@@ -80,10 +221,93 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
+    ligo-ldif-backup-01:
+        image: cilogon/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-01
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=ligo-01
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - ligo
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    ligo-ldif-backup-02:
+        image: cilogon/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-02
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=ligo-02
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - ligo
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
     comanage-registry:
         image: cilogon/comanage-registry:hotfix-3.3.x-2
         volumes:
-            - /srv/docker/ligo/srv/comanage-registry/local:/srv/comanage-registry/local
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/ligo_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/ligo_oidc_client_secret 
@@ -142,7 +366,12 @@ services:
     comanage-registry-cron:
         image: sphericalcowgroup/comanage-registry-cron:hotfix-3.3.x-1
         volumes:
-            - /srv/docker/ligo/srv/comanage-registry/local:/srv/comanage-registry/local
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
         networks:
             - ligo
         deploy:
@@ -157,15 +386,14 @@ services:
     pyff:
         image: cilogon/comanage-registry-pyff:3
         volumes:
-            - /srv/docker/ligo/opt/pyff/ligo_mdx.yaml:/opt/pyff/ligo_mdx.yaml
-            - /srv/docker/ligo/opt/pyff/ligo.xrd:/opt/pyff/ligo.xrd
-            - /srv/docker/ligo/opt/pyff/ligo_transform.xsl:/opt/pyff/ligo_transform.xsl
-            - /srv/docker/ligo/opt/pyff/federation-proxy-test.ligo.org-idp-metadata.xml:/opt/pyff/federation-proxy-test.ligo.org-idp-metadata.xml
-            - /srv/docker/ligo/opt/pyff/group-registry-test.ligo.org-metadata.xml:/opt/pyff/group-registry-test.ligo.org-metadata.xml
-            # REMOVE THIS AFTER TESTING
-            - /srv/docker/ligo/opt/pyff/sp-test-metadata.xml:/opt/pyff/sp-test-metadata.xml
+            - type: volume
+              source: pyff-configs
+              target: /etc/pyff
+              read_only: true
+              volume:
+                nocopy: true
         environment:
-            - PYFF_PIPELINE=ligo_mdx.yaml
+            - PYFF_PIPELINE=/etc/pyff/ligo_mdx.yaml
             - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/ligo_metadata_signer_cert_file
             - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/ligo_metadata_signer_privkey_file
         secrets:
@@ -198,7 +426,12 @@ services:
     satosa-proxy:
         image: cilogon/comanage-registry-apache-satosa-proxy:2
         volumes:
-            - /srv/docker/ligo/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+            - type: volume
+              source: satosa-proxy-htdocs
+              target: /usr/local/apache2/htdocs
+              read_only: true
+              volume:
+                nocopy: true
         environment:
             - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
         networks:
@@ -223,12 +456,14 @@ services:
     satosa:
         image: cilogon/comanage-registry-satosa:8
         volumes:
-            - /srv/docker/ligo/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
-            - /srv/docker/ligo/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
-            - /srv/docker/ligo/opt/satosa/ligo-metadata-signer.crt:/opt/satosa/ligo-metadata-signer.crt
-            - /srv/docker/ligo/opt/satosa/attributemaps:/opt/satosa/attributemaps
-            - /srv/docker/ligo/opt/satosa/plugins:/opt/satosa/plugins
+            - type: volume
+              source: satosa-configs
+              target: /etc/satosa
+              read_only: true
+              volume:
+                nocopy: true
         environment:
+            - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
             - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/ligo_satosa_cilogon_backend_client_secret
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/ligo_satosa_saml_frontend_cert_file
             - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/ligo_satosa_saml_frontend_privkey_file
@@ -255,11 +490,12 @@ services:
         image: i2incommon/grouper:2.5.29
         command: ["bash", "-c", "exec ui"]
         volumes:
-            - /srv/docker/ligo/etc/httpd/conf.d/grouper-www.conf:/etc/httpd/conf.d/grouper-www.conf
-            - /srv/docker/ligo/etc/httpd/conf.d/ssl-enabled.conf:/etc/httpd/conf.d/ssl-enabled.conf
-            - /srv/docker/ligo/etc/shibboleth/shibboleth2.xml:/etc/shibboleth/shibboleth2.xml
-            - /srv/docker/ligo/etc/shibboleth/attribute-map.xml:/etc/shibboleth/attribute-map.xml
-            - /srv/docker/ligo/etc/shibboleth/ligo-metadata-signer.crt:/etc/shibboleth/ligo-metadata-signer.crt
+            - type: volume
+              source: grouper-ui-configs
+              target: /opt/grouper/slashRoot
+              read_only: true
+              volume:
+                nocopy: true
         environment:
             - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
             - GROUPER_DATABASE_USERNAME=lg_grouper_test
@@ -329,8 +565,12 @@ services:
         image: i2incommon/grouper:2.5.29
         command: ["bash", "-c", "exec ws"]
         volumes:
-            - /srv/docker/ligo/etc/httpd/conf.d/grouper-www-ws.conf:/etc/httpd/conf.d/grouper-www.conf
-            - /srv/docker/ligo/etc/httpd/conf.d/ssl-enabled.conf:/etc/httpd/conf.d/ssl-enabled.conf
+            - type: volume
+              source: grouper-ws-configs
+              target: /opt/grouper/slashRoot
+              read_only: true
+              volume:
+                nocopy: true
         environment:
             - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
             - GROUPER_DATABASE_USERNAME=lg_grouper_test
