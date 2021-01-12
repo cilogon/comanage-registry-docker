@@ -22,16 +22,13 @@ RUN useradd --home-dir ${SATOSA_DIR} --no-create-home --system ${SATOSA_USER} \
     && mkdir -p ${SATOSA_DIR}/attributemaps \
     && chown -R ${SATOSA_USER}:${SATOSA_GROUP} ${SATOSA_DIR}
 
-ARG SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@8daddcb938d4da634dc3a2b25b03fe8812450dd2
-ENV SATOSA_SRC_URL ${SATOSA_SRC_URL}
-LABEL satosa_src_url=${SATOSA_SRC_URL}
-
 WORKDIR ${SATOSA_DIR}
 
 USER ${SATOSA_USER}
 
 RUN /usr/bin/virtualenv -p python3 ${SATOSA_DIR} --no-site-packages \
-    && ${SATOSA_DIR}/bin/pip install ${SATOSA_SRC_URL}
+    && ${SATOSA_DIR}/bin/pip install pysaml2==6.4.1 \
+    && ${SATOSA_DIR}/bin/pip install satosa==7.0.1
 
 USER root
 
