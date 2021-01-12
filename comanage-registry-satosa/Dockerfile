@@ -7,14 +7,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         virtualenv \
         xmlsec1
 
-ENV SATOSA_SRC_URL=git+https://github.com/IdentityPython/SATOSA.git@8daddcb938d4da634dc3a2b25b03fe8812450dd2
-
 RUN mkdir -p /opt/satosa \
     && adduser --home /opt/satosa --no-create-home --system satosa --group \
     && virtualenv --python=python3.7 /opt/satosa --no-site-packages \
     && . /opt/satosa/bin/activate \
     && pip install ldap3 \
-    && pip install ${SATOSA_SRC_URL} \
+    && pip install pysaml2==6.4.1 \
+    && pip install satosa==7.0.1 \
     && chown -R satosa:satosa /opt/satosa \
     && apt-get remove -y --purge \
         git \
