@@ -70,7 +70,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:9
+        image: cilogon/comanage-registry-satosa:10
         volumes:
             - /srv/docker/cloudbank/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
             - /srv/docker/cloudbank/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
