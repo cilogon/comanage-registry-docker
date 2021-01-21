@@ -390,7 +390,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     orcid-saml-gateway:
-        image: cilogon/comanage-registry-orcid-saml-gateway:4
+        image: cilogon/comanage-registry-orcid-saml-gateway:5
         volumes:
             - /srv/docker/gw-astronomy/opt/satosa/orcid-saml-gateway-sp-metadata.xml:/opt/satosa/orcid-saml-gateway-sp-metadata.xml
         environment:
