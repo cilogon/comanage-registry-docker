@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 
 networks:
     webgateway:
@@ -42,6 +42,7 @@ services:
             mode: replicated
             replicas: 3
             placement:
+              max_replicas_per_node: 1
               constraints:
                 - node.role == manager
             restart_policy:
@@ -111,6 +112,7 @@ services:
             mode: replicated
             replicas: 3
             placement:
+              max_replicas_per_node: 1
               constraints:
                 - node.role == manager
             restart_policy:
