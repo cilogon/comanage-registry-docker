@@ -62,6 +62,8 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        extra_hosts:
+            "myproxy.cilogon.org:141.142.149.29"
         deploy:
             labels:
                 - "traefik.frontend.rule=Host: crl-dev.cilogon.org"
@@ -92,6 +94,10 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        extra_hosts:
+            "myproxy.cilogon.org:141.142.149.29"
+            "myproxy2.cilogon.org:141.142.149.30"
+            "myproxy3.cilogon.org:141.142.149.31"
         deploy:
             labels:
                 - "traefik.frontend.rule=Host: dev.cilogon.org/oauth2"
@@ -122,6 +128,10 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        extra_hosts:
+            "myproxy.cilogon.org:141.142.149.29"
+            "myproxy2.cilogon.org:141.142.149.30"
+            "myproxy3.cilogon.org:141.142.149.31"
         deploy:
             labels:
                 - "traefik.frontend.rule=Host: dev.cilogon.org"
