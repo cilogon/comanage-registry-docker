@@ -55,7 +55,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon_crl:
-        image: cilogon/cilogon_crl:1
+        image: cilogon/cilogon_crl:2
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -94,7 +94,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
 #    oa4mp_server:
-#        image: cilogon/oa4mp_server:1
+#        image: cilogon/oa4mp_server:2
 #        command: ["catalina.sh", "run"]
 #        volumes:
 #            - type: volume
@@ -134,7 +134,7 @@ services:
 #                tag: "cilogon_docker_{{.Name}}"
 
     cilogon_web:
-        image: cilogon/cilogon_web:1
+        image: cilogon/cilogon_web:3
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -189,8 +189,6 @@ services:
 #            - cilogon_service
 #        extra_hosts:
 #            myproxy.cilogon.org: 141.142.149.29
-#            myproxy2.cilogon.org: 141.142.149.30
-#            myproxy3.cilogon.org: 141.142.149.31
 #        deploy:
 #            mode: replicated
 #            replicas: 1
