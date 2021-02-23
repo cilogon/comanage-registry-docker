@@ -320,6 +320,8 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant_dev"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
+                - "traefik.frontend.headers.SSLRedirect=true"
+                - "traefik.frontend.entryPoints=http,https"
             replicas: 1
         logging:
             driver: journald
