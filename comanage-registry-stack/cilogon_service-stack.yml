@@ -49,6 +49,8 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_demo_dev_cilogon_org"
 #                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8888"
+                - "traefik.frontend.headers.SSLRedirect=true"
+                - "traefik.frontend.entryPoints=http,https"
         logging:
             driver: journald
             options:
@@ -128,6 +130,8 @@ services:
 #                - "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_dev_cilogon_org_oauth2"
 #                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
 #                - "traefik.port=8888"
+#                - "traefik.frontend.headers.SSLRedirect=true"
+#                - "traefik.frontend.entryPoints=http,https"
 #        logging:
 #            driver: journald
 #            options:
@@ -168,6 +172,8 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_demo_dev_cilogon_org"
                 #- "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
+                - "traefik.frontend.headers.SSLRedirect=true"
+                - "traefik.frontend.entryPoints=http,https"
         logging:
             driver: journald
             options:
