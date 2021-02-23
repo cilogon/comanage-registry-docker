@@ -50,7 +50,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon_crl:
-        image: cilogon/cilogon_crl:3
+        image: cilogon/cilogon_crl:4
         command: ["apache2-foreground"]
         volumes:
             - type: volume
