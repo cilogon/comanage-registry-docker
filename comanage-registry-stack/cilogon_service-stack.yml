@@ -127,7 +127,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp_server:
-        image: cilogon/oa4mp_server:3
+        image: cilogon/oa4mp_server:4
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
