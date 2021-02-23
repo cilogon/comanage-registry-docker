@@ -57,7 +57,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon_crl:
-        image: cilogon/cilogon_crl:2
+        image: cilogon/cilogon_crl:3
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -81,7 +81,7 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=Host: crl-dev.cilogon.org"
+                - "traefik.frontend.rule=Host:crl-dev.cilogon.org"
                 - "traefik.backend=cilogon_service-cilogon_crl"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
@@ -95,50 +95,50 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-#    oa4mp_server:
-#        image: cilogon/oa4mp_server:2
-#        command: ["catalina.sh", "run"]
-#        volumes:
-#            - type: volume
-#              source: cilogon_service_volume
-#              target: /var/local/cilogon_service
-#              read_only: false
-#              volume:
-#                  nocopy: true
-#        #environment:
-#        networks:
-#            - webgateway
-#            - cilogon_service
-#        extra_hosts:
-#            myproxy.cilogon.org: 141.142.149.29
-#            myproxy2.cilogon.org: 141.142.149.30
-#            myproxy3.cilogon.org: 141.142.149.31
-#        deploy:
-#            mode: replicated
-#            replicas: 1
-#            restart_policy:
-#                condition: on-failure
-#            update_config:
-#                parallelism: 1
-#                delay: 60s
-#            labels:
-#                - "traefik.frontend.rule=Host: dev.cilogon.org/oauth2"
-#                - "traefik.backend=cilogon_service-oa4mp_server"
-#                - "traefik.docker.network=webgateway"
-#                - "traefik.enable=true"
-#                - "traefik.backend.loadbalancer.stickiness=true"
-#                - "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_dev_cilogon_org_oauth2"
-#                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-#                - "traefik.port=8888"
-#                - "traefik.frontend.headers.SSLRedirect=true"
-#                - "traefik.frontend.entryPoints=http,https"
-#        logging:
-#            driver: journald
-#            options:
-#                tag: "cilogon_docker_{{.Name}}"
+    oa4mp_server:
+        image: cilogon/oa4mp_server:3
+        command: ["catalina.sh", "run"]
+        volumes:
+            - type: volume
+              source: cilogon_service_volume
+              target: /var/local/cilogon_service
+              read_only: false
+              volume:
+                  nocopy: true
+        #environment:
+        networks:
+            - webgateway
+            - cilogon_service
+        extra_hosts:
+            myproxy.cilogon.org: 141.142.149.29
+            myproxy2.cilogon.org: 141.142.149.30
+            myproxy3.cilogon.org: 141.142.149.31
+        deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+                condition: on-failure
+            update_config:
+                parallelism: 1
+                delay: 60s
+            labels:
+                - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth2/{url:(getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|instrospect)((/[^/]*)*)}"
+                - "traefik.backend=cilogon_service-oa4mp_server"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_dev_cilogon_org_oauth2"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8888"
+                - "traefik.frontend.headers.SSLRedirect=true"
+                - "traefik.frontend.entryPoints=http,https"
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
     cilogon_web:
-        image: cilogon/cilogon_web:3
+        image: cilogon/cilogon_web:4
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -164,7 +164,7 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=Host: dev.cilogon.org"
+                - "traefik.frontend.rule=Host:dev.cilogon.org"
                 - "traefik.backend=cilogon_service-cilogon_web"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
@@ -179,41 +179,34 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-#    cilogon_cron:
-#        image: cilogon/cilogon_cron:1
-#        command: ["/usr/sbin/cron", "-f", "-L", "15"]
-#        volumes:
-#            - type: volume
-#              source: cilogon_service_volume
-#              target: /var/local/cilogon_service
-#              read_only: false
-#              volume:
-#                  nocopy: true
-#        #environment:
-#        networks:
-#            # - webgateway
-#            - cilogon_service
-#        extra_hosts:
-#            myproxy.cilogon.org: 141.142.149.29
-#        deploy:
-#            mode: replicated
-#            replicas: 1
-#            restart_policy:
-#                condition: on-failure
-#            update_config:
-#                parallelism: 1
-#                delay: 60s
-#            labels:
-#                #- "traefik.frontend.rule=Host: dev.cilogon.org"
-#                - "traefik.backend=cilogon_service-cilogon_cron"
-#                #- "traefik.docker.network=webgateway"
-#                - "traefik.enable=false"
-#                #- "traefik.backend.loadbalancer.stickiness=true"
-#                #- "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_demo_dev_cilogon_org"
-#                #- "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-#                #- "traefik.port=80"
-#        logging:
-#            driver: journald
-#            options:
-#                tag: "cilogon_docker_{{.Name}}"
-#
+    cilogon_cron:
+        image: cilogon/cilogon_cron:2
+        command: ["/usr/sbin/cron", "-f", "-L", "15"]
+        volumes:
+            - type: volume
+              source: cilogon_service_volume
+              target: /var/local/cilogon_service
+              read_only: false
+              volume:
+                  nocopy: true
+        #environment:
+        networks:
+            - cilogon_service
+        extra_hosts:
+            myproxy.cilogon.org: 141.142.149.29
+        deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+                condition: on-failure
+            update_config:
+                parallelism: 1
+                delay: 60s
+            labels:
+                - "traefik.backend=cilogon_service-cilogon_cron"
+                - "traefik.enable=false"
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
