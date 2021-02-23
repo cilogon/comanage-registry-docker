@@ -154,6 +154,7 @@ services:
                 delay: 60s
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth2/{url:(getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|instrospect)((/[^/]*)*)}"
+                - "traefik.frontend.priority=100"
                 - "traefik.backend=cilogon_service-oa4mp_server"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
@@ -196,6 +197,7 @@ services:
                 delay: 60s
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org"
+                - "traefik.frontend.priority=50"
                 - "traefik.backend=cilogon_service-cilogon_web"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
