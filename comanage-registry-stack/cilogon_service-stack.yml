@@ -122,7 +122,7 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth2/{url:(getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|instrospect)((/[^/]*)*)}"
+                - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth2/{url:(getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}"
                 - "traefik.frontend.priority=100"
                 - "traefik.backend=cilogon_service-oa4mp-server"
                 - "traefik.docker.network=webgateway"
