@@ -82,6 +82,34 @@ volumes:
             o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/lsst/srv/comanage-registry/local"
 
+    pyff-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/etc/pyff"
+
+    satosa-proxy-htdocs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/usr/local/apache2/htdocs"
+
+    satosa-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/etc/satosa"
+
+    grouper-ui-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst/grouper-ui/slashRoot"
+
 services:
     lsst-ldap-01:
         image: sphericalcowgroup/comanage-registry-slapd:4
@@ -333,6 +361,244 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
+    pyff:
+        image: cilogon/comanage-registry-pyff:4
+        volumes:
+            - type: volume
+              source: pyff-configs
+              target: /etc/pyff
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - PYFF_PIPELINE=/etc/pyff/lsst_mdx.yaml
+            - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/lsst_metadata_signer_cert_file
+            - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/lsst_metadata_signer_privkey_file
+        secrets:
+            - lsst_metadata_signer_cert_file
+            - lsst_metadata_signer_privkey_file
+        networks:
+            - lsst
+            - webgateway
+        deploy:
+            resources:
+              limits:
+                memory: 512M
+              reservations:
+                memory: 512M
+            labels:
+                - "traefik.backend=lsst-pyff"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: mdq-dev.lsst.codes"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_lsst_codes"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=8080"
+                - "traefik.frontend.headers.SSLRedirect=true"
+                - "traefik.frontend.entryPoints=http,https"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa-proxy:
+        image: cilogon/comanage-registry-apache-satosa-proxy:3
+        volumes:
+            - type: volume
+              source: satosa-proxy-htdocs
+              target: /usr/local/apache2/htdocs
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
+        networks:
+            - webgateway
+            - lsst
+        deploy:
+            labels:
+                - "traefik.backend=lsst-satosa-proxy"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host: federation-proxy-dev.lsst.codes"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_lsst_codes"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+                - "traefik.frontend.headers.SSLRedirect=true"
+                - "traefik.frontend.entryPoints=http,https"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa:
+        image: cilogon/comanage-registry-satosa:11
+        volumes:
+            - type: volume
+              source: satosa-configs
+              target: /etc/satosa
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
+            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/lsst_satosa_cilogon_backend_client_secret
+            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/lsst_satosa_saml_frontend_cert_file
+            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/lsst_satosa_saml_frontend_privkey_file
+            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/lsst_satosa_ldap_bind_password
+            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/lsst_satosa_state_encryption_key
+        secrets:
+            - lsst_satosa_cilogon_backend_client_secret
+            - lsst_satosa_ldap_bind_password
+            - lsst_satosa_saml_frontend_cert_file
+            - lsst_satosa_saml_frontend_privkey_file
+            - lsst_satosa_state_encryption_key
+        networks:
+            - lsst
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    grouper-ui:
+        image: i2incommon/grouper:2.5.42
+        command: ["bash", "-c", "exec ui"]
+        volumes:
+            - type: volume
+              source: grouper-ui-configs
+              target: /opt/grouper/slashRoot
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lsst_grouper_dev
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
+            - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
+            - GROUPER_MAX_MEMORY=512m
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
+            - GROUPER_UI=true
+            - GROUPER_RUN_APACHE=true
+            - GROUPER_RUN_SHIB_SP=true
+            - GROUPER_RUN_TOMEE=true
+            - GROUPER_USE_SSL=false
+            - GROUPER_SELF_SIGNED_CERT=false
+            - GROUPER_APACHE_SERVER_NAME=https://group-registry-dev.lsst.codes:443
+            - GROUPER_APACHE_REMOTE_IP_TRUSTED_PROXY=10.0.0.0/24
+            - GROUPER_UI_CONFIGURATION_EDITOR_SOURCEIPADDRESSES=0.0.0.0/0
+            - GROUPER_APACHE_REMOTE_IP_HEADER=X-Forwarded-For
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: lsst_grouper_database_password
+              target: grouper_database_password
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: lsst_grouper_morphstring_encrypt_key
+              target: grouper_morphstring_encrypt_key
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: lsst_grouper_shibboleth_sp_encryption_cert
+              target: shib_sp-encrypt-cert.pem
+              uid: '999'
+              gid: '998'
+              mode: 0644
+            - source: lsst_grouper_shibboleth_sp_encryption_privkey
+              target: shib_sp-encrypt-key.pem
+              uid: '999'
+              gid: '998'
+              mode: 0400
+            - source: lsst_grouper_shibboleth_sp_signing_cert
+              target: shib_sp-signing-cert.pem
+              uid: '999'
+              gid: '998'
+              mode: 0644
+            - source: lsst_grouper_shibboleth_sp_signing_privkey
+              target: shib_sp-signing-key.pem
+              uid: '999'
+              gid: '998'
+              mode: 0400
+        networks:
+            - lsst
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=lsst-grouper-ui"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host:group-registry-dev.lsst.codes"
+                - "traefik.frontend.priority=50"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_dev_lsst_codes"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+                - "traefik.frontend.headers.SSLRedirect=true"
+                - "traefik.frontend.entryPoints=http,https"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    grouper-ws:
+        image: i2incommon/grouper:2.5.42
+        command: ["bash", "-c", "exec ws"]
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lsst_grouper_dev
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
+            - GROUPER_MAX_MEMORY=512m
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
+            - GROUPER_WS=true
+            - GROUPER_WS_GROUPER_AUTH=true
+            - GROUPER_RUN_APACHE=true
+            - GROUPER_RUN_SHIB_SP=false
+            - GROUPER_RUN_TOMEE=true
+            - GROUPER_SELF_SIGNED_CERT=false
+            - GROUPER_USE_SSL=false
+            - GROUPER_APACHE_SERVER_NAME=https://group-registry-dev.lsst.codes:443
+            - GROUPER_APACHE_REMOTE_IP_TRUSTED_PROXY=10.0.0.0/24
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: lsst_grouper_database_password
+              target: grouper_database_password
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: lsst_grouper_morphstring_encrypt_key
+              target: grouper_morphstring_encrypt_key
+              uid: '998'
+              gid: '998'
+              mode: 0600
+        networks:
+            - lsst
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.backend=lsst-grouper-ws"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
+                - "traefik.frontend.rule=Host:group-registry-dev.lsst.codes;PathPrefix:/grouper-ws"
+                - "traefik.frontend.priority=100"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_dev_lsst_codes"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.port=80"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
 
 secrets:
     lsst_olc_root_pw:
@@ -364,4 +630,30 @@ secrets:
     lsst_registry_host:
         external: true
     lsst_syncrepl_user_password_hash:
+        external: true
+    lsst_metadata_signer_cert_file:
+        external: true
+    lsst_metadata_signer_privkey_file:
+        external: true
+    lsst_satosa_cilogon_backend_client_secret:
+        external: true
+    lsst_satosa_ldap_bind_password:
+        external: true
+    lsst_satosa_saml_frontend_cert_file:
+        external: true
+    lsst_satosa_saml_frontend_privkey_file:
+        external: true
+    lsst_satosa_state_encryption_key:
+        external: true
+    lsst_grouper_database_password:
+        external: true
+    lsst_grouper_morphstring_encrypt_key:
+        external: true
+    lsst_grouper_shibboleth_sp_encryption_cert:
+        external: true
+    lsst_grouper_shibboleth_sp_encryption_privkey:
+        external: true
+    lsst_grouper_shibboleth_sp_signing_cert:
+        external: true
+    lsst_grouper_shibboleth_sp_signing_privkey:
         external: true
