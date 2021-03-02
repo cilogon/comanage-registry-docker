@@ -390,9 +390,9 @@ services:
                 - "traefik.backend=lsst-pyff"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq-dev.lsst.codes"
+                - "traefik.frontend.rule=Host: mdq-test.lsst.codes"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_lsst_codes"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_test_lsst_codes"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8080"
                 - "traefik.frontend.headers.SSLRedirect=true"
@@ -422,9 +422,9 @@ services:
                 - "traefik.backend=lsst-satosa-proxy"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.lsst.codes"
+                - "traefik.frontend.rule=Host: federation-proxy-test.lsst.codes"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_lsst_codes"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_lsst_codes"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
                 - "traefik.frontend.headers.SSLRedirect=true"
@@ -477,8 +477,8 @@ services:
               volume:
                 nocopy: true
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
-            - GROUPER_DATABASE_USERNAME=lsst_grouper_dev
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lsst_grouper_tst
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
             - GROUPER_MAX_MEMORY=512m
@@ -489,7 +489,7 @@ services:
             - GROUPER_RUN_TOMEE=true
             - GROUPER_USE_SSL=false
             - GROUPER_SELF_SIGNED_CERT=false
-            - GROUPER_APACHE_SERVER_NAME=https://group-registry-dev.lsst.codes:443
+            - GROUPER_APACHE_SERVER_NAME=https://group-registry-test.lsst.codes:443
             - GROUPER_APACHE_REMOTE_IP_TRUSTED_PROXY=10.0.0.0/24
             - GROUPER_UI_CONFIGURATION_EDITOR_SOURCEIPADDRESSES=0.0.0.0/0
             - GROUPER_APACHE_REMOTE_IP_HEADER=X-Forwarded-For
@@ -534,10 +534,10 @@ services:
                 - "traefik.backend=lsst-grouper-ui"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host:group-registry-dev.lsst.codes"
+                - "traefik.frontend.rule=Host:group-registry-test.lsst.codes"
                 - "traefik.frontend.priority=50"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_dev_lsst_codes"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_test_lsst_codes"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
                 - "traefik.frontend.headers.SSLRedirect=true"
@@ -552,8 +552,8 @@ services:
         image: i2incommon/grouper:2.5.42
         command: ["bash", "-c", "exec ws"]
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
-            - GROUPER_DATABASE_USERNAME=lsst_grouper_dev
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lsst_grouper_tst
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_MAX_MEMORY=512m
             - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key
@@ -564,7 +564,7 @@ services:
             - GROUPER_RUN_TOMEE=true
             - GROUPER_SELF_SIGNED_CERT=false
             - GROUPER_USE_SSL=false
-            - GROUPER_APACHE_SERVER_NAME=https://group-registry-dev.lsst.codes:443
+            - GROUPER_APACHE_SERVER_NAME=https://group-registry-test.lsst.codes:443
             - GROUPER_APACHE_REMOTE_IP_TRUSTED_PROXY=10.0.0.0/24
             - ENV=DEV
             - USERTOKEN=_
@@ -587,10 +587,10 @@ services:
                 - "traefik.backend=lsst-grouper-ws"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host:group-registry-dev.lsst.codes;PathPrefix:/grouper-ws"
+                - "traefik.frontend.rule=Host:group-registry-test.lsst.codes;PathPrefix:/grouper-ws"
                 - "traefik.frontend.priority=100"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_dev_lsst_codes"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_test_lsst_codes"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
