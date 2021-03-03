@@ -43,7 +43,7 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=host:crl-dev.cilogon.org"
+                - "traefik.frontend.rule=Host:crl-dev.cilogon.org"
                 - "traefik.backend=cilogon_service-cilogon-crl"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
@@ -55,7 +55,7 @@ services:
         logging:
             driver: journald
             options:
-                tag: "cilogon_docker_{{.name}}"
+                tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-demo:
         image: cilogon/oa4mp-demo:1
