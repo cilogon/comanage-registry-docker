@@ -165,7 +165,7 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=Host:dev.cilogon.org,dev.cilogon.com,dev.cilogon.net,dev.cilogin.org"
+                - "traefik.frontend.rule=Host:dev.cilogon.org,dev.cilogon.com,dev.cilogon.net,dev.cilogin.org,ecp-dev.cilogon.org"
                 - "traefik.frontend.priority=50"
                 - "traefik.backend=cilogon_service-cilogon-web"
                 - "traefik.docker.network=webgateway"
