@@ -58,7 +58,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-demo:
-        image: cilogon/oa4mp-demo:1
+        image: cilogon/oa4mp-demo:4
         hostname: demo-dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
@@ -96,7 +96,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: cilogon/oa4mp-server:1
+        image: cilogon/oa4mp-server:4
         hostname: dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
@@ -139,9 +139,9 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: cilogon/cilogon-web:1
+        image: cilogon/cilogon-web:2
         hostname: dev.cilogon.org
-        command: ["apache2-foreground"]
+        command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
               source: cilogon_service_volume
@@ -182,7 +182,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-oauth1:
-        image: cilogon/oa4mp-oauth1:1
+        image: cilogon/oa4mp-oauth1:6
         hostname: dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
