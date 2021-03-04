@@ -139,7 +139,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: cilogon/cilogon-web:2
+        image: cilogon/cilogon-web:3
         hostname: dev.cilogon.org
         command: ["/usr/local/bin/startup.sh"]
         volumes:
