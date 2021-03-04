@@ -43,7 +43,7 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=Host:crl-dev.cilogon.org"
+                - "traefik.frontend.rule=Host:crl-dev.cilogon.org,crl-cilogon-dev.ncsa-security.net"
                 - "traefik.backend=cilogon_service-cilogon-crl"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
@@ -86,7 +86,7 @@ services:
                 - "traefik.enable=true"
                 - "traefik.backend.loadbalancer.stickiness=true"
                 - "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_demo_dev_cilogon_org"
-#                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8888"
                 - "traefik.frontend.headers.SSLRedirect=true"
                 - "traefik.frontend.entryPoints=http,https"
@@ -165,14 +165,14 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=Host:dev.cilogon.org"
+                - "traefik.frontend.rule=Host:dev.cilogon.org,dev.cilogon.com,dev.cilogon.net,dev.cilogin.org"
                 - "traefik.frontend.priority=50"
                 - "traefik.backend=cilogon_service-cilogon-web"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
                 - "traefik.backend.loadbalancer.stickiness=true"
                 - "traefik.backend.loadbalancer.stickiness.cookieName=cilogon_service_dev_cilogon_org"
-                #- "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
+                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
                 - "traefik.frontend.headers.SSLRedirect=true"
                 - "traefik.frontend.entryPoints=http,https"
