@@ -133,7 +133,6 @@ services:
                 - "traefik.port=8888"
                 - "traefik.frontend.headers.SSLRedirect=true"
                 - "traefik.frontend.entryPoints=http,https"
-                - "traefik.http.middlewares.test-ratelimit.ratelimit.average=2"
         logging:
             driver: journald
             options:
@@ -220,7 +219,6 @@ services:
                 - "traefik.port=80"
                 - "traefik.frontend.headers.SSLRedirect=true"
                 - "traefik.frontend.entryPoints=http,https"
-                - "traefik.http.middlewares.test-ratelimit.ratelimit.average=2"
         logging:
             driver: journald
             options:
