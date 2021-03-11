@@ -121,6 +121,13 @@ services:
             update_config:
                 parallelism: 1
                 delay: 60s
+            resources:
+                limits:
+                    cpus: 0.5
+                    memory: 1024M
+                reservations:
+                    cpus: 0.25
+                    memory: 1024M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}"
                 - "traefik.frontend.priority=100"
@@ -207,6 +214,13 @@ services:
             update_config:
                 parallelism: 1
                 delay: 60s
+            resources:
+                limits:
+                    cpus: 0.5
+                    memory: 1024M
+                reservations:
+                    cpus: 0.25
+                    memory: 1024M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org,dev.cilogon.com,dev.cilogon.net,dev.cilogin.org,ecp-dev.cilogon.org"
                 - "traefik.frontend.priority=50"
