@@ -19,7 +19,7 @@ volumes:
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:2
         hostname: crl-dev.cilogon.org
         command: ["apache2-foreground"]
         volumes:
@@ -124,7 +124,7 @@ services:
             resources:
                 limits:
                     cpus: 0.5
-                    memory: 1024M
+                    memory: 2048M
                 reservations:
                     cpus: 0.25
                     memory: 1024M
@@ -171,6 +171,13 @@ services:
             update_config:
                 parallelism: 1
                 delay: 60s
+            resources:
+                limits:
+                    cpus: 0.5
+                    memory: 2048M
+                reservations:
+                    cpus: 0.25
+                    memory: 1024M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth/{url:(initiate|token|getcert|assets)((/[^/]*)*)}"
                 - "traefik.frontend.priority=90"
@@ -220,7 +227,7 @@ services:
                     memory: 1024M
                 reservations:
                     cpus: 0.25
-                    memory: 1024M
+                    memory: 512M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org,dev.cilogon.com,dev.cilogon.net,dev.cilogin.org,ecp-dev.cilogon.org"
                 - "traefik.frontend.priority=50"
@@ -233,6 +240,36 @@ services:
                 - "traefik.port=80"
                 - "traefik.frontend.headers.SSLRedirect=true"
                 - "traefik.frontend.entryPoints=http,https"
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    cilogon-cron:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:1
+        command: ["/usr/sbin/cron", "-f", "-L", "15"]
+        volumes:
+            - type: volume
+              source: cilogon_service_volume
+              target: /var/local/cilogon_service
+              read_only: false
+              volume:
+                  nocopy: true
+        networks:
+            - webgateway
+            - cilogon_service
+        deploy:
+            mode: replicated
+            replicas: 1
+            restart_policy:
+                condition: on-failure
+            update_config:
+                parallelism: 1
+                delay: 60s
+            labels:
+                - "traefik.backend=cilogon_service-cilogon-cron"
+                - "traefik.docker.network=webgateway"
+                - "traefik.enable=true"
         logging:
             driver: journald
             options:
