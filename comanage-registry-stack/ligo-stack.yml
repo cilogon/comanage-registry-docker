@@ -623,7 +623,7 @@ services:
                 - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_ligo_org"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=8000"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
