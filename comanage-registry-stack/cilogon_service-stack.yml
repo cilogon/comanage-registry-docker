@@ -123,10 +123,10 @@ services:
                 delay: 60s
             resources:
                 limits:
-                    cpus: 0.5
+                    cpus: '0.5'
                     memory: 2048M
                 reservations:
-                    cpus: 0.25
+                    cpus: '0.25'
                     memory: 1024M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}"
@@ -173,10 +173,10 @@ services:
                 delay: 60s
             resources:
                 limits:
-                    cpus: 0.5
+                    cpus: '0.5'
                     memory: 2048M
                 reservations:
-                    cpus: 0.25
+                    cpus: '0.25'
                     memory: 1024M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth/{url:(initiate|token|getcert|assets)((/[^/]*)*)}"
@@ -223,10 +223,10 @@ services:
                 delay: 60s
             resources:
                 limits:
-                    cpus: 0.5
+                    cpus: '0.5'
                     memory: 1024M
                 reservations:
-                    cpus: 0.25
+                    cpus: '0.25'
                     memory: 512M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org,dev.cilogon.com,dev.cilogon.net,dev.cilogin.org,ecp-dev.cilogon.org"
