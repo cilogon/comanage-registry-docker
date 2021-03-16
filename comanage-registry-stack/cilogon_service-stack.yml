@@ -196,7 +196,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:8
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:9
         hostname: dev.cilogon.org
         command: ["/usr/local/bin/startup.sh"]
         volumes:
@@ -246,7 +246,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:2
         command: ["/usr/sbin/cron", "-f", "-L", "15"]
         volumes:
             - type: volume
@@ -258,6 +258,10 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        extra_hosts:
+            myproxy.cilogon.org: 141.142.149.29
+            myproxy2.cilogon.org: 141.142.149.30
+            myproxy3.cilogon.org: 141.142.149.31
         deploy:
             mode: replicated
             replicas: 1
