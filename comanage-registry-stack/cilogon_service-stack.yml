@@ -127,7 +127,7 @@ services:
                     memory: 2048M
                 reservations:
                     cpus: '0.25'
-                    memory: 1024M
+                    memory: 512M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}"
                 - "traefik.frontend.priority=100"
@@ -177,7 +177,7 @@ services:
                     memory: 2048M
                 reservations:
                     cpus: '0.25'
-                    memory: 1024M
+                    memory: 512M
             labels:
                 - "traefik.frontend.rule=Host:dev.cilogon.org;PathPrefix:/oauth/{url:(initiate|token|getcert|assets)((/[^/]*)*)}"
                 - "traefik.frontend.priority=90"
@@ -196,7 +196,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:11
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:12
         hostname: dev.cilogon.org
         command: ["/usr/local/bin/startup.sh"]
         volumes:
