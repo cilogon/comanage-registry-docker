@@ -96,7 +96,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:2
         hostname: dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
@@ -146,7 +146,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-oauth1:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-oauth1:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-oauth1:2
         hostname: dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
@@ -196,7 +196,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:12
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:13
         hostname: dev.cilogon.org
         command: ["/usr/local/bin/startup.sh"]
         volumes:
@@ -224,7 +224,7 @@ services:
             resources:
                 limits:
                     cpus: '0.5'
-                    memory: 1024M
+                    memory: 2048M
                 reservations:
                     cpus: '0.25'
                     memory: 512M
