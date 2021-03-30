@@ -43,7 +43,7 @@ services:
                 parallelism: 1
                 delay: 60s
             labels:
-                - "traefik.frontend.rule=Host:crl-dev.cilogon.org,crl-cilogon-dev.ncsa-security.net"
+                - "traefik.frontend.rule=Host:crl-dev.cilogon.org,crl-cilogon-dev.ncsa-security.net,crl-dev.cilogon.com,crl-dev.cilogon.net,crl-dev.cilogin.org"
                 - "traefik.backend=cilogon_service-cilogon-crl"
                 - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
@@ -96,7 +96,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:2
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:3
         hostname: dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
