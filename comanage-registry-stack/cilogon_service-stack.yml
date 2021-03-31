@@ -136,6 +136,7 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_cilogon_service_dev_cilogon_org_oauth2"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.oa4mp-server.ratelimit.average=5"
                 - "traefik.http.middlewares.oa4mp-server.redirectscheme.scheme=https"
                 - "traefik.http.middlewares.oa4mp-server.redirectscheme.permanent=true"
         logging:
@@ -236,6 +237,7 @@ services:
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_cilogon_service_dev_cilogon_org"
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.cilogon-web.ratelimit.average=5"
                 - "traefik.http.middlewares.cilogon-web.redirectscheme.scheme=https"
                 - "traefik.http.middlewares.cilogon-web.redirectscheme.permanent=true"
         logging:
