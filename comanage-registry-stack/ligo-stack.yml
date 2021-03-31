@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 networks:
     ligo:
@@ -356,14 +356,16 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=ligo-comanage-registry"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.ligo.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_ligo_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.ligo.org`)"
+                - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_registry_dev_ligo_org"
+                - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.comanage-registry.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.comanage-registry.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
@@ -416,14 +418,16 @@ services:
               reservations:
                 memory: 512M
             labels:
-                - "traefik.backend=ligo-pyff"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq-dev.ligo.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_ligo_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8080"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.pyff.rule=Host(`mdq-dev.ligo.org`)"
+                - "traefik.http.services.pyff.loadbalancer.server.port=8080"
+                - "traefik.http.services.pyff.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.pyff.loadbalancer.sticky.cookie.name=_mdq_dev_ligo_org"
+                - "traefik.http.middlewares.pyff.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.pyff.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.pyff.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.pyff.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
@@ -446,14 +450,16 @@ services:
             - ligo
         deploy:
             labels:
-                - "traefik.backend=ligo-satosa-proxy"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.ligo.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_ligo_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-proxy.rule=Host(`federation-proxy-dev.ligo.org`)"
+                - "traefik.http.services.satosa-proxy.loadbalancer.server.port=80"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_ligo_org"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.satosa-proxy.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.satosa-proxy.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
@@ -553,15 +559,17 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=ligo-grouper-ui"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host:group-registry-dev.ligo.org"
-                - "traefik.frontend.priority=50"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_dev_ligo_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8000"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.grouper-ui.rule=Host(`group-registry-dev.ligo.org`)"
+                - "traefik.http.routers.grouper-ui.priority=50"
+                - "traefik.http.services.grouper-ui.loadbalancer.server.port=8000"
+                - "traefik.http.services.grouper-ui.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.grouper-ui.loadbalancer.sticky.cookie.name=_group_registry_dev_ligo_org"
+                - "traefik.http.middlewares.grouper-ui.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.grouper-ui.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.grouper-ui.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.grouper-ui.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
@@ -614,15 +622,17 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=ligo-grouper-ws"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host:group-registry-dev.ligo.org;PathPrefix:/grouper-ws"
-                - "traefik.frontend.priority=100"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_group_registry_ws_dev_ligo_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8000"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.grouper-ws.rule=Host(`group-registry-dev.ligo.org`) && PathPrefix(`/grouper-ws`)"
+                - "traefik.http.routers.grouper-ws.priority=100"
+                - "traefik.http.services.grouper-ws.loadbalancer.server.port=8000"
+                - "traefik.http.services.grouper-ws.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.grouper-ws.loadbalancer.sticky.cookie.name=_group_registry_ws_dev_ligo_org"
+                - "traefik.http.middlewares.grouper-ws.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.grouper-ws.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.grouper-ws.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.grouper-ws.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald

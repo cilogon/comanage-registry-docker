@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 networks:
     gw-astronomy:
@@ -113,11 +113,12 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=gw-astronomy-aa"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: aa-dev.gw-astronomy.org"
-                - "traefik.port=8080"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.aa.rule=Host(`aa-dev.gw-astronomy.org`)"
+                - "traefik.http.services.aa.loadbalancer.server.port=8080"
+                - "traefik.http.middlewares.aa.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.aa.redirectscheme.permanent=true"
             replicas: 1
             update_config:
                 parallelism: 1
@@ -355,14 +356,16 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=gw-astronomy-comanage-registry"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.gw-astronomy.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.gw-astronomy.org`)"
+                - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_gw_astronomy"
+                - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.comanage-registry.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.comanage-registry.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
@@ -413,14 +416,16 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=gw-astronomy-orcid-saml-gateway"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: orcid-saml-gateway-dev.gw-astronomy.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_orcid_saml_gateway_dev"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8000"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.orcid-saml-gateway.rule=Host(`orcid-saml-gateway-dev.gw-astronomy.org`)"
+                - "traefik.http.services.orcid-saml-gateway.loadbalancer.server.port=8000"
+                - "traefik.http.services.orcid-saml-gateway.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.orcid-saml-gateway.loadbalancer.sticky.cookie.name=_gw_astronomy_orcid_saml_gateway_dev"
+                - "traefik.http.middlewares.orcid-saml-gateway.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.orcid-saml-gateway.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.orcid-saml-gateway.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.orcid-saml-gateway.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
