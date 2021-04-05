@@ -361,7 +361,7 @@ services:
                 - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.gw-astronomy.org`)"
                 - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
-                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_gw_astronomy"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_gw_astronomy_dev"
                 - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.comanage-registry.redirectscheme.scheme=https"
