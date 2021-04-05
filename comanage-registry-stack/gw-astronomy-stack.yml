@@ -360,7 +360,7 @@ services:
                 - "traefik.enable=true"
                 - "traefik.frontend.rule=Host: registry-dev.gw-astronomy.org"
                 - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy"
+                - "traefik.backend.loadbalancer.stickiness.cookieName=_gw_astronomy_dev"
                 - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
                 - "traefik.port=80"
             replicas: 1
