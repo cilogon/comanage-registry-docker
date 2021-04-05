@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.8'
 
 networks:
     webgateway:
@@ -42,6 +42,7 @@ services:
             mode: replicated
             replicas: 2
             placement:
+              max_replicas_per_node: 1
               constraints:
                 - node.role == manager
             restart_policy:
@@ -57,7 +58,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
           
     webgateway:
-        image: traefik:v1.7.26
+        image: traefik:v2.4.8
         volumes:
             - type: volume
               source: traefik
@@ -111,6 +112,7 @@ services:
             mode: replicated
             replicas: 2
             placement:
+              max_replicas_per_node: 1
               constraints:
                 - node.role == manager
             restart_policy:
@@ -144,15 +146,17 @@ services:
             mode: replicated
             replicas: 1
             labels:
-                - "traefik.backend=webgateway-getssl"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=PathPrefix: /.well-known/acme-challenge"
-                - "traefik.frontend.priority=100"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_webgateway_test"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.getssl.rule=PathPrefix(`/.well-known/acme-challenge`)"
+                - "traefik.http.routers.getssl.priority=100"
+                - "traefik.http.services.getssl.loadbalancer.server.port=80"
+                - "traefik.http.services.getssl.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.getssl.loadbalancer.sticky.cookie.name=_webgateway_test"
+                - "traefik.http.middlewares.getssl.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.getssl.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.getssl.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.getssl.redirectscheme.permanent=true"
             restart_policy:
               condition: on-failure
             update_config:

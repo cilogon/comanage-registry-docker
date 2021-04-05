@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 networks:
     scimma:
@@ -137,14 +137,16 @@ services:
               reservations:
                 memory: 512M
             labels:
-                - "traefik.backend=scimma-pyff"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq-test.scimma.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_test_scimma_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8080"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.pyff.rule=Host(`mdq-test.scimma.org`)"
+                - "traefik.http.services.pyff.loadbalancer.server.port=8080"
+                - "traefik.http.services.pyff.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.pyff.loadbalancer.sticky.cookie.name=_mdq_test_scimma_org"
+                - "traefik.http.middlewares.pyff.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.pyff.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.pyff.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.pyff.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
@@ -198,14 +200,16 @@ services:
             - scimma
         deploy:
             labels:
-                - "traefik.backend=scimma-satosa-proxy"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-test.scimma.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_scimma_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-proxy.rule=Host(`federation-proxy-test.scimma.org`)"
+                - "traefik.http.services.satosa-proxy.loadbalancer.server.port=80"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_test_scimma_org"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.satosa-proxy.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.satosa-proxy.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
@@ -262,14 +266,16 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=scimma-comanage-registry"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-test.scimma.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_test_scimma_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry.rule=Host(`registry-test.scimma.org`)"
+                - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_registry_test_scimma_org"
+                - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.comanage-registry.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.comanage-registry.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald

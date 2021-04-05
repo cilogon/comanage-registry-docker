@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 networks:
     cloudbank:
@@ -55,14 +55,16 @@ services:
             - cloudbank
         deploy:
             labels:
-                - "traefik.backend=cloudbank-satosa-proxy"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-test.cloudbank.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_test_cloudbank_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-proxy.rule=Host(`federation-proxy-test.cloudbank.org`)"
+                - "traefik.http.services.satosa-proxy.loadbalancer.server.port=80"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_test_cloudbank_org"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.satosa-proxy.redirectscheme.scheme=https"
+                - "traefik.http.middlewares.satosa-proxy.redirectscheme.permanent=true"
             replicas: 2
         logging:
             driver: journald
