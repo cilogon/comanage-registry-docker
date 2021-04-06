@@ -148,6 +148,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.getssl.entrypoints=web,websecure"
                 - "traefik.http.routers.getssl.rule=PathPrefix(`/.well-known/acme-challenge`)"
                 - "traefik.http.routers.getssl.priority=100"
                 - "traefik.http.services.getssl.loadbalancer.server.port=80"

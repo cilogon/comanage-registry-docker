@@ -115,6 +115,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.aa.entrypoints=web,websecure"
                 - "traefik.http.routers.aa.rule=Host(`aa-dev.gw-astronomy.org`)"
                 - "traefik.http.services.aa.loadbalancer.server.port=8080"
                 - "traefik.http.middlewares.aa.redirectscheme.scheme=https"
@@ -358,6 +359,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry.entrypoints=web,websecure"
                 - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.gw-astronomy.org`)"
                 - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
@@ -418,6 +420,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.orcid-saml-gateway.entrypoints=web,websecure"
                 - "traefik.http.routers.orcid-saml-gateway.rule=Host(`orcid-saml-gateway-dev.gw-astronomy.org`)"
                 - "traefik.http.services.orcid-saml-gateway.loadbalancer.server.port=8000"
                 - "traefik.http.services.orcid-saml-gateway.loadbalancer.sticky.cookie=true"

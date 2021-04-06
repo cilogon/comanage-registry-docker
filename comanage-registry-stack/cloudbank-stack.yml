@@ -57,6 +57,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-proxy.entrypoints=web,websecure"
                 - "traefik.http.routers.satosa-proxy.rule=Host(`federation-proxy-dev.cloudbank.org`)"
                 - "traefik.http.services.satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie=true"

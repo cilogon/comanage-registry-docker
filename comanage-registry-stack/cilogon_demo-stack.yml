@@ -338,6 +338,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry.entrypoints=web,websecure"
                 - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.demo.cilogon.org`)"
                 - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
@@ -400,6 +401,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.pyff.entrypoints=web,websecure"
                 - "traefik.http.routers.pyff.rule=Host(`mdq-dev.demo.cilogon.org`)"
                 - "traefik.http.services.pyff.loadbalancer.server.port=8080"
                 - "traefik.http.services.pyff.loadbalancer.sticky.cookie=true"
@@ -432,6 +434,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-proxy.entrypoints=web,websecure"
                 - "traefik.http.routers.satosa-proxy.rule=Host(`federation-proxy-dev.demo.cilogon.org`)"
                 - "traefik.http.services.satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie=true"

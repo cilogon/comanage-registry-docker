@@ -327,6 +327,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry.entrypoints=web,websecure"
                 - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.lsst.codes`)"
                 - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
@@ -391,6 +392,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.pyff.entrypoints=web,websecure"
                 - "traefik.http.routers.pyff.rule=Host(`mdq-dev.lsst.codes`)"
                 - "traefik.http.services.pyff.loadbalancer.server.port=8080"
                 - "traefik.http.services.pyff.loadbalancer.sticky.cookie=true"
@@ -423,6 +425,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-proxy.entrypoints=web,websecure"
                 - "traefik.http.routers.satosa-proxy.rule=Host(`federation-proxy-dev.lsst.codes`)"
                 - "traefik.http.services.satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie=true"
@@ -535,6 +538,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.grouper-ui.entrypoints=web,websecure"
                 - "traefik.http.routers.grouper-ui.rule=Host(`group-registry-dev.lsst.codes`)"
                 - "traefik.http.routers.grouper-ui.priority=50"
                 - "traefik.http.services.grouper-ui.loadbalancer.server.port=80"
@@ -588,6 +592,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.grouper-ws.entrypoints=web,websecure"
                 - "traefik.http.routers.grouper-ws.rule=Host(`group-registry-dev.lsst.codes`) && PathPrefix(`/grouper-ws`)"
                 - "traefik.http.routers.grouper-ws.priority=100"
                 - "traefik.http.services.grouper-ws.loadbalancer.server.port=80"

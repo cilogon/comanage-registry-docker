@@ -314,6 +314,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry.entrypoints=web,websecure"
                 - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.cilogon.org`)"
                 - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
