@@ -45,7 +45,7 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.cilogon-crl.entryPoints=web"
+                - "traefik.http.routers.cilogon-crl.entrypoints=web"
                 - "traefik.http.routers.cilogon-crl.rule=Host(`crl-dev.cilogon.org`,`crl-cilogon-dev.ncsa-security.net`,`crl-dev.cilogon.com`,`crl-dev.cilogon.net`,`crl-dev.cilogin.org`)"
                 - "traefik.http.services.cilogon-crl.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-crl.loadbalancer.sticky.cookie=true"
@@ -80,15 +80,18 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.oa4mp-demo.entryPoints=web,websecure"
+                - "traefik.http.routers.oa4mp-demo-http.entrypoints=web"
+                - "traefik.http.routers.oa4mp-demo-http.rule=Host(`demo-dev.cilogon.org`)"
+                - "traefik.http.routers.oa4mp-demo-http.middlewares=oa4mp-demo-https"
+                - "traefik.http.middlewares.oa4mp-demo-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.oa4mp-demo.entrypoints=websecure"
                 - "traefik.http.routers.oa4mp-demo.rule=Host(`demo-dev.cilogon.org`)"
+                - "traefik.http.routers.oa4mp-demo.tls=true"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie.name=_cilogon_service_demo_dev_cilogon_org"
                 - "traefik.http.middlewares.oa4mp-demo.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-demo.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.oa4mp-demo.redirectscheme.scheme=https"
-                - "traefik.http.middlewares.oa4mp-demo.redirectscheme.permanent=true"
         logging:
             driver: journald
             options:
@@ -130,8 +133,13 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.oa4mp-server.entryPoints=web,websecure"
+                - "traefik.http.routers.oa4mp-server-http.entryPoints=web"
+                - "traefik.http.routers.oa4mp-server-http.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
+                - "traefik.http.routers.oa4mp-server-http.middlewares=oa4mp-server-https"
+                - "traefik.http.middlewares.oa4mp-server-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.oa4mp-server.entryPoints=websecure"
                 - "traefik.http.routers.oa4mp-server.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
+                - "traefik.http.routers.oa4mp-server.tls=true"
                 - "traefik.http.routers.oa4mp-server.priority=100"
                 - "traefik.http.services.oa4mp-server.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie=true"
@@ -139,8 +147,6 @@ services:
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.oa4mp-server.ratelimit.average=5"
-                - "traefik.http.middlewares.oa4mp-server.redirectscheme.scheme=https"
-                - "traefik.http.middlewares.oa4mp-server.redirectscheme.permanent=true"
         logging:
             driver: journald
             options:
@@ -182,16 +188,19 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.oa4mp-oauth1.entryPoints=web,websecure"
+                - "traefik.http.routers.oa4mp-oauth1-http.entryPoints=web"
+                - "traefik.http.routers.oa4mp-oauth1-http.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth/{url:(initiate|token|getcert|assets)((/[^/]*)*)}`)"
+                - "traefik.http.routers.oa4mp-oauth1-http.middlewares=oa4mp-oauth1-https"
+                - "traefik.http.middlewares.oa4mp-oauth1-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.oa4mp-oauth1.entryPoints=websecure"
                 - "traefik.http.routers.oa4mp-oauth1.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth/{url:(initiate|token|getcert|assets)((/[^/]*)*)}`)"
+                - "traefik.http.routers.oa4mp-oauth1.tls=true"
                 - "traefik.http.routers.oa4mp-oauth1.priority=90"
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie.name=_cilogon_service_dev_cilogon_org_oauth1"
                 - "traefik.http.middlewares.oa4mp-oauth1.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-oauth1.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.oa4mp-oauth1.redirectscheme.scheme=https"
-                - "traefik.http.middlewares.oa4mp-oauth1.redirectscheme.permanent=true"
         logging:
             driver: journald
             options:
@@ -233,8 +242,13 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.cilogon-web.entryPoints=web,websecure"
+                - "traefik.http.routers.cilogon-web-http.entryPoints=web"
+                - "traefik.http.routers.cilogon-web-http.rule=Host(`dev.cilogon.org`,`dev.cilogon.com`,`dev.cilogon.net`,`dev.cilogin.org`,`ecp-dev.cilogon.org`)"
+                - "traefik.http.routers.cilogon-web-http.middlewares=cilogon-web-https"
+                - "traefik.http.middlewares.cilogon-web-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.cilogon-web.entryPoints=websecure"
                 - "traefik.http.routers.cilogon-web.rule=Host(`dev.cilogon.org`,`dev.cilogon.com`,`dev.cilogon.net`,`dev.cilogin.org`,`ecp-dev.cilogon.org`)"
+                - "traefik.http.routers.cilogon-web.tls=true"
                 - "traefik.http.routers.cilogon-web.priority=50"
                 - "traefik.http.services.cilogon-web.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie=true"
@@ -242,8 +256,6 @@ services:
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.cilogon-web.ratelimit.average=5"
-                - "traefik.http.middlewares.cilogon-web.redirectscheme.scheme=https"
-                - "traefik.http.middlewares.cilogon-web.redirectscheme.permanent=true"
         logging:
             driver: journald
             options:

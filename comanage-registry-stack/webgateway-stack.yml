@@ -91,7 +91,6 @@ services:
             - login_chooser_ligo_org_https_privkey_file
             - mdq_ligo_org_https_cert_file
             - mdq_ligo_org_https_privkey_file
-
         networks:
             - webgateway
             - dockersocket
@@ -148,16 +147,19 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.getssl.entrypoints=web,websecure"
+                - "traefik.http.routers.getssl-http.entrypoints=web"
+                - "traefik.http.routers.getssl-http.rule=PathPrefix(`/.well-known/acme-challenge`)"
+                - "traefik.http.routers.getssl-http.middlewares=getssl-https"
+                - "traefik.http.middlewares.getssl-https.redirectscheme.scheme=https" 
+                - "traefik.http.routers.getssl.entrypoints=websecure"
                 - "traefik.http.routers.getssl.rule=PathPrefix(`/.well-known/acme-challenge`)"
+                - "traefik.http.routers.getssl.tls=true"
                 - "traefik.http.routers.getssl.priority=100"
                 - "traefik.http.services.getssl.loadbalancer.server.port=80"
                 - "traefik.http.services.getssl.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.getssl.loadbalancer.sticky.cookie.name=_webgateway_dev"
                 - "traefik.http.middlewares.getssl.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.getssl.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.getssl.redirectscheme.scheme=https"
-                - "traefik.http.middlewares.getssl.redirectscheme.permanent=true"
             restart_policy:
               condition: on-failure
             update_config:

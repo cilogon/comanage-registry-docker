@@ -314,15 +314,18 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.comanage-registry.entrypoints=web,websecure"
+                - "traefik.http.routers.comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.comanage-registry-http.rule=Host(`registry-dev.cilogon.org`)"
+                - "traefik.http.routers.comanage-registry-http.middlewares=comanage-registry-https"
+                - "traefik.http.middlewares.comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.comanage-registry.entrypoints=websecure"
                 - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.cilogon.org`)"
+                - "traefik.http.routers.comanage-registry.tls=true"
                 - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_cilogon_multi_tenant_dev"
                 - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.comanage-registry.redirectscheme.scheme=https"
-                - "traefik.http.middlewares.comanage-registry.redirectscheme.permanent=true"
             replicas: 1
         logging:
             driver: journald
