@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 networks:
     biocommons:
@@ -359,14 +359,20 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=biocommons-comanage-registry"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.biocommons.org.au"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_dev_biocommons_org_au"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.comanage-registry-http.rule=Host(`registry-dev.biocommons.org.au`)"
+                - "traefik.http.routers.comanage-registry-http.middlewares=comanage-registry-https"
+                - "traefik.http.middlewares.comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.biocommons.org.au`)"
+                - "traefik.http.routers.comanage-registry.tls=true"
+                - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_registry_dev_biocommons_org_au"
+                - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
             replicas: 1
             rollback_config:
               parallelism: 1
@@ -443,14 +449,20 @@ services:
               reservations:
                 memory: 512M
             labels:
-                - "traefik.backend=biocommons-pyff"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq-dev.biocommons.org.au"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_dev_biocommons_org_au"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8080"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.pyff-http.entrypoints=web"
+                - "traefik.http.routers.pyff-http.rule=Host(`mdq-dev.biocommons.org.au`)"
+                - "traefik.http.routers.pyff-http.middlewares=pyff-https"
+                - "traefik.http.middlewares.pyff-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.pyff.entrypoints=websecure"
+                - "traefik.http.routers.pyff.rule=Host(`mdq-dev.biocommons.org.au`)"
+                - "traefik.http.routers.pyff.tls=true"
+                - "traefik.http.services.pyff.loadbalancer.server.port=8080"
+                - "traefik.http.services.pyff.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.pyff.loadbalancer.sticky.cookie.name=_mdq_dev_biocommons_org_au"
+                - "traefik.http.middlewares.pyff.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.pyff.headers.stsincludesubdomains=true"
             replicas: 1
             rollback_config:
               parallelism: 1
@@ -485,14 +497,20 @@ services:
             - biocommons
         deploy:
             labels:
-                - "traefik.backend=biocommons-satosa-proxy"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy-dev.biocommons.org.au"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_dev_biocommons_org_au"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-proxy-http.entrypoints=web"
+                - "traefik.http.routers.satosa-proxy-http.rule=Host(`federation-proxy-dev.biocommons.org.au`)"
+                - "traefik.http.routers.satosa-proxy-http.middlewares=satosa-proxy-https"
+                - "traefik.http.middlewares.satosa-proxy-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.satosa-proxy.entrypoints=websecure"
+                - "traefik.http.routers.satosa-proxy.rule=Host(`federation-proxy-dev.biocommons.org.au`)"
+                - "traefik.http.routers.satosa-proxy.tls=true"
+                - "traefik.http.services.satosa-proxy.loadbalancer.server.port=80"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_biocommons_org_au"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.satosa-proxy.headers.stsincludesubdomains=true"
             replicas: 1
             rollback_config:
               parallelism: 1

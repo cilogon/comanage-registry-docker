@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 networks:
     cilogon-multi-tenant:
@@ -312,16 +312,20 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=cilogon-multi-tenant-comanage-registry"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry-dev.cilogon.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant_dev"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
-                - "traefik.frontend.headers.SSLRedirect=true"
-                - "traefik.frontend.entryPoints=http,https"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.comanage-registry-http.rule=Host(`registry-dev.cilogon.org`)"
+                - "traefik.http.routers.comanage-registry-http.middlewares=comanage-registry-https"
+                - "traefik.http.middlewares.comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.comanage-registry.rule=Host(`registry-dev.cilogon.org`)"
+                - "traefik.http.routers.comanage-registry.tls=true"
+                - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_cilogon_multi_tenant_dev"
+                - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
             replicas: 1
         logging:
             driver: journald
