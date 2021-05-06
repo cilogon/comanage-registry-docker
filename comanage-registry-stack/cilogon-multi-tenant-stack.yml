@@ -265,7 +265,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:hotfix-3.3.x-2
+        image: cilogon/comanage-registry:3.3.2-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -314,18 +314,19 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.comanage-registry-http.entrypoints=web"
-                - "traefik.http.routers.comanage-registry-http.rule=Host(`registry.cilogon.org`)"
-                - "traefik.http.routers.comanage-registry-http.middlewares=comanage-registry-https"
-                - "traefik.http.middlewares.comanage-registry-https.redirectscheme.scheme=https"
-                - "traefik.http.routers.comanage-registry.entrypoints=websecure"
-                - "traefik.http.routers.comanage-registry.rule=Host(`registry.cilogon.org`)"
-                - "traefik.http.routers.comanage-registry.tls=true"
-                - "traefik.http.services.comanage-registry.loadbalancer.server.port=80"
-                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie=true"
-                - "traefik.http.services.comanage-registry.loadbalancer.sticky.cookie.name=_cilogon_multi_tenant"
-                - "traefik.http.middlewares.comanage-registry.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry-http.rule=Host(`registry.cilogon.org`)"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry-http.middlewares=cilogon_multi_tenant-comanage-registry-https"
+                - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.rule=Host(`registry.cilogon.org`)"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.tls=true"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.middlewares=cilogon_multi_tenant-comanage-registry"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie.name=_cilogon_multi_tenant"
+                - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 3
         logging:
             driver: journald
