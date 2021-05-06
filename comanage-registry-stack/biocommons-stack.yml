@@ -5,7 +5,7 @@ networks:
         driver: overlay
         ipam:
             config:
-                - subnet: 10.0.108.0/24
+                - subnet: 10.108.0.0/16
     webgateway:
         external: true
     ldapgateway:
@@ -368,6 +368,7 @@ services:
                 - "traefik.http.routers.biocommons-comanage-registry.entrypoints=websecure"
                 - "traefik.http.routers.biocommons-comanage-registry.rule=Host(`registry-dev.biocommons.org.au`)"
                 - "traefik.http.routers.biocommons-comanage-registry.tls=true"
+                - "traefik.http.routers.biocommons-comanage-registry.middlewares=biocommons-comanage-registry"
                 - "traefik.http.services.biocommons-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.biocommons-comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.biocommons-comanage-registry.loadbalancer.sticky.cookie.name=_registry_dev_biocommons_org_au"
@@ -458,6 +459,7 @@ services:
                 - "traefik.http.routers.biocommons-pyff.entrypoints=websecure"
                 - "traefik.http.routers.biocommons-pyff.rule=Host(`mdq-dev.biocommons.org.au`)"
                 - "traefik.http.routers.biocommons-pyff.tls=true"
+                - "traefik.http.routers.biocommons-pyff.middlewares=biocommons-pyff"
                 - "traefik.http.services.biocommons-pyff.loadbalancer.server.port=8080"
                 - "traefik.http.services.biocommons-pyff.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.biocommons-pyff.loadbalancer.sticky.cookie.name=_mdq_dev_biocommons_org_au"
@@ -506,6 +508,7 @@ services:
                 - "traefik.http.routers.biocommons-satosa-proxy.entrypoints=websecure"
                 - "traefik.http.routers.biocommons-satosa-proxy.rule=Host(`federation-proxy-dev.biocommons.org.au`)"
                 - "traefik.http.routers.biocommons-satosa-proxy.tls=true"
+                - "traefik.http.routers.biocommons-satosa-proxy.middlewares=biocommons-satosa-proxy"
                 - "traefik.http.services.biocommons-satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.biocommons-satosa-proxy.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.biocommons-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_biocommons_org_au"
