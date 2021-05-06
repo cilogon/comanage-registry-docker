@@ -64,6 +64,7 @@ services:
                 - "traefik.http.routers.cloudbank-satosa-proxy.entrypoints=websecure"
                 - "traefik.http.routers.cloudbank-satosa-proxy.rule=Host(`federation-proxy-test.cloudbank.org`)"
                 - "traefik.http.routers.cloudbank-satosa-proxy.tls=true"
+                - "traefik.http.routers.cloudbank-satosa-proxy.middlewares=cloudbank-satosa-proxy"
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_test_cloudbank_org"
