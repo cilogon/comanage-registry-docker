@@ -321,6 +321,7 @@ services:
                 - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.entrypoints=websecure"
                 - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.rule=Host(`registry-dev.cilogon.org`)"
                 - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.tls=true"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.middlewares=cilogon_multi_tenant-comanage-registry"
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie.name=_cilogon_multi_tenant_dev"
