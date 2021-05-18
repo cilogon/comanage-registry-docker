@@ -99,7 +99,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:5-dev
         hostname: dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
@@ -148,7 +148,8 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_dev_cilogon_org_oauth2"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=5"
+                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=10"
+                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=10"
         logging:
             driver: journald
             options:
@@ -259,7 +260,8 @@ services:
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_dev_cilogon_org"
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=5"
+                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=10"
+                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=10"
         logging:
             driver: journald
             options:
