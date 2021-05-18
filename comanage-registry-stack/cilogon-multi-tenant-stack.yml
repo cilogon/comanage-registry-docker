@@ -312,14 +312,21 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=cilogon-multi-tenant-comanage-registry"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry.cilogon.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_cilogon_multi_tenant_prod"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry-http.rule=Host(`registry.cilogon.org`)"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry-http.middlewares=cilogon_multi_tenant-comanage-registry-https"
+                - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.rule=Host(`registry.cilogon.org`)"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.tls=true"
+                - "traefik.http.routers.cilogon_multi_tenant-comanage-registry.middlewares=cilogon_multi_tenant-comanage-registry"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie.name=_cilogon_multi_tenant"
+                - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 3
         logging:
             driver: journald

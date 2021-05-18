@@ -337,14 +337,21 @@ services:
             - webgateway
         deploy:
             labels:
-                - "traefik.backend=xsede-comanage-registry"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: registry.xsede.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_registry_xsede_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.xsede-comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.xsede-comanage-registry-http.rule=Host(`registry.xsede.org`)"
+                - "traefik.http.routers.xsede-comanage-registry-http.middlewares=xsede-comanage-registry-https"
+                - "traefik.http.middlewares.xsede-comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.xsede-comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.xsede-comanage-registry.rule=Host(`registry.xsede.org`)"
+                - "traefik.http.routers.xsede-comanage-registry.tls=true"
+                - "traefik.http.routers.xsede-comanage-registry.middlewares=xsede-comanage-registry"
+                - "traefik.http.services.xsede-comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.xsede-comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.xsede-comanage-registry.loadbalancer.sticky.cookie.name=_registry_xsede_org"
+                - "traefik.http.middlewares.xsede-comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.xsede-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 1
         logging:
             driver: journald
@@ -399,14 +406,21 @@ services:
               reservations:
                 memory: 512M
             labels:
-                - "traefik.backend=xsede-pyff"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: mdq.xsede.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_mdq_xsede_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=8080"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.xsede-pyff-http.entrypoints=web"
+                - "traefik.http.routers.xsede-pyff-http.rule=Host(`mdq.xsede.org`)"
+                - "traefik.http.routers.xsede-pyff-http.middlewares=xsede-pyff-https"
+                - "traefik.http.middlewares.xsede-pyff-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.xsede-pyff.entrypoints=websecure"
+                - "traefik.http.routers.xsede-pyff.rule=Host(`mdq.xsede.org`)"
+                - "traefik.http.routers.xsede-pyff.tls=true"
+                - "traefik.http.routers.xsede-pyff.middlewares=xsede-pyff"
+                - "traefik.http.services.xsede-pyff.loadbalancer.server.port=8080"
+                - "traefik.http.services.xsede-pyff.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.xsede-pyff.loadbalancer.sticky.cookie.name=_mdq_xsede_org"
+                - "traefik.http.middlewares.xsede-pyff.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.xsede-pyff.headers.stsincludesubdomains=true"
             replicas: 1
         logging:
             driver: journald
@@ -429,14 +443,21 @@ services:
             - xsede
         deploy:
             labels:
-                - "traefik.backend=xsede-satosa-proxy"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy.xsede.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_xsede_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.xsede-satosa-proxy-http.entrypoints=web"
+                - "traefik.http.routers.xsede-satosa-proxy-http.rule=Host(`federation-proxy.xsede.org`)"
+                - "traefik.http.routers.xsede-satosa-proxy-http.middlewares=xsede-satosa-proxy-https"
+                - "traefik.http.middlewares.xsede-satosa-proxy-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.xsede-satosa-proxy.entrypoints=websecure"
+                - "traefik.http.routers.xsede-satosa-proxy.rule=Host(`federation-proxy.xsede.org`)"
+                - "traefik.http.routers.xsede-satosa-proxy.tls=true"
+                - "traefik.http.routers.xsede-satosa-proxy.middlewares=xsede-satosa-proxy"
+                - "traefik.http.services.xsede-satosa-proxy.loadbalancer.server.port=80"
+                - "traefik.http.services.xsede-satosa-proxy.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.xsede-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_xsede_org"
+                - "traefik.http.middlewares.xsede-satosa-proxy.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.xsede-satosa-proxy.headers.stsincludesubdomains=true"
             replicas: 1
         logging:
             driver: journald

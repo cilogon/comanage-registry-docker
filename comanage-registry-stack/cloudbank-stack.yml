@@ -55,14 +55,21 @@ services:
             - cloudbank
         deploy:
             labels:
-                - "traefik.backend=cloudbank-satosa-proxy"
-                - "traefik.docker.network=webgateway"
                 - "traefik.enable=true"
-                - "traefik.frontend.rule=Host: federation-proxy.cloudbank.org"
-                - "traefik.backend.loadbalancer.stickiness=true"
-                - "traefik.backend.loadbalancer.stickiness.cookieName=_federation_proxy_cloudbank_org"
-                - "traefik.frontend.headers.customResponseHeaders=Strict-Transport-Security: max-age=63072000; includeSubDomains"
-                - "traefik.port=80"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.cloudbank-satosa-proxy-http.entrypoints=web"
+                - "traefik.http.routers.cloudbank-satosa-proxy-http.rule=Host(`federation-proxy.cloudbank.org`)"
+                - "traefik.http.routers.cloudbank-satosa-proxy-http.middlewares=cloudbank-satosa-proxy-https"
+                - "traefik.http.middlewares.cloudbank-satosa-proxy-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.cloudbank-satosa-proxy.entrypoints=websecure"
+                - "traefik.http.routers.cloudbank-satosa-proxy.rule=Host(`federation-proxy.cloudbank.org`)"
+                - "traefik.http.routers.cloudbank-satosa-proxy.tls=true"
+                - "traefik.http.routers.cloudbank-satosa-proxy.middlewares=cloudbank-satosa-proxy"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.server.port=80"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_cloudbank_org"
+                - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsincludesubdomains=true"
             replicas: 3
         logging:
             driver: journald
