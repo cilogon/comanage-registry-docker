@@ -137,6 +137,7 @@ services:
                 - "traefik.http.routers.oa4mp-server-http.entrypoints=web"
                 - "traefik.http.routers.oa4mp-server-http.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
                 - "traefik.http.routers.oa4mp-server-http.middlewares=oa4mp-server-https"
+                - "traefik.http.routers.oa4mp-server-http.priority=100"
                 - "traefik.http.middlewares.oa4mp-server-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.oa4mp-server.entrypoints=websecure"
                 - "traefik.http.routers.oa4mp-server.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
@@ -148,7 +149,7 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_dev_cilogon_org_oauth2"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=10"
+                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=5"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=10"
         logging:
             driver: journald
@@ -194,6 +195,7 @@ services:
                 - "traefik.http.routers.oa4mp-oauth1-http.entrypoints=web"
                 - "traefik.http.routers.oa4mp-oauth1-http.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth/{url:(initiate|token|getcert|assets)((/[^/]*)*)}`)"
                 - "traefik.http.routers.oa4mp-oauth1-http.middlewares=oa4mp-oauth1-https"
+                - "traefik.http.routers.oa4mp-oauth1-http.priority=90"
                 - "traefik.http.middlewares.oa4mp-oauth1-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.oa4mp-oauth1.entrypoints=websecure"
                 - "traefik.http.routers.oa4mp-oauth1.rule=Host(`dev.cilogon.org`) && PathPrefix(`/oauth/{url:(initiate|token|getcert|assets)((/[^/]*)*)}`)"
@@ -249,6 +251,7 @@ services:
                 - "traefik.http.routers.cilogon-web-http.entrypoints=web"
                 - "traefik.http.routers.cilogon-web-http.rule=Host(`dev.cilogon.org`,`dev.cilogon.com`,`dev.cilogon.net`,`dev.cilogin.org`,`ecp-dev.cilogon.org`)"
                 - "traefik.http.routers.cilogon-web-http.middlewares=cilogon-web-https"
+                - "traefik.http.routers.cilogon-web-http.priority=50"
                 - "traefik.http.middlewares.cilogon-web-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.cilogon-web.entrypoints=websecure"
                 - "traefik.http.routers.cilogon-web.rule=Host(`dev.cilogon.org`,`dev.cilogon.com`,`dev.cilogon.net`,`dev.cilogin.org`,`ecp-dev.cilogon.org`)"
@@ -260,7 +263,7 @@ services:
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_dev_cilogon_org"
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=10"
+                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=5"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=10"
         logging:
             driver: journald
