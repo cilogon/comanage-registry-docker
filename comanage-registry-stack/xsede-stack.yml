@@ -352,7 +352,7 @@ services:
                 - "traefik.http.services.xsede-comanage-registry.loadbalancer.sticky.cookie.name=_registry_xsede_org"
                 - "traefik.http.middlewares.xsede-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.xsede-comanage-registry.headers.stsincludesubdomains=true"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -421,7 +421,7 @@ services:
                 - "traefik.http.services.xsede-pyff.loadbalancer.sticky.cookie.name=_mdq_xsede_org"
                 - "traefik.http.middlewares.xsede-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.xsede-pyff.headers.stsincludesubdomains=true"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -458,7 +458,7 @@ services:
                 - "traefik.http.services.xsede-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_xsede_org"
                 - "traefik.http.middlewares.xsede-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.xsede-satosa-proxy.headers.stsincludesubdomains=true"
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
@@ -489,7 +489,7 @@ services:
         networks:
             - xsede
         deploy:
-            replicas: 1
+            replicas: 3
         logging:
             driver: journald
             options:
