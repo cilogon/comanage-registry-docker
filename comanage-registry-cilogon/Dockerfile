@@ -1,4 +1,4 @@
-ARG COMANAGE_REGISTRY_VERSION=3.2.5
+ARG COMANAGE_REGISTRY_VERSION=3.3.3
 ARG COMANAGE_REGISTRY_BASE_IMAGE_VERSION=1
 FROM sphericalcowgroup/comanage-registry:${COMANAGE_REGISTRY_VERSION}-mod-auth-openidc-${COMANAGE_REGISTRY_BASE_IMAGE_VERSION}
 
@@ -33,8 +33,8 @@ RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" \
       && tar -zxf CilogonEppnEnroller.tar.gz -C "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" --strip-components=1 \
       && rm -f CilogonEppnEnroller.tar.gz
 
-# Deploy Oa4mpClient plugin version 3.0.0
-ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/3.0.0.tar.gz
+# Deploy Oa4mpClient plugin version 3.0.1
+ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/3.0.1.tar.gz
 
 RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" \
       && wget -O Oa4mpClient.tar.gz $CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL \
