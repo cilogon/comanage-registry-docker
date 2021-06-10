@@ -33,7 +33,7 @@ services:
             - webgateway
             - cilogon_service
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://127.0.0.1/"]
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
             interval: 30s
             timeout: 3s
             retries: 3
@@ -83,7 +83,7 @@ services:
             - webgateway
             - cilogon_service
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://127.0.0.1:8888/cilogon2/"]
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/cilogon2/"]
             interval: 30s
             timeout: 3s
             retries: 3
@@ -138,7 +138,7 @@ services:
             - webgateway
             - cilogon_service
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://127.0.0.1:8888/oauth2/register"]
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth2/register"]
             interval: 30s
             timeout: 3s
             retries: 3
@@ -267,7 +267,7 @@ services:
             - webgateway
             - cilogon_service
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://127.0.0.1/"]
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
             interval: 30s
             timeout: 3s
             retries: 3
