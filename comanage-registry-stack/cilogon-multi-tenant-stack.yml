@@ -347,7 +347,7 @@ services:
             - cilogon-multi-tenant
             - webgateway
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://127.0.0.1/registry/index.php"]
+            test: ["CMD", "curl", "-f", "-I", "http://127.0.0.1/registry/index.php"]
             interval: 15s
             timeout: 1s
             retries: 3
