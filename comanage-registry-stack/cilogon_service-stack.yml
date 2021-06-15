@@ -32,16 +32,25 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        healthcheck:
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 30s
         extra_hosts:
             myproxy.cilogon.org: 141.142.149.29
         deploy:
             mode: replicated
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
             restart_policy:
                 condition: on-failure
             update_config:
                 parallelism: 1
-                delay: 60s
+                delay: 30s
+                failure_action: rollback
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
@@ -50,6 +59,10 @@ services:
                 - "traefik.http.services.cilogon-crl.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-crl.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon-crl.loadbalancer.sticky.cookie.name=_crl_test_cilogon_org"
+                - "traefik.http.services.cilogon-crl.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.services.cilogon-crl.loadbalancer.healthcheck.path=/"
+                - "traefik.http.services.cilogon-crl.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.cilogon-crl.loadbalancer.healthcheck.timeout=3s"
         logging:
             driver: journald
             options:
@@ -69,14 +82,23 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        healthcheck:
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/cilogon2/"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 60s
         deploy:
             mode: replicated
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
             restart_policy:
                 condition: on-failure
             update_config:
                 parallelism: 1
                 delay: 60s
+                failure_action: rollback
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
@@ -91,6 +113,11 @@ services:
                 - "traefik.http.services.oa4mp-demo.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie.name=_demo_test_cilogon_org"
+                - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.services.oa4mp-demo.loadbalancer.healthcheck.path=/cilogon2/"
+                - "traefik.http.services.oa4mp-demo.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.oa4mp-demo.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.oa4mp-demo.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-demo.headers.stsincludesubdomains=true"
         logging:
@@ -112,6 +139,12 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        healthcheck:
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth2/register"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 60s
         extra_hosts:
             myproxy.cilogon.org: 141.142.149.29
             myproxy2.cilogon.org: 141.142.149.30
@@ -119,11 +152,14 @@ services:
         deploy:
             mode: replicated
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
             restart_policy:
                 condition: on-failure
             update_config:
                 parallelism: 1
                 delay: 60s
+                failure_action: rollback
             resources:
                 limits:
                     cpus: '0.5'
@@ -147,6 +183,11 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_test_cilogon_org_oauth2"
+                - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.path=/oauth2/register"
+                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=5"
@@ -177,11 +218,14 @@ services:
         deploy:
             mode: replicated
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
             restart_policy:
                 condition: on-failure
             update_config:
                 parallelism: 1
                 delay: 60s
+                failure_action: rollback
             resources:
                 limits:
                     cpus: '0.5'
@@ -205,6 +249,8 @@ services:
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie.name=_test_cilogon_org_oauth1"
+                - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.oa4mp-oauth1.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-oauth1.headers.stsincludesubdomains=true"
         logging:
@@ -226,6 +272,12 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        healthcheck:
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 30s
         extra_hosts:
             myproxy.cilogon.org: 141.142.149.29
             myproxy2.cilogon.org: 141.142.149.30
@@ -233,11 +285,14 @@ services:
         deploy:
             mode: replicated
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
             restart_policy:
                 condition: on-failure
             update_config:
                 parallelism: 1
-                delay: 60s
+                delay: 30s
+                failure_action: rollback
             resources:
                 limits:
                     cpus: '0.5'
@@ -261,6 +316,11 @@ services:
                 - "traefik.http.services.cilogon-web.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_test_cilogon_org"
+                - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.path=/"
+                - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=5"
@@ -283,6 +343,12 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        healthcheck:
+            test: ["CMD-SHELL", "ps aux | grep '[c]ron' || exit 1"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 30s
         extra_hosts:
             myproxy.cilogon.org: 141.142.149.29
             myproxy2.cilogon.org: 141.142.149.30
@@ -290,11 +356,14 @@ services:
         deploy:
             mode: replicated
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
             restart_policy:
                 condition: on-failure
             update_config:
                 parallelism: 1
-                delay: 60s
+                delay: 30s
+                failure_action: rollback
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
