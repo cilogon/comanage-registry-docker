@@ -325,6 +325,8 @@ services:
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie.name=_cilogon_multi_tenant"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon_multi_tenant-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 3

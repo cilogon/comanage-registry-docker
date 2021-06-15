@@ -90,7 +90,6 @@ services:
             - login_chooser_ligo_org_https_privkey_file
             - mdq_ligo_org_https_cert_file
             - mdq_ligo_org_https_privkey_file
-
         networks:
             - webgateway
             - dockersocket
@@ -152,6 +151,7 @@ services:
                 - "traefik.http.services.getssl.loadbalancer.server.port=80"
                 - "traefik.http.services.getssl.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.getssl.loadbalancer.sticky.cookie.name=_webgateway_prod"
+                - "traefik.http.services.getssl.loadbalancer.sticky.cookie.httpOnly=true"
             restart_policy:
               condition: on-failure
             update_config:

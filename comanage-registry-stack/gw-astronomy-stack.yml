@@ -373,6 +373,8 @@ services:
                 - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.sticky.cookie.name=_gw_astronomy_prod"
+                - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.gw-astronomy-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.gw-astronomy-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 3
@@ -438,6 +440,8 @@ services:
                 - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.server.port=8000"
                 - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.sticky.cookie.name=_gw_astronomy_orcid_saml_gateway_prod"
+                - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.gw-astronomy-orcid-saml-gateway.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.gw-astronomy-orcid-saml-gateway.headers.stsincludesubdomains=true"
             replicas: 3

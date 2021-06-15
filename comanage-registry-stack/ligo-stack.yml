@@ -369,6 +369,8 @@ services:
                 - "traefik.http.services.ligo-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.ligo-comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.ligo-comanage-registry.loadbalancer.sticky.cookie.name=_registry_ligo_org"
+                - "traefik.http.services.ligo-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.ligo-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.ligo-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.ligo-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 3
@@ -436,6 +438,8 @@ services:
                 - "traefik.http.services.ligo-pyff.loadbalancer.server.port=8080"
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.name=_mdq_ligo_org"
+                - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.httpOnlyl=true"
                 - "traefik.http.middlewares.ligo-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.ligo-pyff.headers.stsincludesubdomains=true"
             replicas: 3
@@ -473,6 +477,8 @@ services:
                 - "traefik.http.services.ligo-satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.ligo-satosa-proxy.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.ligo-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_ligo_org"
+                - "traefik.http.services.ligo-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.ligo-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.ligo-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.ligo-satosa-proxy.headers.stsincludesubdomains=true"
             replicas: 3
@@ -588,6 +594,8 @@ services:
                 - "traefik.http.services.ligo-grouper-ui.loadbalancer.server.port=8000"
                 - "traefik.http.services.ligo-grouper-ui.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.ligo-grouper-ui.loadbalancer.sticky.cookie.name=_group_registry_ligo_org"
+                - "traefik.http.services.ligo-grouper-ui.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.ligo-grouper-ui.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.ligo-grouper-ui.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.ligo-grouper-ui.headers.stsincludesubdomains=true"
             replicas: 1
@@ -656,6 +664,8 @@ services:
                 - "traefik.http.services.ligo-grouper-ws.loadbalancer.server.port=8000"
                 - "traefik.http.services.ligo-grouper-ws.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.ligo-grouper-ws.loadbalancer.sticky.cookie.name=_group_registry_ws_ligo_org"
+                - "traefik.http.services.ligo-grouper-ws.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.ligo-grouper-ws.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.ligo-grouper-ws.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.ligo-grouper-ws.headers.stsincludesubdomains=true"
             replicas: 3
