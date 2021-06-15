@@ -338,6 +338,8 @@ services:
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.name=_registry_test_lsst_codes"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 1
@@ -407,6 +409,8 @@ services:
                 - "traefik.http.services.lsst-pyff.loadbalancer.server.port=8080"
                 - "traefik.http.services.lsst-pyff.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.lsst-pyff.loadbalancer.sticky.cookie.name=_mdq_test_lsst_codes"
+                - "traefik.http.services.lsst-pyff.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.lsst-pyff.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-pyff.headers.stsincludesubdomains=true"
             replicas: 1
@@ -444,6 +448,8 @@ services:
                 - "traefik.http.services.lsst-satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.lsst-satosa-proxy.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.lsst-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_test_lsst_codes"
+                - "traefik.http.services.lsst-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.lsst-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-satosa-proxy.headers.stsincludesubdomains=true"
             replicas: 1
@@ -562,6 +568,8 @@ services:
                 - "traefik.http.services.lsst-grouper-ui.loadbalancer.server.port=80"
                 - "traefik.http.services.lsst-grouper-ui.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.lsst-grouper-ui.loadbalancer.sticky.cookie.name=_group_registry_test_lsst_codes"
+                - "traefik.http.services.lsst-grouper-ui.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.lsst-grouper-ui.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-grouper-ui.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-grouper-ui.headers.stsincludesubdomains=true"
             replicas: 1
@@ -620,6 +628,8 @@ services:
                 - "traefik.http.services.lsst-grouper-ws.loadbalancer.server.port=80"
                 - "traefik.http.services.lsst-grouper-ws.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.lsst-grouper-ws.loadbalancer.sticky.cookie.name=_group_registry_ws_test_lsst_codes"
+                - "traefik.http.services.lsst-grouper-ws.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.lsst-grouper-ws.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-grouper-ws.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-grouper-ws.headers.stsincludesubdomains=true"
             replicas: 1
