@@ -1,3 +1,3 @@
-FROM httpd:2.4.41
+FROM httpd:2.4.48
 
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
