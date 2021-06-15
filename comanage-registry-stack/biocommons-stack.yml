@@ -152,8 +152,17 @@ services:
         networks:
             - biocommons
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
             rollback_config:
               parallelism: 1
               delay: 0s
@@ -212,8 +221,17 @@ services:
         networks:
             - biocommons
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
             rollback_config:
               parallelism: 1
               delay: 0s
@@ -263,6 +281,12 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - biocommons
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -302,8 +326,17 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - biocommons
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
         logging:
             driver: journald
             options:
@@ -357,6 +390,12 @@ services:
         networks:
             - biocommons
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "-f", "-I", "http://127.0.0.1/registry/index.php"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 180s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -374,7 +413,12 @@ services:
                 - "traefik.http.services.biocommons-comanage-registry.loadbalancer.sticky.cookie.name=_registry_dev_biocommons_org_au"
                 - "traefik.http.middlewares.biocommons-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.biocommons-comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.services.biocommons-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
+                - "traefik.http.services.biocommons-comanage-registry.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.biocommons-comanage-registry.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
             rollback_config:
               parallelism: 1
               delay: 0s
@@ -383,7 +427,7 @@ services:
               order: stop-first
             update_config:
               parallelism: 1
-              delay: 0s
+              delay: 120s
               failure_action: rollback
               monitor: 5s
               order: stop-first
@@ -403,6 +447,12 @@ services:
                 nocopy: true
         networks:
             - biocommons
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=false"
@@ -425,7 +475,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     pyff:
-        image: cilogon/comanage-registry-pyff:3
+        image: cilogon/comanage-registry-pyff:5
         volumes:
             - type: volume
               source: pyff-configs
@@ -443,6 +493,12 @@ services:
         networks:
             - biocommons
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "-I", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             resources:
               limits:
@@ -465,7 +521,13 @@ services:
                 - "traefik.http.services.biocommons-pyff.loadbalancer.sticky.cookie.name=_mdq_dev_biocommons_org_au"
                 - "traefik.http.middlewares.biocommons-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.biocommons-pyff.headers.stsincludesubdomains=true"
+                - "traefik.http.services.biocommons-pyff.loadbalancer.healthcheck.path=/entities/"
+                - "traefik.http.services.biocommons-pyff.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.biocommons-pyff.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.biocommons-pyff.loadbalancer.healthcheck.headers.Accept=application/samlmetadata+xml"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
             rollback_config:
               parallelism: 1
               delay: 0s
@@ -484,7 +546,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: cilogon/comanage-registry-apache-satosa-proxy:2
+        image: cilogon/comanage-registry-apache-satosa-proxy:4
         volumes:
             - type: volume
               source: satosa-proxy-htdocs
@@ -497,6 +559,12 @@ services:
         networks:
             - webgateway
             - biocommons
+        healthcheck:
+            test: ["CMD", "curl", "-I", "http://127.0.0.1/noproxy/alive.html"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -514,7 +582,12 @@ services:
                 - "traefik.http.services.biocommons-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_biocommons_org_au"
                 - "traefik.http.middlewares.biocommons-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.biocommons-satosa-proxy.headers.stsincludesubdomains=true"
+                - "traefik.http.services.biocommons-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
+                - "traefik.http.services.biocommons-satosa-proxy.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.biocommons-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
             rollback_config:
               parallelism: 1
               delay: 0s
@@ -523,7 +596,7 @@ services:
               order: stop-first
             update_config:
               parallelism: 1
-              delay: 0s
+              delay: 30s
               failure_action: rollback
               monitor: 5s
               order: stop-first
@@ -533,7 +606,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:11
+        image: cilogon/comanage-registry-satosa:12
         volumes:
             - type: volume
               source: satosa-configs
@@ -556,8 +629,16 @@ services:
             - biocommons_satosa_state_encryption_key
         networks:
             - biocommons
+        healthcheck:
+            test: ["CMD", "curl", "-I", "http://127.0.0.1:8080/ping"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
             rollback_config:
               parallelism: 1
               delay: 0s
@@ -566,7 +647,7 @@ services:
               order: stop-first
             update_config:
               parallelism: 1
-              delay: 0s
+              delay: 120s
               failure_action: rollback
               monitor: 5s
               order: stop-first
