@@ -2,6 +2,7 @@ FROM debian:buster
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
+        curl \
         git \
         python-virtualenv \
         virtualenv \
@@ -12,7 +13,7 @@ RUN mkdir -p /opt/satosa \
     && virtualenv --python=python3.7 /opt/satosa --no-site-packages \
     && . /opt/satosa/bin/activate \
     && pip install ldap3 \
-    && pip install pysaml2==6.5.1 \
+    && pip install pysaml2==6.5.2 \
     && pip install satosa==7.0.3 \
     && chown -R satosa:satosa /opt/satosa \
     && apt-get remove -y --purge \
