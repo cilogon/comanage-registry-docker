@@ -150,6 +150,8 @@ services:
                 - "traefik.http.services.scimma-pyff.loadbalancer.server.port=8080"
                 - "traefik.http.services.scimma-pyff.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.scimma-pyff.loadbalancer.sticky.cookie.name=_mdq_dev_scimma_org"
+                - "traefik.http.services.scimma-pyff.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.scimma-pyff.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.scimma-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.scimma-pyff.headers.stsincludesubdomains=true"
             replicas: 1
@@ -218,6 +220,8 @@ services:
                 - "traefik.http.services.scimma-satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.scimma-satosa-proxy.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.scimma-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_scimma_org"
+                - "traefik.http.services.scimma-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.scimma-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.scimma-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.scimma-satosa-proxy.headers.stsincludesubdomains=true"
             replicas: 1
@@ -289,6 +293,8 @@ services:
                 - "traefik.http.services.scimma-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.scimma-comanage-registry.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.scimma-comanage-registry.loadbalancer.sticky.cookie.name=_registry_dev_scimma_org"
+                - "traefik.http.services.scimma-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.scimma-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.scimma-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.scimma-comanage-registry.headers.stsincludesubdomains=true"
             replicas: 1

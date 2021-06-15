@@ -68,6 +68,8 @@ services:
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.server.port=80"
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_cloudbank_org"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsincludesubdomains=true"
             replicas: 1

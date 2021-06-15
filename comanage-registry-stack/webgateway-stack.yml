@@ -153,6 +153,7 @@ services:
                 - "traefik.http.services.getssl.loadbalancer.server.port=80"
                 - "traefik.http.services.getssl.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.getssl.loadbalancer.sticky.cookie.name=_webgateway_dev"
+                - "traefik.http.services.getssl.loadbalancer.sticky.cookie.httpOnly=true"
             restart_policy:
               condition: on-failure
             update_config:
