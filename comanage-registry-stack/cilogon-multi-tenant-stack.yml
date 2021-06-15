@@ -131,8 +131,17 @@ services:
         networks:
             - cilogon-multi-tenant
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
         logging:
             driver: journald
             options:
@@ -179,8 +188,17 @@ services:
         networks:
             - cilogon-multi-tenant
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
         logging:
             driver: journald
             options:
@@ -218,8 +236,17 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - cilogon-multi-tenant
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
         logging:
             driver: journald
             options:
@@ -257,8 +284,17 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - cilogon-multi-tenant
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
         logging:
             driver: journald
             options:
@@ -361,6 +397,12 @@ services:
                 nocopy: true
         networks:
             - cilogon-multi-tenant
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=false"
