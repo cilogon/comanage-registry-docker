@@ -1,21 +1,19 @@
-FROM redis:5.0.7-buster
+FROM redis:5.0.12-buster
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
         git \
         python-virtualenv \
         redis-tools \
         supervisor \
         virtualenv 
 
-# Use specific commit from pyFF repostory.
-ENV PYFF_SRC_URL=git+https://github.com/IdentityPython/pyFF.git@a17e5435392f1bef5a3d5854fbd2ebbdbfa2dfbe
-
 RUN mkdir -p /opt/pyff \
     && adduser --home /opt/pyff --no-create-home --system pyff --group \
     && virtualenv /opt/pyff --no-site-packages --python=python3 \
     && . /opt/pyff/bin/activate \
     && pip install --upgrade pip \
-    && pip install ${PYFF_SRC_URL} \
+    && pip install pyff==2.0.0 \
     && chown -R pyff:pyff /opt/pyff \
     && apt-get remove -y --purge \
         git \
