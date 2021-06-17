@@ -391,7 +391,7 @@ services:
             - biocommons
             - webgateway
         healthcheck:
-            test: ["CMD", "curl", "-f", "-I", "http://127.0.0.1/registry/index.php"]
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
             interval: 15s
             timeout: 1s
             retries: 3
@@ -496,7 +496,7 @@ services:
             - biocommons
             - webgateway
         healthcheck:
-            test: ["CMD", "curl", "-I", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
+            test: ["CMD", "curl", "-I", "--fail", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
             interval: 15s
             timeout: 1s
             retries: 3
@@ -564,7 +564,7 @@ services:
             - webgateway
             - biocommons
         healthcheck:
-            test: ["CMD", "curl", "-I", "http://127.0.0.1/noproxy/alive.html"]
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/noproxy/alive.html"]
             interval: 15s
             timeout: 1s
             retries: 3
@@ -636,7 +636,7 @@ services:
         networks:
             - biocommons
         healthcheck:
-            test: ["CMD", "curl", "-I", "http://127.0.0.1:8080/ping"]
+            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8080/ping"]
             interval: 15s
             timeout: 1s
             retries: 3
