@@ -11,7 +11,7 @@ networks:
 
 services:
     pyff:
-        image: cilogon/comanage-registry-pyff:3
+        image: cilogon/comanage-registry-pyff:5
         volumes:
             - /srv/docker/cloudbank/opt/pyff/cloudbank_mdx.yaml:/opt/pyff/cloudbank_mdx.yaml
             - /srv/docker/cloudbank/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
@@ -31,6 +31,12 @@ services:
             - cloudbank_metadata_signer_privkey_file
         networks:
             - cloudbank
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             resources:
               limits:
@@ -38,13 +44,27 @@ services:
               reservations:
                 memory: 512M
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: cilogon/comanage-registry-apache-satosa-proxy:2
+        image: cilogon/comanage-registry-apache-satosa-proxy:4
         volumes:
             - /srv/docker/cloudbank/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
             - /srv/docker/cloudbank/usr/local/apache2/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
@@ -53,6 +73,12 @@ services:
         networks:
             - webgateway
             - cloudbank
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1/noproxy/alive.html"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -72,14 +98,31 @@ services:
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsincludesubdomains=true"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 30s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:11
+        image: cilogon/comanage-registry-satosa:12
         volumes:
             - /srv/docker/cloudbank/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
             - /srv/docker/cloudbank/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
@@ -102,8 +145,28 @@ services:
             - cloudbank_satosa_state_encryption_key
         networks:
             - cloudbank
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8080/ping"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             replicas: 2
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
