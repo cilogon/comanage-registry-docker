@@ -91,26 +91,30 @@ volumes:
 
 services:
     aa:
-        image: cilogon/comanage-registry-saml-aa:4.0.0
+        image: i2incommon/shib-idp:4.1.2_20210614
         volumes:
+            - /srv/docker/gw-astronomy/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/idp.properties:/opt/shibboleth-idp/conf/idp.properties
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-filter.xml:/opt/shibboleth-idp/conf/attribute-filter.xml
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties:/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-resolver.xml:/opt/shibboleth-idp/conf/attribute-resolver.xml
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/metadata-providers.xml:/opt/shibboleth-idp/conf/metadata-providers.xml
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/inc-md-cert.pem:/opt/shibboleth-idp/credentials/inc-md-cert.pem
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/relying-party.xml:/opt/shibboleth-idp/conf/relying-party.xml
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/access-control.xml:/opt/shibboleth-idp/conf/access-control.xml
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/c14n/subject-c14n.xml:/opt/shibboleth-idp/conf/c14n/subject-c14n.xml
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/inc-md-cert-mdq.pem:/opt/shibboleth-idp/credentials/inc-md-cert-mdq.pem
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem:/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/mdq-beta-cert.pem:/opt/shibboleth-idp/credentials/mdq-beta-cert.pem
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/incommon-mdq.pem:/opt/shibboleth-idp/credentials/incommon-mdq.pem
-        environment:
-            - SAML_AA_ENTITY_ID=https://aa.gw-astronomy.org/aa/shibboleth
-            - SAML_AA_SCOPE=gw-astronomy.org
-            - SAML_AA_SIGNING_CERT_FILE=/var/run/secrets/gw_astronomy_saml_aa_signing_cert
-            - SAML_AA_SIGNING_PRIVKEY_FILE=/var/run/secrets/gw_astronomy_saml_aa_privkey
-        secrets:
-            - gw_astronomy_saml_aa_signing_cert
-            - gw_astronomy_saml_aa_privkey
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.crt:/opt/shibboleth-idp/credentials/idp-signing.crt
+            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.key:/opt/shibboleth-idp/credentials/idp-signing.key
         networks:
             - gw-astronomy
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8080/idp/status"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 60s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -123,6 +127,9 @@ services:
                 - "traefik.http.routers.gw-astronomy-aa.rule=Host(`aa.gw-astronomy.org`)"
                 - "traefik.http.routers.gw-astronomy-aa.tls=true"
                 - "traefik.http.services.gw-astronomy-aa.loadbalancer.server.port=8080"
+                - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.path=/idp/status"
+                - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.timeout=1s"
             replicas: 3
             update_config:
                 parallelism: 1
@@ -133,7 +140,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd:4
+        image: sphericalcowgroup/comanage-registry-slapd:5
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -173,6 +180,12 @@ services:
         networks:
             - gw-astronomy
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -181,7 +194,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd:4
+        image: sphericalcowgroup/comanage-registry-slapd:5
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
         volumes:
@@ -222,6 +235,12 @@ services:
         networks:
             - gw-astronomy
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -261,6 +280,12 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - gw-astronomy
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -300,6 +325,12 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - gw-astronomy
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -358,6 +389,12 @@ services:
         networks:
             - gw-astronomy
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 180s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -377,6 +414,9 @@ services:
                 - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.gw-astronomy-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.gw-astronomy-comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
+                - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.healthcheck.timeout=1s"
             replicas: 3
         logging:
             driver: journald
@@ -394,6 +434,12 @@ services:
                 nocopy: true
         networks:
             - gw-astronomy
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=false"
@@ -404,7 +450,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     orcid-saml-gateway:
-        image: cilogon/comanage-registry-orcid-saml-gateway:5
+        image: cilogon/comanage-registry-orcid-saml-gateway:6
         volumes:
             - /srv/docker/gw-astronomy/opt/satosa/orcid-saml-gateway-sp-metadata.xml:/opt/satosa/orcid-saml-gateway-sp-metadata.xml
         environment:
@@ -425,6 +471,12 @@ services:
             - gw_astronomy_orcid_saml_gateway_satosa_state_encryption_key
         networks:
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8000/ping"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -444,6 +496,9 @@ services:
                 - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.gw-astronomy-orcid-saml-gateway.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.gw-astronomy-orcid-saml-gateway.headers.stsincludesubdomains=true"
+                - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.healthcheck.path=/ping/"
+                - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.healthcheck.timeout=1s"
             replicas: 3
         logging:
             driver: journald
