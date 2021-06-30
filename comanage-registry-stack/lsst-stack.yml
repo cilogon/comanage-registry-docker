@@ -112,7 +112,7 @@ volumes:
 
 services:
     lsst-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd:4
+        image: sphericalcowgroup/comanage-registry-slapd:5
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -146,15 +146,36 @@ services:
         networks:
             - lsst
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
     lsst-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd:3
+        image: sphericalcowgroup/comanage-registry-slapd:5
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -188,8 +209,29 @@ services:
         networks:
             - lsst
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -227,6 +269,12 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - lsst
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -266,6 +314,12 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - lsst
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -323,6 +377,12 @@ services:
         networks:
             - lsst
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 180s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -342,7 +402,24 @@ services:
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -361,17 +438,35 @@ services:
             - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
         networks:
             - lsst
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=false"
             replicas: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
     pyff:
-        image: cilogon/comanage-registry-pyff:4
+        image: cilogon/comanage-registry-pyff:5
         volumes:
             - type: volume
               source: pyff-configs
@@ -389,6 +484,12 @@ services:
         networks:
             - lsst
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             resources:
               limits:
@@ -413,14 +514,32 @@ services:
                 - "traefik.http.services.lsst-pyff.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-pyff.headers.stsincludesubdomains=true"
+                - "traefik.http.services.lsst-pyff.loadbalancer.healthcheck.path=/entities/"
+                - "traefik.http.services.lsst-pyff.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.lsst-pyff.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.lsst-pyff.loadbalancer.healthcheck.headers.Accept=application/samlmetadata+xml"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: cilogon/comanage-registry-apache-satosa-proxy:3
+        image: cilogon/comanage-registry-apache-satosa-proxy:4
         volumes:
             - type: volume
               source: satosa-proxy-htdocs
@@ -433,6 +552,12 @@ services:
         networks:
             - webgateway
             - lsst
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/noproxy/alive.html"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -452,14 +577,31 @@ services:
                 - "traefik.http.services.lsst-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-satosa-proxy.headers.stsincludesubdomains=true"
+                - "traefik.http.services.lsst-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
+                - "traefik.http.services.lsst-satosa-proxy.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.lsst-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 30s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:11
+        image: cilogon/comanage-registry-satosa:12
         volumes:
             - type: volume
               source: satosa-configs
@@ -482,8 +624,28 @@ services:
             - lsst_satosa_state_encryption_key
         networks:
             - lsst
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8080/ping"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -552,6 +714,12 @@ services:
         networks:
             - lsst
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1:80/grouper/status?diagnosticType=trivial"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -572,6 +740,9 @@ services:
                 - "traefik.http.services.lsst-grouper-ui.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-grouper-ui.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-grouper-ui.headers.stsincludesubdomains=true"
+                - "traefik.http.services.lsst-grouper-ui.loadbalancer.healthcheck.path=/grouper/status?diagnosticType=trivial"
+                - "traefik.http.services.lsst-grouper-ui.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.lsst-grouper-ui.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
         logging:
             driver: journald
@@ -612,6 +783,12 @@ services:
         networks:
             - lsst
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1:80/grouper-ws/status?diagnosticType=trivial"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -632,6 +809,9 @@ services:
                 - "traefik.http.services.lsst-grouper-ws.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-grouper-ws.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-grouper-ws.headers.stsincludesubdomains=true"
+                - "traefik.http.services.lsst-grouper-ws.loadbalancer.healthcheck.path=/grouper-ws/status?diagnosticType=trivial"
+                - "traefik.http.services.lsst-grouper-ws.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.lsst-grouper-ws.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
         logging:
             driver: journald
@@ -667,6 +847,12 @@ services:
               mode: 0600
         networks:
             - lsst
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1:8080/grouper/status?diagnosticType=trivial"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             replicas: 1
         logging:
