@@ -13,6 +13,7 @@ ENV SATOSA_GROUP ${SATOSA_GROUP}
 LABEL satosa_group=${SATOSA_GROUP}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
         git \
         virtualenv \
         xmlsec1
@@ -27,7 +28,7 @@ WORKDIR ${SATOSA_DIR}
 USER ${SATOSA_USER}
 
 RUN /usr/bin/virtualenv -p python3 ${SATOSA_DIR} --no-site-packages \
-    && ${SATOSA_DIR}/bin/pip install pysaml2==6.5.1 \
+    && ${SATOSA_DIR}/bin/pip install pysaml2==6.5.2 \
     && ${SATOSA_DIR}/bin/pip install satosa==7.0.3
 
 USER root
