@@ -127,7 +127,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:6
         hostname: dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
