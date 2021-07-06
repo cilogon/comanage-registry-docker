@@ -131,6 +131,13 @@ volumes:
             o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/ligo/grouper-daemon/slashRoot"
 
+    grouper-ui-ligodev-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/grouper-ui-ligodev/slashRoot"
+
 services:
     ligo-ldap-01:
         image: sphericalcowgroup/comanage-registry-slapd:4
@@ -439,7 +446,7 @@ services:
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.name=_mdq_test_ligo_org"
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.secure=true"
-                - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.httpOnlyl=true"
+                - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.ligo-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.ligo-pyff.headers.stsincludesubdomains=true"
             replicas: 2
@@ -717,6 +724,90 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
+    grouper-ui-ligodev:
+        image: i2incommon/grouper:2.5.29
+        command: ["bash", "-c", "exec ui"]
+        volumes:
+            - type: volume
+              source: grouper-ui-ligodev-configs
+              target: /opt/grouper/slashRoot
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_USERNAME=lg_grouper_dev
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password_dev
+            - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
+            - GROUPER_MAX_MEMORY=512m
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key_dev
+            - GROUPER_UI=true
+            - GROUPER_RUN_APACHE=true
+            - GROUPER_RUN_SHIB_SP=true
+            - GROUPER_RUN_TOMEE=true
+            - GROUPER_SELF_SIGNED_CERT=false
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: ligo_grouper_database_password_dev
+              target: grouper_database_password_dev
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_morphstring_encrypt_key_dev
+              target: grouper_morphstring_encrypt_key_dev
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_shibboleth_sp_encryption_cert_dev
+              target: shib_sp-encrypt-cert.pem
+              uid: '999'
+              gid: '998'
+              mode: 0644
+            - source: ligo_grouper_shibboleth_sp_encryption_privkey_dev
+              target: shib_sp-encrypt-key.pem
+              uid: '999'
+              gid: '998'
+              mode: 0400
+            - source: ligo_grouper_shibboleth_sp_signing_cert_dev
+              target: shib_sp-signing-cert.pem
+              uid: '999'
+              gid: '998'
+              mode: 0644
+            - source: ligo_grouper_shibboleth_sp_signing_privkey_dev
+              target: shib_sp-signing-key.pem
+              uid: '999'
+              gid: '998'
+              mode: 0400
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.ligo-grouper-ui-dev-http.entrypoints=web"
+                - "traefik.http.routers.ligo-grouper-ui-dev-http.rule=Host(`group-registry-dev.ligo.org`)"
+                - "traefik.http.routers.ligo-grouper-ui-dev-http.middlewares=ligo-grouper-ui-dev-https"
+                - "traefik.http.middlewares.ligo-grouper-ui-dev-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.ligo-grouper-ui-dev.entrypoints=websecure"
+                - "traefik.http.routers.ligo-grouper-ui-dev.rule=Host(`group-registry-dev.ligo.org`)"
+                - "traefik.http.routers.ligo-grouper-ui-dev.tls=true"
+                - "traefik.http.routers.ligo-grouper-ui-dev.priority=50"
+                - "traefik.http.routers.ligo-grouper-ui-dev.middlewares=ligo-grouper-ui-dev"
+                - "traefik.http.services.ligo-grouper-ui-dev.loadbalancer.server.port=8000"
+                - "traefik.http.services.ligo-grouper-ui-dev.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.ligo-grouper-ui-dev.loadbalancer.sticky.cookie.name=_group_registry_dev_ligo_org"
+                - "traefik.http.services.ligo-grouper-ui-dev.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.ligo-grouper-ui-dev.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.middlewares.ligo-grouper-ui-dev.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.ligo-grouper-ui-dev.headers.stsincludesubdomains=true"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
 secrets:
     ligo_olc_root_pw:
         external: true
@@ -777,4 +868,16 @@ secrets:
     ligo_satosa_state_encryption_key:
         external: true
     ligo_syncrepl_user_password_hash:
+        external: true
+    ligo_grouper_database_password_dev:
+        external: true
+    ligo_grouper_morphstring_encrypt_key_dev:
+        external: true
+    ligo_grouper_shibboleth_sp_encryption_cert_dev:
+        external: true
+    ligo_grouper_shibboleth_sp_encryption_privkey_dev:
+        external: true
+    ligo_grouper_shibboleth_sp_signing_cert_dev:
+        external: true
+    ligo_grouper_shibboleth_sp_signing_privkey_dev:
         external: true
