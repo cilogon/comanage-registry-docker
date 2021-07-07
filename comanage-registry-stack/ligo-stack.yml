@@ -439,7 +439,7 @@ services:
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.name=_mdq_ligo_org"
                 - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.secure=true"
-                - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.httpOnlyl=true"
+                - "traefik.http.services.ligo-pyff.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.ligo-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.ligo-pyff.headers.stsincludesubdomains=true"
             replicas: 3
