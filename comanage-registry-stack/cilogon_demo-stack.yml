@@ -112,7 +112,7 @@ volumes:
 
 services:
     cilogon_demo-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd:4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -160,7 +160,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon_demo-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd:4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:4
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -208,7 +208,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon_demo-ldif-backup-01:
-        image: cilogon/ldif-backup:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
               source: ldap-state-01
@@ -247,7 +247,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon_demo-ldif-backup-02:
-        image: cilogon/ldif-backup:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
               source: ldap-state-02
@@ -286,7 +286,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:hotfix-3.3.x-2
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:hotfix-3.3.x-2
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -360,7 +360,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:hotfix-3.3.x-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:hotfix-3.3.x-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -382,7 +382,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     pyff:
-        image: cilogon/comanage-registry-pyff:3
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:3
         volumes:
             - type: volume
               source: pyff-configs
@@ -431,7 +431,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: cilogon/comanage-registry-apache-satosa-proxy:2
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:2
         volumes:
             - type: volume
               source: satosa-proxy-htdocs
@@ -470,7 +470,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: cilogon/comanage-registry-satosa:11
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:11
         volumes:
             - type: volume
               source: satosa-configs

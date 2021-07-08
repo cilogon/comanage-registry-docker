@@ -140,7 +140,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-01:
-        image: sphericalcowgroup/comanage-registry-slapd:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:5
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -194,7 +194,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldap-02:
-        image: sphericalcowgroup/comanage-registry-slapd:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:5
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
         volumes:
@@ -249,7 +249,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldif-backup-01:
-        image: cilogon/ldif-backup:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
               source: ldap-state-01
@@ -294,7 +294,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     gw-astronomy-ldif-backup-02:
-        image: cilogon/ldif-backup:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
               source: ldap-state-02
@@ -339,7 +339,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: cilogon/comanage-registry:3.3.3-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:3.3.3-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -424,7 +424,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: sphericalcowgroup/comanage-registry-cron:3.3.3-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:3.3.3-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -450,7 +450,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     orcid-saml-gateway:
-        image: cilogon/comanage-registry-orcid-saml-gateway:6
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-orcid-saml-gateway:6
         volumes:
             - /srv/docker/gw-astronomy/opt/satosa/orcid-saml-gateway-sp-metadata.xml:/opt/satosa/orcid-saml-gateway-sp-metadata.xml
         environment:
