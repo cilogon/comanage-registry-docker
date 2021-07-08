@@ -6,7 +6,7 @@ networks:
 
 services:
     ldapgateway:
-        image: sphericalcowgroup/comanage-registry-slapd-proxy:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd-proxy:5
         command: ["slapd", "-d", "0", "-h", "ldapi:/// ldap:/// ldaps:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - /srv/docker/ldapgateway/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
