@@ -190,8 +190,8 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=5"
-                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=10"
+                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=2"
+                - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=20"
         logging:
             driver: journald
             options:
@@ -323,8 +323,8 @@ services:
                 - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web.headers.stsincludesubdomains=true"
-                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=5"
-                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=10"
+                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=2"
+                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=20"
         logging:
             driver: journald
             options:
