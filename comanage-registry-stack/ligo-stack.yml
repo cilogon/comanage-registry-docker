@@ -138,6 +138,20 @@ volumes:
             o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/ligo/grouper-ui-ligodev/slashRoot"
 
+    grouper-ws-ligodev-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/grouper-ws-ligodev/slashRoot"
+
+    grouper-daemon-ligodev-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ligo/grouper-daemon-ligodev/slashRoot"
+
 services:
     ligo-ldap-01:
         image: sphericalcowgroup/comanage-registry-slapd:4
@@ -509,11 +523,13 @@ services:
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/ligo_satosa_saml_frontend_cert_file
             - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/ligo_satosa_saml_frontend_privkey_file
             - SATOSA_LDAP_LIGO_BIND_PASSWORD_FILE=/run/secrets/ligo_satosa_ligo_ldap_bind_password
+            - SATOSA_LDAP_LIGO_DEV_BIND_PASSWORD_FILE=/run/secrets/ligo_satosa_ligo_dev_ldap_bind_password
             - SATOSA_LDAP_KAGRA_BIND_PASSWORD_FILE=/run/secrets/ligo_satosa_kagra_ldap_bind_password
             - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/ligo_satosa_state_encryption_key
         secrets:
             - ligo_satosa_cilogon_backend_client_secret
             - ligo_satosa_ligo_ldap_bind_password
+            - ligo_satosa_ligo_dev_ldap_bind_password
             - ligo_satosa_kagra_ldap_bind_password
             - ligo_satosa_saml_frontend_cert_file
             - ligo_satosa_saml_frontend_privkey_file
@@ -538,7 +554,7 @@ services:
               volume:
                 nocopy: true
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
             - GROUPER_DATABASE_USERNAME=lg_grouper_test
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
@@ -622,7 +638,7 @@ services:
               volume:
                 nocopy: true
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
             - GROUPER_DATABASE_USERNAME=lg_grouper_test
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_MAX_MEMORY=512m
@@ -692,7 +708,7 @@ services:
               volume:
                 nocopy: true
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
             - GROUPER_DATABASE_USERNAME=lg_grouper_test
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
@@ -735,7 +751,7 @@ services:
               volume:
                 nocopy: true
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
             - GROUPER_DATABASE_USERNAME=lg_grouper_dev
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password_dev
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
@@ -808,6 +824,120 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
+    grouper-ws-ligodev:
+        image: i2incommon/grouper:2.5.29
+        command: ["bash", "-c", "exec ws"]
+        volumes:
+            - type: volume
+              source: grouper-ws-ligodev-configs
+              target: /opt/grouper/slashRoot
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
+            - GROUPER_DATABASE_USERNAME=lg_grouper_dev
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password_dev
+            - GROUPER_MAX_MEMORY=512m
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key_dev
+            - GROUPER_WS=true
+            - GROUPER_WS_GROUPER_AUTH=true
+            - GROUPER_RUN_APACHE=true
+            - GROUPER_RUN_SHIB_SP=false
+            - GROUPER_RUN_TOMEE=true
+            - GROUPER_SELF_SIGNED_CERT=false
+            - GROUPER_USE_SSL=false
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: ligo_grouper_database_password_dev
+              target: grouper_database_password_dev
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_morphstring_encrypt_key_dev
+              target: grouper_morphstring_encrypt_key_dev
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_ws_httpd_basic_auth
+              target: ligo_grouper_ws_httpd_basic_auth
+              uid: '0'
+              gid: '0'
+              mode: 0644
+        networks:
+            - ligo
+            - webgateway
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.ligo-grouper-ws-dev-http.entrypoints=web"
+                - "traefik.http.routers.ligo-grouper-ws-dev-http.rule=Host(`group-registry-dev.ligo.org`) && PathPrefix(`/grouper-ws`)"
+                - "traefik.http.routers.ligo-grouper-ws-dev-http.middlewares=ligo-grouper-ws-dev-https"
+                - "traefik.http.middlewares.ligo-grouper-ws-dev-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.ligo-grouper-ws-dev.entrypoints=websecure"
+                - "traefik.http.routers.ligo-grouper-ws-dev.rule=Host(`group-registry-dev.ligo.org`) && PathPrefix(`/grouper-ws`)"
+                - "traefik.http.routers.ligo-grouper-ws-dev.tls=true"
+                - "traefik.http.routers.ligo-grouper-ws-dev.priority=100"
+                - "traefik.http.routers.ligo-grouper-ws-dev.middlewares=ligo-grouper-ws-dev"
+                - "traefik.http.services.ligo-grouper-ws-dev.loadbalancer.server.port=8000"
+                - "traefik.http.services.ligo-grouper-ws-dev.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.ligo-grouper-ws-dev.loadbalancer.sticky.cookie.name=_group_registry_ws_dev_ligo_org"
+                - "traefik.http.services.ligo-grouper-ws-dev.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.ligo-grouper-ws-dev.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.middlewares.ligo-grouper-ws-dev.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.ligo-grouper-ws-dev.headers.stsincludesubdomains=true"
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    grouper-daemon-ligodev:
+        image: i2incommon/grouper:2.5.29
+        command: ["bash", "-c", "exec daemon"]
+        volumes:
+            - type: volume
+              source: grouper-daemon-ligodev-configs
+              target: /opt/grouper/slashRoot
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/ligo_grouper_dev?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
+            - GROUPER_DATABASE_USERNAME=lg_grouper_dev
+            - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password_dev
+            - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
+            - GROUPER_MAX_MEMORY=512m
+            - GROUPER_MORPHSTRING_ENCRYPT_KEY_FILE=/run/secrets/grouper_morphstring_encrypt_key_dev
+            - GROUPER_DAEMON=true
+            - GROUPER_RUN_APACHE=false
+            - GROUPER_RUN_SHIB_SP=false
+            - GROUPER_RUN_TOMEE=true
+            - ENV=DEV
+            - USERTOKEN=_
+        secrets:
+            - source: ligo_grouper_database_password_dev
+              target: grouper_database_password_dev
+              uid: '998'
+              gid: '998'
+              mode: 0600
+            - source: ligo_grouper_morphstring_encrypt_key_dev
+              target: grouper_morphstring_encrypt_key_dev
+              uid: '998'
+              gid: '998'
+              mode: 0600
+        networks:
+            - ligo
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+
 secrets:
     ligo_olc_root_pw:
         external: true
@@ -858,6 +988,8 @@ secrets:
     ligo_satosa_cilogon_backend_client_secret:
         external: true
     ligo_satosa_ligo_ldap_bind_password:
+        external: true
+    ligo_satosa_ligo_dev_ldap_bind_password:
         external: true
     ligo_satosa_kagra_ldap_bind_password:
         external: true
