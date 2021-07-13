@@ -152,8 +152,29 @@ services:
         networks:
             - cilogon_demo
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -200,8 +221,29 @@ services:
         networks:
             - cilogon_demo
             - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -239,6 +281,12 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - cilogon_demo
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -278,6 +326,12 @@ services:
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
         networks:
             - cilogon_demo
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             replicas: 1
         logging:
@@ -334,6 +388,12 @@ services:
         networks:
             - cilogon_demo
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 180s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -353,7 +413,24 @@ services:
                 - "traefik.http.services.cilogon_demo-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.cilogon_demo-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon_demo-comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.services.cilogon_demo-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
+                - "traefik.http.services.cilogon_demo-comanage-registry.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.cilogon_demo-comanage-registry.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -370,10 +447,28 @@ services:
                 nocopy: true
         networks:
             - cilogon_demo
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=false"
             replicas: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -398,6 +493,12 @@ services:
         networks:
             - cilogon_demo
             - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             resources:
               limits:
@@ -422,7 +523,24 @@ services:
                 - "traefik.http.services.cilogon_demo-pyff.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.cilogon_demo-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon_demo-pyff.headers.stsincludesubdomains=true"
+                - "traefik.http.services.cilogon_demo-pyff.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.cilogon_demo-pyff.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.cilogon_demo-pyff.loadbalancer.healthcheck.headers.Accept=application/samlmetadata+xml"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -442,6 +560,12 @@ services:
         networks:
             - webgateway
             - cilogon_demo
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/noproxy/alive.html"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=true"
@@ -461,7 +585,24 @@ services:
                 - "traefik.http.services.cilogon_demo-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.cilogon_demo-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon_demo-satosa-proxy.headers.stsincludesubdomains=true"
+                - "traefik.http.services.cilogon_demo-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
+                - "traefik.http.services.cilogon_demo-satosa-proxy.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.cilogon_demo-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 30s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -491,8 +632,28 @@ services:
             - cilogon_demo_satosa_state_encryption_key
         networks:
             - cilogon_demo
+        healthcheck:
+            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8080/ping"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 30s
         deploy:
             replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
