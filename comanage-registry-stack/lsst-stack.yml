@@ -662,7 +662,7 @@ services:
               volume:
                 nocopy: true
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
             - GROUPER_DATABASE_USERNAME=lsst_grouper_tst
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
@@ -753,7 +753,7 @@ services:
         image: i2incommon/grouper:2.5.42
         command: ["bash", "-c", "exec ws"]
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
             - GROUPER_DATABASE_USERNAME=lsst_grouper_tst
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_MAX_MEMORY=512m
@@ -822,7 +822,7 @@ services:
         image: i2incommon/grouper:2.5.42
         command: ["bash", "-c", "exec daemon"]
         environment:
-            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8
+            - GROUPER_DATABASE_URL=jdbc:mysql://cilogon-registry-cluster-01.cluster-chnfiwoxacjh.us-east-2.rds.amazonaws.com:3306/lsst_grouper_test?CharSet=utf8&useUnicode=true&characterEncoding=utf8&useSSL=false
             - GROUPER_DATABASE_USERNAME=lsst_grouper_tst
             - GROUPER_DATABASE_PASSWORD=/run/secrets/grouper_database_password
             - GROUPER_AUTO_DDL_UPTOVERSION=v2.5.*
