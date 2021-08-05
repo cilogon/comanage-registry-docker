@@ -42,7 +42,7 @@ services:
             myproxy.cilogon.org: 141.142.149.29
         deploy:
             mode: replicated
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             restart_policy:
@@ -90,7 +90,7 @@ services:
             start_period: 60s
         deploy:
             mode: replicated
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             restart_policy:
@@ -151,7 +151,7 @@ services:
             myproxy3.cilogon.org: 141.142.149.31
         deploy:
             mode: replicated
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             restart_policy:
@@ -217,7 +217,7 @@ services:
             myproxy3.cilogon.org: 141.142.149.31
         deploy:
             mode: replicated
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             restart_policy:
@@ -284,7 +284,7 @@ services:
             myproxy3.cilogon.org: 141.142.149.31
         deploy:
             mode: replicated
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             restart_policy:
