@@ -211,6 +211,12 @@ services:
         networks:
             - webgateway
             - cilogon_service
+        healthcheck:
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth/dbService?action=getPortalParameter&oauth_token=ping"]
+            interval: 30s
+            timeout: 3s
+            retries: 3
+            start_period: 30s
         extra_hosts:
             myproxy.cilogon.org: 141.142.149.29
             myproxy2.cilogon.org: 141.142.149.30
@@ -251,6 +257,9 @@ services:
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie.name=_cilogon_org_oauth1"
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie.secure=true"
                 - "traefik.http.services.oa4mp-oauth1.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.services.oa4mp-oauth1.loadbalancer.healthcheck.path=/oauth/dbService?action=getPortalParameter&oauth_token=ping"
+                - "traefik.http.services.oa4mp-oauth1.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.oa4mp-oauth1.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.oa4mp-oauth1.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-oauth1.headers.stsincludesubdomains=true"
         logging:
