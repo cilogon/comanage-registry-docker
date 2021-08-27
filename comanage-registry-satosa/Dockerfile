@@ -20,6 +20,8 @@ RUN mkdir -p /opt/satosa \
         git \
     && apt-get clean
 
+COPY mdstore.py /opt/satosa/lib/python3.7/site-packages/saml2/mdstore.py
+
 COPY start.sh /usr/local/sbin/satosa-start.sh
 
 WORKDIR /opt/satosa
