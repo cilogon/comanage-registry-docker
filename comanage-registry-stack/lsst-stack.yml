@@ -601,7 +601,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:12
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:14
         volumes:
             - type: volume
               source: satosa-configs
