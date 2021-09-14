@@ -125,7 +125,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     getssl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:2
         volumes:
             - type: volume
               source: getssl
