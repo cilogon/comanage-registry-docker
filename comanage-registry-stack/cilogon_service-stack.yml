@@ -126,7 +126,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:8
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:9
         hostname: cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
@@ -198,7 +198,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:24
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:25
         hostname: cilogon.org
         command: ["/usr/local/bin/startup.sh"]
         volumes:
