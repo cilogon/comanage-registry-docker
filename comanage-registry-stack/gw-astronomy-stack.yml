@@ -188,6 +188,21 @@ services:
             start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -243,6 +258,21 @@ services:
             start_period: 5s
         deploy:
             replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
