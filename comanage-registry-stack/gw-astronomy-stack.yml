@@ -131,9 +131,20 @@ services:
                 - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.timeout=1s"
             replicas: 3
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
             update_config:
-                parallelism: 1
-                delay: 60s
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -448,6 +459,20 @@ services:
                 - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.gw-astronomy-comanage-registry.loadbalancer.healthcheck.timeout=1s"
             replicas: 3
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
@@ -530,6 +555,18 @@ services:
                 - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.gw-astronomy-orcid-saml-gateway.loadbalancer.healthcheck.timeout=1s"
             replicas: 3
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
         logging:
             driver: journald
             options:
