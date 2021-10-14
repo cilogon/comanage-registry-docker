@@ -1,6 +1,6 @@
-ARG COMANAGE_REGISTRY_VERSION=3.3.3
+ARG COMANAGE_REGISTRY_VERSION=4.0.0
 ARG COMANAGE_REGISTRY_BASE_IMAGE_VERSION=1
-FROM sphericalcowgroup/comanage-registry:${COMANAGE_REGISTRY_VERSION}-mod-auth-openidc-${COMANAGE_REGISTRY_BASE_IMAGE_VERSION}
+FROM comanage-registry:${COMANAGE_REGISTRY_VERSION}-mod-auth-openidc-${COMANAGE_REGISTRY_BASE_IMAGE_VERSION}
 
 # Enable the remoteip module since we run behind load balancer
 COPY remoteip.conf /etc/apache2/mods-available/remoteip.conf
@@ -8,33 +8,18 @@ RUN a2enmod remoteip
 
 COPY 000-comanage.conf /etc/apache2/sites-available/000-comanage.conf
 
-# Required for the MediaWiki Provisioner
-RUN apt-get update && apt-get install -y \
-      libpcre3-dev \
-      && wget -O oauth.tar.gz https://github.com/cilogon/pecl-web_services-oauth/archive/null_byte.tar.gz \
-      && mkdir -p oauth \
-      && tar zxf oauth.tar.gz -C oauth --strip-components=1 \
-      && rm oauth.tar.gz \
-      && ( \
-          cd oauth \
-          && phpize \
-          && ./configure \
-          && make \
-          && make install \
-          ) \
-      && rm -r oauth \
-      && docker-php-ext-enable oauth
-
 # Deploy the CILogon ePPN enroller plugin
 ARG CILOGON_EPPN_ENROLLER_PLUGIN_SRC_URL=https://github.com/cilogon/CilogonEppnEnroller/archive/master.tar.gz
 
 RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" \
       && wget -O CilogonEppnEnroller.tar.gz $CILOGON_EPPN_ENROLLER_PLUGIN_SRC_URL \
       && tar -zxf CilogonEppnEnroller.tar.gz -C "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" --strip-components=1 \
-      && rm -f CilogonEppnEnroller.tar.gz
+      && rm -f CilogonEppnEnroller.tar.gz \
+      && cd "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller/View/CilogonEppnEnrollers" \
+      && ln -s ../../../../View/Standard/edit.ctp edit.ctp
 
-# Deploy Oa4mpClient plugin version 3.0.1
-ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/3.0.1.tar.gz
+# Deploy Oa4mpClient plugin version 3.1.0
+ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/3.1.0.tar.gz
 
 RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" \
       && wget -O Oa4mpClient.tar.gz $CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL \
