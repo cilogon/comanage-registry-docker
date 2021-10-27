@@ -343,7 +343,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:3.3.4-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:hotfix-4.0.x-2
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -439,7 +439,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:3.3.4-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:hotfix-4.0.x-3
         volumes:
             - type: volume
               source: comanage-registry-local
