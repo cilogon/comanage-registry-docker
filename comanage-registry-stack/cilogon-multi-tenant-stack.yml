@@ -136,7 +136,7 @@ services:
             interval: 15s
             timeout: 1s
             retries: 3
-            start_period: 5s
+            start_period: 180s
         deploy:
             replicas: 1
             placement:
@@ -193,7 +193,7 @@ services:
             interval: 15s
             timeout: 1s
             retries: 3
-            start_period: 5s
+            start_period: 180s
         deploy:
             replicas: 1
             placement:
