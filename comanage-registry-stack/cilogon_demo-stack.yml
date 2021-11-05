@@ -112,7 +112,7 @@ volumes:
 
 services:
     cilogon_demo-ldap-01:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -181,7 +181,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon_demo-ldap-02:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
