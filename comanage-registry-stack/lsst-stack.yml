@@ -678,6 +678,7 @@ services:
             - GROUPER_APACHE_REMOTE_IP_TRUSTED_PROXY=10.0.0.0/24
             - GROUPER_UI_CONFIGURATION_EDITOR_SOURCEIPADDRESSES=0.0.0.0/0
             - GROUPER_APACHE_REMOTE_IP_HEADER=X-Forwarded-For
+            - GROUPER_EXTRA_CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true
             - ENV=DEV
             - USERTOKEN=_
         secrets:
@@ -767,6 +768,7 @@ services:
             - GROUPER_USE_SSL=false
             - GROUPER_APACHE_SERVER_NAME=https://group-registry-test.lsst.codes:443
             - GROUPER_APACHE_REMOTE_IP_TRUSTED_PROXY=10.0.0.0/24
+            - GROUPER_EXTRA_CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true
             - ENV=DEV
             - USERTOKEN=_
         secrets:
@@ -832,6 +834,7 @@ services:
             - GROUPER_RUN_APACHE=false
             - GROUPER_RUN_SHIB_SP=false
             - GROUPER_RUN_TOMEE=true
+            - GROUPER_EXTRA_CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true
             - ENV=DEV
             - USERTOKEN=_
         secrets:
