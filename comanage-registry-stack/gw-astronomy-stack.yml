@@ -94,6 +94,7 @@ services:
         image: i2incommon/shib-idp:4.1.2_20210614
         volumes:
             - /srv/docker/gw-astronomy/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
+            - /srv/docker/gw-astronomy/usr/local/tomcat/bin/setenv.sh:/usr/local/tomcat/bin/setenv.sh
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/idp.properties:/opt/shibboleth-idp/conf/idp.properties
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-filter.xml:/opt/shibboleth-idp/conf/attribute-filter.xml
             - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties:/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties
