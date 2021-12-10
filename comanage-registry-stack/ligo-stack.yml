@@ -704,6 +704,7 @@ services:
             - GROUPER_RUN_SHIB_SP=true
             - GROUPER_RUN_TOMEE=true
             - GROUPER_SELF_SIGNED_CERT=false
+            - GROUPER_EXTRA_CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true
             - ENV=DEV
             - USERTOKEN=_
         secrets:
@@ -798,6 +799,7 @@ services:
             - GROUPER_RUN_TOMEE=true
             - GROUPER_SELF_SIGNED_CERT=false
             - GROUPER_USE_SSL=false
+            - GROUPER_EXTRA_CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true
             - ENV=DEV
             - USERTOKEN=_
         secrets:
@@ -875,6 +877,7 @@ services:
             - GROUPER_RUN_APACHE=false
             - GROUPER_RUN_SHIB_SP=false
             - GROUPER_RUN_TOMEE=true
+            - GROUPER_EXTRA_CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true
             - ENV=DEV
             - USERTOKEN=_
         secrets:
