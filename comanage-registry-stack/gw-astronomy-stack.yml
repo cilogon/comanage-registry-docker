@@ -91,7 +91,7 @@ volumes:
 
 services:
     aa:
-        image: i2incommon/shib-idp:4.1.4_20211210
+        image: i2incommon/shib-idp:4.1.4_20211214
         volumes:
             - /srv/docker/gw-astronomy/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
             - /srv/docker/gw-astronomy/usr/local/tomcat/bin/setenv.sh:/usr/local/tomcat/bin/setenv.sh
