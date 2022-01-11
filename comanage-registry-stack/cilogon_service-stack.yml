@@ -39,7 +39,7 @@ services:
             retries: 3
             start_period: 30s
         extra_hosts:
-            myproxy.cilogon.org: 141.142.149.29
+            myproxy.cilogon.org: 141.142.149.36
         deploy:
             mode: replicated
             replicas: 1
@@ -147,9 +147,8 @@ services:
             retries: 3
             start_period: 60s
         extra_hosts:
-            myproxy.cilogon.org: 141.142.149.29
-            myproxy2.cilogon.org: 141.142.149.30
-            myproxy3.cilogon.org: 141.142.149.31
+            myproxy.cilogon.org: 141.142.149.24
+            myproxy2.cilogon.org: 141.142.149.36
         deploy:
             mode: replicated
             replicas: 1
@@ -219,9 +218,8 @@ services:
             retries: 3
             start_period: 30s
         extra_hosts:
-            myproxy.cilogon.org: 141.142.149.29
-            myproxy2.cilogon.org: 141.142.149.30
-            myproxy3.cilogon.org: 141.142.149.31
+            myproxy.cilogon.org: 141.142.149.24
+            myproxy2.cilogon.org: 141.142.149.36
         deploy:
             mode: replicated
             replicas: 1
@@ -290,9 +288,8 @@ services:
             retries: 3
             start_period: 30s
         extra_hosts:
-            myproxy.cilogon.org: 141.142.149.29
-            myproxy2.cilogon.org: 141.142.149.30
-            myproxy3.cilogon.org: 141.142.149.31
+            myproxy.cilogon.org: 141.142.149.24
+            myproxy2.cilogon.org: 141.142.149.36
         deploy:
             mode: replicated
             replicas: 1
