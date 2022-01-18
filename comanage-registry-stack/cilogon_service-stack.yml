@@ -288,8 +288,8 @@ services:
             retries: 3
             start_period: 30s
         extra_hosts:
-            myproxy.cilogon.org: 141.142.149.24
-            myproxy2.cilogon.org: 141.142.149.36
+            myproxy.cilogon.org: 141.142.149.36
+            myproxy2.cilogon.org: 141.142.149.38
         deploy:
             mode: replicated
             replicas: 1
