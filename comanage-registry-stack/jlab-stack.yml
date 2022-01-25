@@ -624,11 +624,11 @@ services:
             - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/jlab_satosa_cilogon_backend_client_secret
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/jlab_satosa_saml_frontend_cert_file
             - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/jlab_satosa_saml_frontend_privkey_file
-            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/jlab_satosa_ldap_bind_password
+            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/jlab_proxy_user_ldap_password
             - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/jlab_satosa_state_encryption_key
         secrets:
             - jlab_satosa_cilogon_backend_client_secret
-            - jlab_satosa_ldap_bind_password
+            - jlab_proxy_user_ldap_password
             - jlab_satosa_saml_frontend_cert_file
             - jlab_satosa_saml_frontend_privkey_file
             - jlab_satosa_state_encryption_key
@@ -696,7 +696,7 @@ secrets:
         external: true
     jlab_satosa_cilogon_backend_client_secret:
         external: true
-    jlab_satosa_ldap_bind_password:
+    jlab_proxy_user_ldap_password:
         external: true
     jlab_satosa_saml_frontend_cert_file:
         external: true
