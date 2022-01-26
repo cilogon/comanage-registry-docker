@@ -348,6 +348,7 @@ services:
               read_only: false
               volume:
                 nocopy: true
+            - /srv/docker/xsede/comanage_registry/etc/apache2/conf-enabled/mod-auth-openidc.conf:/etc/apache2/conf-enabled/mod-auth-openidc.conf
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/xsede_registry_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/xsede_registry_oidc_client_secret 
