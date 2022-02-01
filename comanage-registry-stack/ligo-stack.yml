@@ -683,7 +683,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     grouper-ui:
-        image: i2incommon/grouper:2.5.29
+        image: i2incommon/grouper:2.5.59.3
         command: ["bash", "-c", "exec ui"]
         volumes:
             - type: volume
@@ -777,7 +777,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     grouper-ws:
-        image: i2incommon/grouper:2.5.29
+        image: i2incommon/grouper:2.5.59.3
         command: ["bash", "-c", "exec ws"]
         volumes:
             - type: volume
@@ -857,7 +857,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     grouper-daemon:
-        image: i2incommon/grouper:2.5.29
+        image: i2incommon/grouper:2.5.59.3
         command: ["bash", "-c", "exec daemon"]
         volumes:
             - type: volume
