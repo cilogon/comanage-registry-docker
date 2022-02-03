@@ -30,8 +30,8 @@ services:
               volume:
                   nocopy: true
         networks:
-            - webgateway
             - cilogon_service
+            - webgateway
         healthcheck:
             test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
             interval: 30s
@@ -80,8 +80,8 @@ services:
               volume:
                   nocopy: true
         networks:
-            - webgateway
             - cilogon_service
+            - webgateway
         healthcheck:
             test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/cilogon2/"]
             interval: 30s
@@ -137,8 +137,8 @@ services:
               volume:
                   nocopy: true
         networks:
-            - webgateway
             - cilogon_service
+            - webgateway
         healthcheck:
             test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth2/register"]
             interval: 30s
@@ -172,13 +172,11 @@ services:
                 - "traefik.http.routers.oa4mp-server-http.entrypoints=web"
                 - "traefik.http.routers.oa4mp-server-http.rule=Host(`cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
                 - "traefik.http.routers.oa4mp-server-http.middlewares=oa4mp-server-https"
-                - "traefik.http.routers.oa4mp-server-http.priority=100"
                 - "traefik.http.middlewares.oa4mp-server-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.oa4mp-server.entrypoints=websecure"
                 - "traefik.http.routers.oa4mp-server.rule=Host(`cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
                 - "traefik.http.routers.oa4mp-server.tls=true"
                 - "traefik.http.routers.oa4mp-server.middlewares=oa4mp-server,oa4mp-server-ratelimit"
-                - "traefik.http.routers.oa4mp-server.priority=100"
                 - "traefik.http.services.oa4mp-server.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_cilogon_org_oauth2"
@@ -208,8 +206,8 @@ services:
               volume:
                   nocopy: true
         networks:
-            - webgateway
             - cilogon_service
+            - webgateway
         healthcheck:
             test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
             interval: 30s
@@ -243,13 +241,11 @@ services:
                 - "traefik.http.routers.cilogon-web-http.entrypoints=web"
                 - "traefik.http.routers.cilogon-web-http.rule=Host(`cilogon.org`,`cilogon.com`,`cilogon.net`,`cilogin.org`,`ecp.cilogon.org`,`www.cilogon.com`,`www.cilogon.net`,`www.cilogin.org`)"
                 - "traefik.http.routers.cilogon-web-http.middlewares=cilogon-web-https"
-                - "traefik.http.routers.cilogon-web-http.priority=50"
                 - "traefik.http.middlewares.cilogon-web-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.cilogon-web.entrypoints=websecure"
                 - "traefik.http.routers.cilogon-web.rule=Host(`cilogon.org`,`cilogon.com`,`cilogon.net`,`cilogin.org`,`ecp.cilogon.org`,`www.cilogon.com`,`www.cilogon.net`,`www.cilogin.org`)"
                 - "traefik.http.routers.cilogon-web.tls=true"
                 - "traefik.http.routers.cilogon-web.middlewares=cilogon-web,cilogon-web-ratelimit"
-                - "traefik.http.routers.cilogon-web.priority=50"
                 - "traefik.http.services.cilogon-web.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_cilogon_org"
@@ -278,8 +274,8 @@ services:
               volume:
                   nocopy: true
         networks:
-            - webgateway
             - cilogon_service
+            - webgateway
         healthcheck:
             test: ["CMD-SHELL", "ps aux | grep '[c]ron' || exit 1"]
             interval: 30s
