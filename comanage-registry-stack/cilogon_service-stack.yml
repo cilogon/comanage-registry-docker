@@ -19,7 +19,7 @@ volumes:
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:2
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:3
         hostname: crl-dev.cilogon.org
         command: ["apache2-foreground"]
         volumes:
@@ -70,7 +70,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-demo:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:3
         hostname: demo-dev.cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
