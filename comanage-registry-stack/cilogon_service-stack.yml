@@ -20,7 +20,6 @@ volumes:
 services:
     cilogon-crl:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:2
-        hostname: crl.cilogon.org
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -42,7 +41,7 @@ services:
             myproxy.cilogon.org: 141.142.149.36
         deploy:
             mode: replicated
-            replicas: 2
+            replicas: 1
             placement:
                 max_replicas_per_node: 1
             restart_policy:
@@ -69,8 +68,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-demo:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:3
-        hostname: demo.cilogon.org
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:4
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -127,7 +125,6 @@ services:
 
     oa4mp-server:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:12
-        hostname: cilogon.org
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -170,13 +167,23 @@ services:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
                 - "traefik.http.routers.oa4mp-server-http.entrypoints=web"
-                - "traefik.http.routers.oa4mp-server-http.rule=Host(`cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
+                - "traefik.http.routers.oa4mp-server-http.rule=Host(`cilogon.org`) &&
+                    PathPrefix(
+                      `/oauth2/{url1:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|\\.well-known)}`,
+                      `/{url2:([^/]+)/\\.well-known/(openid-configuration|oauth-authorization-server)}`,
+                      `/{url3:\\.well-known/(openid-configuration|oauth-authorization-server)/([^/]+)}`
+                    )"
                 - "traefik.http.routers.oa4mp-server-http.middlewares=oa4mp-server-https"
                 - "traefik.http.middlewares.oa4mp-server-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.oa4mp-server.entrypoints=websecure"
-                - "traefik.http.routers.oa4mp-server.rule=Host(`cilogon.org`) && PathPrefix(`/oauth2/{url:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|.well-known)((/[^/]*)*)}`)"
+                - "traefik.http.routers.oa4mp-server.rule=Host(`cilogon.org`) &&
+                    PathPrefix(
+                      `/oauth2/{url1:(token|userinfo|getcert|register|certs|clients|static|oidc-cm|admin-register|revoke|introspect|device_authorization|device|\\.well-known)}`,
+                      `/{url2:([^/]+)/\\.well-known/(openid-configuration|oauth-authorization-server)}`,
+                      `/{url3:\\.well-known/(openid-configuration|oauth-authorization-server)/([^/]+)}`
+                    )"
                 - "traefik.http.routers.oa4mp-server.tls=true"
-                - "traefik.http.routers.oa4mp-server.middlewares=oa4mp-server,oa4mp-server-ratelimit"
+                - "traefik.http.routers.oa4mp-server.middlewares=oa4mp-server,oa4mp-server-ratelimit,oa4mp-regex1,oa4mp-regex2"
                 - "traefik.http.services.oa4mp-server.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_cilogon_org_oauth2"
@@ -185,6 +192,11 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.path=/oauth2/register"
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.interval=30s"
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.timeout=3s"
+                # This horrible regex is equivalent to (?!oauth2) in Perl (due to lack of negative lookahead in Golang)
+                - "traefik.http.middlewares.oa4mp-regex1.replacepathregex.regex=^/(([^o]|o(o|a(o|u(o|t(o|ho))))*([^ao]|a([^ou]|u([^ot]|t([^ho]|h[^2o])))))*(o(o|a(o|u(o|t(o|ho))))*(a(u?|uth?))?)?)/\\.well-known/(openid-configuration|oauth-authorization-server)/?"
+                - "traefik.http.middlewares.oa4mp-regex1.replacepathregex.replacement=/oauth2/.well-known/$${18}/$${1}"
+                - "traefik.http.middlewares.oa4mp-regex2.replacepathregex.regex=^/\\.well-known/(openid-configuration|oauth-authorization-server)/([^/]+)/?"
+                - "traefik.http.middlewares.oa4mp-regex2.replacepathregex.replacement=/oauth2/.well-known/$${1}/$${2}"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=4"
@@ -195,8 +207,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:27
-        hostname: cilogon.org
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:28
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
