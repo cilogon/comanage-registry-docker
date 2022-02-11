@@ -25,6 +25,12 @@ volumes:
             type: nfs
             o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/webgateway/opt/getssl"
+    diun:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/webgateway/etc/diun"
 
 services:
     dockersocket:
@@ -159,6 +165,40 @@ services:
             update_config:
               parallelism: 1
               delay: 60s
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    diun:
+        image: crazymax/diun:latest
+        command: serve
+        volumes:
+            - type: volume
+              source: diun
+              target: /etc/diun
+              read_only: false
+              volume:
+                  nocopy: true
+            - type: volume
+              source: diun
+              target: /data
+              read_only: false
+        networks:
+            - webgateway
+        deploy:
+            mode: replicated
+            replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            restart_policy:
+                condition: on-failure
+            update_config:
+                parallelism: 1
+                delay: 30s
+                failure_action: rollback
+            labels:
+                - "diun.enable=true"
         logging:
             driver: journald
             options:
