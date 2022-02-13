@@ -55,6 +55,7 @@ services:
                 - "traefik.docker.network=webgateway"
                 - "traefik.http.routers.cilogon-crl.entrypoints=web"
                 - "traefik.http.routers.cilogon-crl.rule=Host(`crl-test.cilogon.org`,`crl-cilogon-test.ncsa-security.net`,`crl-test.cilogon.com`,`crl-test.cilogon.net`,`crl-test.cilogin.org`)"
+                - "traefik.http.routers.cilogon-crl.middlewares=cilogon-crl-ratelimit"
                 - "traefik.http.services.cilogon-crl.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-crl.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon-crl.loadbalancer.sticky.cookie.name=_crl_test_cilogon_org"
@@ -62,6 +63,8 @@ services:
                 - "traefik.http.services.cilogon-crl.loadbalancer.healthcheck.path=/"
                 - "traefik.http.services.cilogon-crl.loadbalancer.healthcheck.interval=30s"
                 - "traefik.http.services.cilogon-crl.loadbalancer.healthcheck.timeout=3s"
+                - "traefik.http.middlewares.cilogon-crl-ratelimit.ratelimit.average=4"
+                - "traefik.http.middlewares.cilogon-crl-ratelimit.ratelimit.burst=40"
         logging:
             driver: journald
             options:
