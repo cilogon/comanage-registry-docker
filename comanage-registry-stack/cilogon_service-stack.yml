@@ -110,7 +110,7 @@ services:
                 - "traefik.http.routers.oa4mp-demo.entrypoints=websecure"
                 - "traefik.http.routers.oa4mp-demo.rule=Host(`demo-test.cilogon.org`)"
                 - "traefik.http.routers.oa4mp-demo.tls=true"
-                - "traefik.http.routers.oa4mp-demo.middlewares=oa4mp-demo"
+                - "traefik.http.routers.oa4mp-demo.middlewares=oa4mp-demo,oa4mp-demo-ratelimit"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.sticky.cookie.name=_demo_test_cilogon_org"
@@ -121,6 +121,8 @@ services:
                 - "traefik.http.services.oa4mp-demo.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.oa4mp-demo.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-demo.headers.stsincludesubdomains=true"
+                - "traefik.http.middlewares.oa4mp-demo-ratelimit.ratelimit.average=4"
+                - "traefik.http.middlewares.oa4mp-demo-ratelimit.ratelimit.burst=40"
         logging:
             driver: journald
             options:
