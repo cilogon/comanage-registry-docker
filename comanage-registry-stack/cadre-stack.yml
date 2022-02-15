@@ -1,0 +1,708 @@
+version: '3.8'
+
+networks:
+    cadre:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.111.0/24
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+volumes:
+    ldap-state-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/var/lib/ldap_01"
+
+    ldap-state-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/var/lib/ldap_02"
+
+    ldap-config-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/etc/slapd.d/ldap_01"
+
+    ldap-config-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/etc/slapd.d/ldap_02"
+
+    ldap-ldif-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/ldif/ldap_01"
+
+    ldap-ldif-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/ldif/ldap_02"
+
+    ldap-schema:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/schema"
+
+    ldap-backups-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/ldif/01"
+
+    ldap-backups-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/ldif/02"
+
+    ldap-backups-usr-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/usr/local/slapcat"
+
+    comanage-registry-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/srv/comanage-registry/local"
+
+    pyff-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/etc/pyff"
+
+    satosa-proxy-htdocs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/usr/local/apache2/htdocs"
+
+    satosa-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/cadre/etc/satosa"
+
+services:
+    cadre-ldap-01:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/cadre_olc_root_pw
+            - OLC_SUFFIX=dc=cadre5safes,dc=org,dc=au
+            - OLC_ROOT_DN=cn=admin,dc=cadre5safes,dc=org,dc=au
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cadre_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cadre_syncrepl_user_password_hash
+        secrets:
+            - cadre_olc_root_pw
+            - cadre_olc_root_dn_password
+            - cadre_syncrepl_user_password_hash
+        networks:
+            - cadre
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    cadre-ldap-02:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/cadre_olc_root_pw
+            - OLC_SUFFIX=dc=cadre5safes,dc=org,dc=au
+            - OLC_ROOT_DN=cn=admin,dc=cadre5safes,dc=org,dc=au
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/cadre_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/cadre_syncrepl_user_password_hash
+        secrets:
+            - cadre_olc_root_pw
+            - cadre_olc_root_dn_password
+            - cadre_syncrepl_user_password_hash
+        networks:
+            - cadre
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    cadre-ldif-backup-01:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-01
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=cadre-01
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - cadre
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    cadre-ldif-backup-02:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-02
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=cadre-02
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - cadre
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:hotfix-4.0.x-6
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - OIDC_CLIENT_ID_FILE=/run/secrets/cadre_registry_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/run/secrets/cadre_registry_oidc_client_secret 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/cadre_registry_oidc_provider_metadata_url 
+            - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/cadre_registry_oidc_crypto_passphrase 
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/cadre_registry_host 
+            - REGISTRY_HOST_FILE=/run/secrets/cadre_registry_host 
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=cadre_registry_test
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/cadre_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=cd_registry_tst
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/cadre_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/cadre_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/cadre_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=CADRE Registry DEV
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/cadre_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/cadre_comanage_registry_security_seed
+        secrets:
+            - cadre_comanage_registry_database_user_password
+            - cadre_comanage_registry_database_host
+            - cadre_comanage_registry_email_account
+            - cadre_comanage_registry_email_account_password
+            - cadre_comanage_registry_email_from
+            - cadre_comanage_registry_security_salt
+            - cadre_comanage_registry_security_seed
+            - cadre_registry_oidc_client_id
+            - cadre_registry_oidc_client_secret
+            - cadre_registry_oidc_provider_metadata_url
+            - cadre_registry_oidc_crypto_passphrase
+            - cadre_registry_host
+        networks:
+            - cadre
+            - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 180s
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.cadre-comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.cadre-comanage-registry-http.rule=Host(`registry-test.cadre5safes.org.au`)"
+                - "traefik.http.routers.cadre-comanage-registry-http.middlewares=cadre-comanage-registry-https"
+                - "traefik.http.middlewares.cadre-comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.cadre-comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.cadre-comanage-registry.rule=Host(`registry-test.cadre5safes.org.au`)"
+                - "traefik.http.routers.cadre-comanage-registry.tls=true"
+                - "traefik.http.routers.cadre-comanage-registry.middlewares=cadre-comanage-registry"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.sticky.cookie.name=_registry_test_cadre5safes.org.au"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.middlewares.cadre-comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.cadre-comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.cadre-comanage-registry.loadbalancer.healthcheck.timeout=1s"
+            replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:4.0.1-1
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
+        networks:
+            - cadre
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+#    pyff:
+#        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:5
+#        volumes:
+#            - type: volume
+#              source: pyff-configs
+#              target: /etc/pyff
+#              read_only: true
+#              volume:
+#                nocopy: true
+#        environment:
+#            - PYFF_PIPELINE=/etc/pyff/cadre_mdx.yaml
+#            - PYFF_METADATA_SIGNING_CERT_FILE=/run/secrets/cadre_metadata_signer_cert_file
+#            - PYFF_METADATA_SIGNING_KEY_FILE=/run/secrets/cadre_metadata_signer_privkey_file
+#        secrets:
+#            - cadre_metadata_signer_cert_file
+#            - cadre_metadata_signer_privkey_file
+#        networks:
+#            - cadre
+#            - webgateway
+#        healthcheck:
+#            test: ["CMD", "curl", "-I", "--fail", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
+#            interval: 15s
+#            timeout: 1s
+#            retries: 3
+#            start_period: 30s
+#        deploy:
+#            resources:
+#              limits:
+#                memory: 512M
+#              reservations:
+#                memory: 512M
+#            labels:
+#                - "traefik.enable=true"
+#                - "traefik.docker.network=webgateway"
+#                - "traefik.http.routers.cadre-pyff-http.entrypoints=web"
+#                - "traefik.http.routers.cadre-pyff-http.rule=Host(`mdq-test.cadre5safes.org.au`)"
+#                - "traefik.http.routers.cadre-pyff-http.middlewares=cadre-pyff-https"
+#                - "traefik.http.middlewares.cadre-pyff-https.redirectscheme.scheme=https"
+#                - "traefik.http.routers.cadre-pyff.entrypoints=websecure"
+#                - "traefik.http.routers.cadre-pyff.rule=Host(`mdq-test.cadre5safes.org.au`)"
+#                - "traefik.http.routers.cadre-pyff.tls=true"
+#                - "traefik.http.routers.cadre-pyff.middlewares=cadre-pyff"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.server.port=8080"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.sticky.cookie=true"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.sticky.cookie.name=_mdq_test_cadre5safes.org.au"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.sticky.cookie.secure=true"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.sticky.cookie.httpOnly=true"
+#                - "traefik.http.middlewares.cadre-pyff.headers.stsseconds=63072000"
+#                - "traefik.http.middlewares.cadre-pyff.headers.stsincludesubdomains=true"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.healthcheck.interval=5s"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.healthcheck.timeout=1s"
+#                - "traefik.http.services.cadre-pyff.loadbalancer.healthcheck.headers.Accept=application/samlmetadata+xml"
+#            replicas: 1
+#            placement:
+#                max_replicas_per_node: 1
+#            rollback_config:
+#              parallelism: 1
+#              delay: 0s
+#              failure_action: pause
+#              monitor: 5s
+#              order: stop-first
+#            update_config:
+#              parallelism: 1
+#              delay: 0s
+#              failure_action: rollback
+#              monitor: 5s
+#              order: stop-first
+#        logging:
+#            driver: journald
+#            options:
+#                tag: "cilogon_docker_{{.Name}}"
+#
+#    satosa-proxy:
+#        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:4
+#        volumes:
+#            - type: volume
+#              source: satosa-proxy-htdocs
+#              target: /usr/local/apache2/htdocs
+#              read_only: true
+#              volume:
+#                nocopy: true
+#        environment:
+#            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
+#        networks:
+#            - webgateway
+#            - cadre
+#        healthcheck:
+#            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/noproxy/alive.html"]
+#            interval: 15s
+#            timeout: 1s
+#            retries: 3
+#            start_period: 5s
+#        deploy:
+#            labels:
+#                - "traefik.enable=true"
+#                - "traefik.docker.network=webgateway"
+#                - "traefik.http.routers.cadre-satosa-proxy-http.entrypoints=web"
+#                - "traefik.http.routers.cadre-satosa-proxy-http.rule=Host(`federation-proxy-test.cadre5safes.org.au`)"
+#                - "traefik.http.routers.cadre-satosa-proxy-http.middlewares=cadre-satosa-proxy-https"
+#                - "traefik.http.middlewares.cadre-satosa-proxy-https.redirectscheme.scheme=https"
+#                - "traefik.http.routers.cadre-satosa-proxy.entrypoints=websecure"
+#                - "traefik.http.routers.cadre-satosa-proxy.rule=Host(`federation-proxy-test.cadre5safes.org.au`)"
+#                - "traefik.http.routers.cadre-satosa-proxy.tls=true"
+#                - "traefik.http.routers.cadre-satosa-proxy.middlewares=cadre-satosa-proxy"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.server.port=80"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.sticky.cookie=true"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_test_cadre5safes.org.au"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
+#                - "traefik.http.middlewares.cadre-satosa-proxy.headers.stsseconds=63072000"
+#                - "traefik.http.middlewares.cadre-satosa-proxy.headers.stsincludesubdomains=true"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.healthcheck.interval=5s"
+#                - "traefik.http.services.cadre-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
+#            replicas: 1
+#            placement:
+#                max_replicas_per_node: 1
+#            rollback_config:
+#              parallelism: 1
+#              delay: 0s
+#              failure_action: pause
+#              monitor: 5s
+#              order: stop-first
+#            update_config:
+#              parallelism: 1
+#              delay: 30s
+#              failure_action: rollback
+#              monitor: 5s
+#              order: stop-first
+#        logging:
+#            driver: journald
+#            options:
+#                tag: "cilogon_docker_{{.Name}}"
+#
+#    satosa:
+#        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:14
+#        volumes:
+#            - type: volume
+#              source: satosa-configs
+#              target: /etc/satosa
+#              read_only: true
+#              volume:
+#                nocopy: true
+#        environment:
+#            - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
+#            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/cadre_satosa_cilogon_backend_client_secret
+#            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/cadre_satosa_saml_frontend_cert_file
+#            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/cadre_satosa_saml_frontend_privkey_file
+#            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/cadre_proxy_user_ldap_password
+#            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/cadre_satosa_state_encryption_key
+#        secrets:
+#            - cadre_satosa_cilogon_backend_client_secret
+#            - cadre_proxy_user_ldap_password
+#            - cadre_satosa_saml_frontend_cert_file
+#            - cadre_satosa_saml_frontend_privkey_file
+#            - cadre_satosa_state_encryption_key
+#        networks:
+#            - cadre
+#        healthcheck:
+#            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8080/ping"]
+#            interval: 15s
+#            timeout: 1s
+#            retries: 3
+#            start_period: 30s
+#        deploy:
+#            replicas: 1
+#            placement:
+#                max_replicas_per_node: 1
+#            rollback_config:
+#              parallelism: 1
+#              delay: 0s
+#              failure_action: pause
+#              monitor: 5s
+#              order: stop-first
+#            update_config:
+#              parallelism: 1
+#              delay: 120s
+#              failure_action: rollback
+#              monitor: 5s
+#              order: stop-first
+#        logging:
+#            driver: journald
+#            options:
+#                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    cadre_olc_root_pw:
+        external: true
+    cadre_comanage_registry_database_user_password:
+        external: true
+    cadre_comanage_registry_database_host:
+        external: true
+    cadre_comanage_registry_email_account:
+        external: true
+    cadre_comanage_registry_email_account_password:
+        external: true
+    cadre_comanage_registry_email_from:
+        external: true
+    cadre_comanage_registry_security_salt:
+        external: true
+    cadre_comanage_registry_security_seed:
+        external: true
+    cadre_metadata_signer_cert_file:
+        external: true
+    cadre_metadata_signer_privkey_file:
+        external: true
+    cadre_registry_oidc_client_id:
+        external: true
+    cadre_registry_oidc_client_secret:
+        external: true
+    cadre_registry_oidc_provider_metadata_url:
+        external: true
+    cadre_registry_oidc_crypto_passphrase:
+        external: true
+    cadre_olc_root_dn_password:
+        external: true
+    cadre_registry_host:
+        external: true
+    cadre_satosa_cilogon_backend_client_secret:
+        external: true
+    cadre_proxy_user_ldap_password:
+        external: true
+    cadre_satosa_saml_frontend_cert_file:
+        external: true
+    cadre_satosa_saml_frontend_privkey_file:
+        external: true
+    cadre_satosa_state_encryption_key:
+        external: true
+    cadre_syncrepl_user_password_hash:
+        external: true
