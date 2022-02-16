@@ -2,7 +2,7 @@
 #
 # https://github.com/Tecnativa/docker-socket-proxy
 #
-FROM haproxy:1.9.7-alpine
+FROM haproxy:2.5.1-alpine
 
 EXPOSE 2375
 
@@ -34,5 +34,7 @@ ENV ALLOW_RESTARTS=0 \
 COPY haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
 
 COPY docker-entrypoint.sh /
+
+USER root
 
 RUN apk --no-cache add socat
