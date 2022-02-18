@@ -2,7 +2,7 @@
 #
 # https://github.com/Tecnativa/docker-socket-proxy
 #
-FROM haproxy:2.5.1-alpine
+FROM haproxy:2.5.2-alpine
 
 EXPOSE 2375
 
