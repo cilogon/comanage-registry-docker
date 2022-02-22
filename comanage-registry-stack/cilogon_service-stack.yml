@@ -162,11 +162,7 @@ services:
                 delay: 60s
                 failure_action: rollback
             resources:
-                limits:
-                    cpus: '0.5'
-                    memory: 2048M
                 reservations:
-                    cpus: '0.25'
                     memory: 512M
             labels:
                 - "traefik.enable=true"
@@ -245,11 +241,7 @@ services:
                 delay: 30s
                 failure_action: rollback
             resources:
-                limits:
-                    cpus: '0.5'
-                    memory: 2048M
                 reservations:
-                    cpus: '0.25'
                     memory: 512M
             labels:
                 - "traefik.enable=true"
