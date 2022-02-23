@@ -34,7 +34,7 @@ volumes:
 
 services:
     dockersocket:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.2
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.3
         volumes:
             - type: bind
               source: /var/run/docker.sock
