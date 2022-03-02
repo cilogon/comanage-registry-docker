@@ -1,4 +1,4 @@
-FROM httpd:2.4.48
+FROM httpd:2.4.52
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         busybox-syslogd \
