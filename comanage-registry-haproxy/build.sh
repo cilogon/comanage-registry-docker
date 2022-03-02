@@ -2,7 +2,7 @@
 
 if [[ -z "${HAPROXY_VERSION}" ]] ; then
    echo "Please set HAPROXY_VERSION environment variable."
-   echo "E.g., 'export HAPROXY_VERSION=2.5.3"
+   echo "E.g., 'export HAPROXY_VERSION=2.5.4'"
    exit;
 fi
 
