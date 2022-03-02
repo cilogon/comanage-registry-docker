@@ -276,7 +276,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:3
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:4
         command: ["/usr/sbin/cron", "-f", "-L", "15"]
         volumes:
             - type: volume
