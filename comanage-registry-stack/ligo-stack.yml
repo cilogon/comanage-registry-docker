@@ -930,7 +930,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     grouper-ui-ligodev:
-        image: i2incommon/grouper:2.5.59.3
+        image: i2incommon/grouper:2.5.60
         command: ["bash", "-c", "exec ui"]
         volumes:
             - type: volume
@@ -1015,7 +1015,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     grouper-ws-ligodev:
-        image: i2incommon/grouper:2.5.59.3
+        image: i2incommon/grouper:2.5.60
         command: ["bash", "-c", "exec ws"]
         volumes:
             - type: volume
@@ -1086,7 +1086,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     grouper-daemon-ligodev:
-        image: i2incommon/grouper:2.5.59.3
+        image: i2incommon/grouper:2.5.60
         command: ["bash", "-c", "exec daemon"]
         volumes:
             - type: volume
