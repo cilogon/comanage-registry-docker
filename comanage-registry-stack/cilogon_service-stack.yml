@@ -14,7 +14,7 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            o: addr=${SRV_CILOGON_SERVICE_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/cilogon_service/"
 
 services:
@@ -55,6 +55,9 @@ services:
                 - "traefik.docker.network=webgateway"
                 - "traefik.http.routers.cilogon-crl.entrypoints=web"
                 - "traefik.http.routers.cilogon-crl.rule=Host(`crl-test.cilogon.org`,`crl-cilogon-test.ncsa-security.net`,`crl-test.cilogon.com`,`crl-test.cilogon.net`,`crl-test.cilogin.org`)"
+                - "traefik.http.routers.cilogon-crl-https.entrypoints=websecure"
+                - "traefik.http.routers.cilogon-crl-https.rule=Host(`crl-test.cilogon.org`,`crl-cilogon-test.ncsa-security.net`,`crl-test.cilogon.com`,`crl-test.cilogon.net`,`crl-test.cilogin.org`)"
+                - "traefik.http.routers.cilogon-crl-https.tls=true"
                 - "traefik.http.routers.cilogon-crl.middlewares=cilogon-crl-ratelimit"
                 - "traefik.http.services.cilogon-crl.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-crl.loadbalancer.sticky.cookie=true"
@@ -120,7 +123,6 @@ services:
                 - "traefik.http.services.oa4mp-demo.loadbalancer.healthcheck.interval=30s"
                 - "traefik.http.services.oa4mp-demo.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.oa4mp-demo.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.oa4mp-demo.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.oa4mp-demo-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.oa4mp-demo-ratelimit.ratelimit.burst=40"
         logging:
@@ -201,7 +203,6 @@ services:
                 - "traefik.http.middlewares.oa4mp-regex2.replacepathregex.regex=^/\\.well-known/(openid-configuration|oauth-authorization-server)/([^/]+)/?"
                 - "traefik.http.middlewares.oa4mp-regex2.replacepathregex.replacement=/oauth2/.well-known/$${1}/$${2}"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.oa4mp-server.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=40"
         logging:
@@ -267,7 +268,6 @@ services:
                 - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.interval=30s"
                 - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.timeout=3s"
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.cilogon-web.headers.stsincludesubdomains=true"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=40"
         logging:
