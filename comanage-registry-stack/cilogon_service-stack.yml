@@ -10,20 +10,20 @@ networks:
         external: true
 
 volumes:
-    cilogon_service_volume:
+    cilogon_service_volume_dedicated:
         driver: local
         driver_opts:
             type: nfs
             o: addr=${SRV_CILOGON_SERVICE_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/cilogon_service/"
+            device: ":/"
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:11
         command: ["apache2-foreground"]
         volumes:
             - type: volume
-              source: cilogon_service_volume
+              source: cilogon_service_volume_dedicated
               target: /var/local/cilogon_service
               read_only: false
               volume:
@@ -78,7 +78,7 @@ services:
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
-              source: cilogon_service_volume
+              source: cilogon_service_volume_dedicated
               target: /var/local/cilogon_service
               read_only: false
               volume:
@@ -131,11 +131,11 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:15
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:16
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
-              source: cilogon_service_volume
+              source: cilogon_service_volume_dedicated
               target: /var/local/cilogon_service
               read_only: false
               volume:
@@ -215,7 +215,7 @@ services:
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
-              source: cilogon_service_volume
+              source: cilogon_service_volume_dedicated
               target: /var/local/cilogon_service
               read_only: false
               volume:
@@ -280,7 +280,7 @@ services:
         command: ["/usr/sbin/cron", "-f", "-L", "15"]
         volumes:
             - type: volume
-              source: cilogon_service_volume
+              source: cilogon_service_volume_dedicated
               target: /var/local/cilogon_service
               read_only: false
               volume:
