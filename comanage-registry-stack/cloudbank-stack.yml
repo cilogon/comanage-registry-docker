@@ -63,7 +63,7 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-    satosa-proxy:
+    satosa_proxy1:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:4
         volumes:
             - /srv/docker/cloudbank/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
@@ -73,34 +73,104 @@ services:
         networks:
             - webgateway
             - cloudbank
-        healthcheck:
-            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1/noproxy/alive.html"]
-            interval: 15s
-            timeout: 1s
-            retries: 3
-            start_period: 5s
+#        healthcheck:
+#            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1/noproxy/alive.html"]
+#            interval: 15s
+#            timeout: 1s
+#            retries: 3
+#            start_period: 5s
         deploy:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.cloudbank-satosa-proxy-http.entrypoints=web"
-                - "traefik.http.routers.cloudbank-satosa-proxy-http.rule=Host(`federation-proxy-dev.cloudbank.org`)"
-                - "traefik.http.routers.cloudbank-satosa-proxy-http.middlewares=cloudbank-satosa-proxy-https"
-                - "traefik.http.middlewares.cloudbank-satosa-proxy-https.redirectscheme.scheme=https"
-                - "traefik.http.routers.cloudbank-satosa-proxy.entrypoints=websecure"
-                - "traefik.http.routers.cloudbank-satosa-proxy.rule=Host(`federation-proxy-dev.cloudbank.org`)"
-                - "traefik.http.routers.cloudbank-satosa-proxy.tls=true"
-                - "traefik.http.routers.cloudbank-satosa-proxy.middlewares=cloudbank-satosa-proxy"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.server.port=80"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie=true"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_cloudbank_org"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
-                - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsincludesubdomains=true"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.interval=5s"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.cloudbank_satosa_proxy1.loadbalancer.server.port=80"
+                - "traefik.http.services.cloudbank_satosa_proxy1.loadbalancer.healthcheck.path=/ping/"
+                - "traefik.http.services.cloudbank_satosa_proxy1.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.cloudbank_satosa_proxy1.loadbalancer.healthcheck.timeout=1s"
+
+                #- "traefik.http.routers.cloudbank-satosa-proxy-http.entrypoints=web"
+                #- "traefik.http.routers.cloudbank-satosa-proxy-http.rule=Host(`federation-proxy-dev.cloudbank.org`)"
+                #- "traefik.http.routers.cloudbank-satosa-proxy-http.middlewares=cloudbank-satosa-proxy-https"
+                #- "traefik.http.middlewares.cloudbank-satosa-proxy-https.redirectscheme.scheme=https"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.entrypoints=websecure"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.rule=Host(`federation-proxy-dev.cloudbank.org`)"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.tls=true"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.middlewares=cloudbank-satosa-proxy"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.server.port=80"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie=true"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_cloudbank_org"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
+                #- "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsseconds=63072000"
+                #- "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsincludesubdomains=true"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.interval=5s"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
+            replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 30s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    satosa_proxy2:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:4
+        volumes:
+            - /srv/docker/cloudbank/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
+            - /srv/docker/cloudbank/usr/local/apache2/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
+        environment:
+            - SATOSA_PROXY_REMOTE_SERVER_URL=http://satosa:8080/
+        networks:
+            - webgateway
+            - cloudbank
+        #healthcheck:
+        #    test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1/noproxy/alive.html"]
+        #    interval: 15s
+        #    timeout: 1s
+        #    retries: 3
+        #    start_period: 5s
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.services.cloudbank_satosa_proxy2.loadbalancer.server.port=80"
+                - "traefik.http.services.cloudbank_satosa_proxy2.loadbalancer.healthcheck.path=/ping/"
+                - "traefik.http.services.cloudbank_satosa_proxy2.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.cloudbank_satosa_proxy2.loadbalancer.healthcheck.timeout=1s"
+
+                #- "traefik.enable=true"
+                #- "traefik.docker.network=webgateway"
+                #- "traefik.http.routers.cloudbank-satosa-proxy-http.entrypoints=web"
+                #- "traefik.http.routers.cloudbank-satosa-proxy-http.rule=Host(`federation-proxy-dev.cloudbank.org`)"
+                #- "traefik.http.routers.cloudbank-satosa-proxy-http.middlewares=cloudbank-satosa-proxy-https"
+                #- "traefik.http.middlewares.cloudbank-satosa-proxy-https.redirectscheme.scheme=https"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.entrypoints=websecure"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.rule=Host(`federation-proxy-dev.cloudbank.org`)"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.tls=true"
+                #- "traefik.http.routers.cloudbank-satosa-proxy.middlewares=cloudbank-satosa-proxy"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.server.port=80"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie=true"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.name=_federation_proxy_dev_cloudbank_org"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.secure=true"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.sticky.cookie.httpOnly=true"
+                #- "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsseconds=63072000"
+                #- "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsincludesubdomains=true"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.interval=5s"
+                #- "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
             replicas: 1
             placement:
                 max_replicas_per_node: 1
