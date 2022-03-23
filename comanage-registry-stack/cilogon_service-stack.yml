@@ -55,7 +55,7 @@ services:
                 - "traefik.docker.network=webgateway"
                 - "traefik.http.routers.cilogon-crl.entrypoints=web"
                 - "traefik.http.routers.cilogon-crl.rule=Host(`crl.cilogon.org`,`crl-cilogon.ncsa-security.net`,`crl.cilogon.com`,`crl.cilogon.net`,`crl.cilogin.org`)"
-                - "traefik.http.routers.cilogon-crl-https.entrypoints=web"
+                - "traefik.http.routers.cilogon-crl-https.entrypoints=websecure"
                 - "traefik.http.routers.cilogon-crl-https.rule=Host(`crl.cilogon.org`,`crl-cilogon.ncsa-security.net`,`crl.cilogon.com`,`crl.cilogon.net`,`crl.cilogin.org`)"
                 - "traefik.http.routers.cilogon-crl-https.tls=true"
                 - "traefik.http.routers.cilogon-crl.middlewares=cilogon-crl-ratelimit"
