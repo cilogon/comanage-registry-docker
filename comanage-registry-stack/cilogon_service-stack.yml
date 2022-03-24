@@ -50,6 +50,7 @@ services:
                 parallelism: 1
                 delay: 30s
                 failure_action: rollback
+                order: start-first
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
@@ -103,6 +104,7 @@ services:
                 parallelism: 1
                 delay: 60s
                 failure_action: rollback
+                order: start-first
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
@@ -163,6 +165,7 @@ services:
                 parallelism: 1
                 delay: 60s
                 failure_action: rollback
+                order: start-first
             resources:
                 reservations:
                     memory: 512M
@@ -243,6 +246,7 @@ services:
                 parallelism: 1
                 delay: 30s
                 failure_action: rollback
+                order: start-first
             resources:
                 reservations:
                     memory: 512M
@@ -308,6 +312,7 @@ services:
                 parallelism: 1
                 delay: 30s
                 failure_action: rollback
+                order: start-first
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
