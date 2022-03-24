@@ -213,7 +213,7 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-    cilogon-web:
+    cilogon-web1:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:37
         command: ["/usr/local/bin/startup.sh"]
         volumes:
@@ -226,18 +226,12 @@ services:
         networks:
             - cilogon_service
             - webgateway
-        healthcheck:
-            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
-            interval: 30s
-            timeout: 3s
-            retries: 3
-            start_period: 30s
         extra_hosts:
             myproxy.cilogon.org: 141.142.149.36
             myproxy2.cilogon.org: 141.142.149.38
         deploy:
             mode: replicated
-            replicas: 2
+            replicas: 1
             placement:
                 max_replicas_per_node: 1
             restart_policy:
@@ -255,25 +249,55 @@ services:
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.cilogon-web-http.entrypoints=web"
-                - "traefik.http.routers.cilogon-web-http.rule=Host(`test.cilogon.org`,`test.cilogon.com`,`test.cilogon.net`,`test.cilogin.org`)"
-                - "traefik.http.routers.cilogon-web-http.middlewares=cilogon-web-https"
-                - "traefik.http.middlewares.cilogon-web-https.redirectscheme.scheme=https"
-                - "traefik.http.routers.cilogon-web.entrypoints=websecure"
-                - "traefik.http.routers.cilogon-web.rule=Host(`test.cilogon.org`,`test.cilogon.com`,`test.cilogon.net`,`test.cilogin.org`)"
-                - "traefik.http.routers.cilogon-web.tls=true"
-                - "traefik.http.routers.cilogon-web.middlewares=cilogon-web,cilogon-web-ratelimit"
-                - "traefik.http.services.cilogon-web.loadbalancer.server.port=80"
-                - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie=true"
-                - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_test_cilogon_org"
-                - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.secure=true"
-                - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.httpOnly=true"
-                - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.path=/"
-                - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.interval=30s"
-                - "traefik.http.services.cilogon-web.loadbalancer.healthcheck.timeout=3s"
-                - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=4"
-                - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=40"
+                - "traefik.http.services.cilogon-web1.loadbalancer.server.port=80"
+                - "traefik.http.services.cilogon-web1.loadbalancer.healthcheck.path=/"
+                - "traefik.http.services.cilogon-web1.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.cilogon-web1.loadbalancer.healthcheck.timeout=3s"
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    cilogon-web2:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:37
+        command: ["/usr/local/bin/startup.sh"]
+        volumes:
+            - type: volume
+              source: cilogon_service_volume_dedicated
+              target: /var/local/cilogon_service
+              read_only: false
+              volume:
+                  nocopy: true
+        networks:
+            - cilogon_service
+            - webgateway
+        extra_hosts:
+            myproxy.cilogon.org: 141.142.149.36
+            myproxy2.cilogon.org: 141.142.149.38
+        deploy:
+            mode: replicated
+            replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            restart_policy:
+                condition: on-failure
+            update_config:
+                parallelism: 1
+                delay: 30s
+                failure_action: rollback
+                order: start-first
+            resources:
+                reservations:
+                    memory: 512M
+                limits:
+                    memory: 4096M
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.services.cilogon-web2.loadbalancer.server.port=80"
+                - "traefik.http.services.cilogon-web2.loadbalancer.healthcheck.path=/"
+                - "traefik.http.services.cilogon-web2.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.cilogon-web2.loadbalancer.healthcheck.timeout=3s"
         logging:
             driver: journald
             options:
