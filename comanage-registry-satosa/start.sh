@@ -60,15 +60,6 @@ if [[ -n "${SATOSA_BACKEND_CERT_FILE}" &&
     chmod 600 "${DATA_DIR}/backend.key"
 fi
 
-# Copy HTTPS certificate and key into place.
-if [[ -n "${SATOSA_HTTPS_CERT_FILE}" &&
-      -n "${SATOSA_HTTPS_KEY_FILE}" ]]; then
-    cp "${SATOSA_HTTPS_CERT_FILE}" "${DATA_DIR}/https.crt"
-    cp "${SATOSA_HTTPS_KEY_FILE}" "${DATA_DIR}/https.key"
-    chmod 644 "${DATA_DIR}/https.crt"
-    chmod 600 "${DATA_DIR}/https.key"
-fi
-
 if [[ -z "${PROXY_PORT}" ]]; then
    PROXY_PORT="8080"
 fi
@@ -81,19 +72,23 @@ cd ${DATA_DIR}
 
 mkdir -p ${METADATA_DIR}
 
-gunicorn=(/opt/satosa/bin/gunicorn -b0.0.0.0:${PROXY_PORT})
-gunicorn+=(--workers ${GUNICORN_WORKERS:-2})
-gunicorn+=(--worker-class ${GUNICORN_WORKER_CLASS:-gthread})
-gunicorn+=(--threads ${GUNICORN_THREADS:-4})
-gunicorn+=(--max-requests ${GUNICORN_MAX_REQUESTS:-720})
-gunicorn+=(--max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER:-10})
+uwsgi=(/opt/satosa/bin/uwsgi)
+uwsgi+=(--master)
+uwsgi+=(--strict)
+uwsgi+=(--lazy-apps)
+uwsgi+=(--single-interpreter)
+uwsgi+=(--die-on-term)
+uwsgi+=(--need-app)
+uwsgi+=(--disable-logging)
+uwsgi+=(--log-4xx)
+uwsgi+=(--log-5xx)
+uwsgi+=(--wsgi satosa.wsgi)
+uwsgi+=(--callable app)
+uwsgi+=(-b 65535)
+uwsgi+=(--http-socket 0.0.0.0:${PROXY_PORT})
+uwsgi+=(--processes ${UWSGI_WORKERS:-2})
+uwsgi+=(--enable-threads)
+uwsgi+=(--threads ${UWSGI_THREADS:-4})
+uwsgi+=(--reload-on-rss ${UWSGI_MAX_RSS_MB:-512})
 
-if [[ -f https.key && -f https.crt ]]; then
-    gunicorn+=(--keyfile https.key --certfile https.crt)
-else
-    gunicorn+=(--forwarded-allow-ips='*')
-fi
-
-gunicorn+=(satosa.wsgi:app)
-
-exec "${gunicorn[@]}"
+exec "${uwsgi[@]}"
