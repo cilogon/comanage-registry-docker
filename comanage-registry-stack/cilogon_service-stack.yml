@@ -146,7 +146,7 @@ services:
             - cilogon_service
             - webgateway
         healthcheck:
-            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth2/register"]
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth2/token?ping=true"]
             interval: 30s
             timeout: 3s
             retries: 3
@@ -197,7 +197,7 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_dev_cilogon_org_oauth2"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.secure=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.httpOnly=true"
-                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.path=/oauth2/register"
+                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.path=/oauth2/token?ping=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.interval=30s"
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.timeout=3s"
                 # This horrible regex is equivalent to (?!oauth2) in Perl (due to lack of negative lookahead in Golang)
