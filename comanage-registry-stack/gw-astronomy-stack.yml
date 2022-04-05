@@ -131,7 +131,7 @@ services:
                 - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.path=/idp/status"
                 - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.gw-astronomy-aa.loadbalancer.healthcheck.timeout=1s"
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             rollback_config:
