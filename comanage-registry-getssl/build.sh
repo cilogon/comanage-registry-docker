@@ -1,4 +1,4 @@
-VERSION=4
+VERSION=5
 IMAGE=comanage-registry-getssl
 
 docker build --no-cache -t ${IMAGE}:${VERSION} .
