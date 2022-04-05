@@ -19,7 +19,7 @@ volumes:
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:11
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:12
         command: ["apache2-foreground"]
         volumes:
             - type: volume
