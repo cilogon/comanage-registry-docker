@@ -850,7 +850,7 @@ services:
                 - "traefik.http.services.ligo-grouper-ws.loadbalancer.healthcheck.path=/grouper-ws/status?diagnosticType=trivial"
                 - "traefik.http.services.ligo-grouper-ws.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.ligo-grouper-ws.loadbalancer.healthcheck.timeout=1s"
-            replicas: 3
+            replicas: 2
         logging:
             driver: journald
             options:
