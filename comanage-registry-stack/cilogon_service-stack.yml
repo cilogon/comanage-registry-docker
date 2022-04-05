@@ -170,7 +170,7 @@ services:
                 reservations:
                     memory: 512M
                 limits:
-                    memory: 2048M
+                    memory: 3072M
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
