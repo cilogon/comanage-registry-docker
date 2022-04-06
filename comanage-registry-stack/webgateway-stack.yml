@@ -34,7 +34,7 @@ volumes:
 
 services:
     dockersocket:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.5
         volumes:
             - type: bind
               source: /var/run/docker.sock
@@ -131,7 +131,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     getssl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:5
         volumes:
             - type: volume
               source: getssl
@@ -165,6 +165,7 @@ services:
             update_config:
               parallelism: 1
               delay: 60s
+              order: start-first
         logging:
             driver: journald
             options:
@@ -197,6 +198,7 @@ services:
                 parallelism: 1
                 delay: 30s
                 failure_action: rollback
+                order: start-first
             labels:
                 - "diun.enable=true"
         logging:
