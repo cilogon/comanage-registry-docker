@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye-slim
 
 ARG SATOSA_DIR=/opt/satosa
 ENV SATOSA_DIR ${SATOSA_DIR}
@@ -13,9 +13,12 @@ ENV SATOSA_GROUP ${SATOSA_GROUP}
 LABEL satosa_group=${SATOSA_GROUP}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
         curl \
-        git \
-        virtualenv \
+        libpcre3-dev \
+        python3 \
+        python3-dev \
+        python3-venv \
         xmlsec1
 
 RUN useradd --home-dir ${SATOSA_DIR} --no-create-home --system ${SATOSA_USER} \
@@ -27,14 +30,18 @@ WORKDIR ${SATOSA_DIR}
 
 USER ${SATOSA_USER}
 
-RUN /usr/bin/virtualenv -p python3 ${SATOSA_DIR} --no-site-packages \
-    && ${SATOSA_DIR}/bin/pip install pysaml2==6.5.2 \
-    && ${SATOSA_DIR}/bin/pip install satosa==7.0.3
+RUN python3 -m venv ${SATOSA_DIR} \
+    && . ${SATOSA_DIR}/bin/activate \
+    && ${SATOSA_DIR}/bin/pip install --upgrade pip \
+    && pip install wheel \
+    && pip install python-pcre \
+    && pip install uwsgi \
+    && ${SATOSA_DIR}/bin/pip install pysaml2==7.1.2 \
+    && ${SATOSA_DIR}/bin/pip install satosa==8.0.1
 
 USER root
 
-RUN apt-get purge -y git \
-    && apt-get clean
+RUN apt-get clean
 
 USER ${SATOSA_USER}
 

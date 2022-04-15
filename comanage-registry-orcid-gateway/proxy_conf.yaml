@@ -35,15 +35,21 @@ LOGGING:
       stream: ext://sys.stderr
   loggers:
     saml2:
-      level: DEBUG
+      level: INFO
       handlers:
         - console
+      propagate: no
     satosa:
-      level: DEBUG
+      level: INFO
+      handlers:
+        - console
+      propagate: no
+    satosa.base:
+      level: ERROR
       handlers:
         - console
       propagate: no
   root:
-    level: INFO
+    level: ERROR
     handlers: 
       - console
