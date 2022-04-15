@@ -12,75 +12,75 @@ networks:
         external: true
 
 volumes:
-    pyff_configs:
+    pyff_configs-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/etc/pyff"
+            o: addr=${SRV_SCIMMA_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/pyff"
 
-    satosa_configs:
+    satosa_configs-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/etc/satosa"
+            o: addr=${SRV_SCIMMA_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/satosa"
 
-    satosa_proxy_htdocs:
+    satosa_proxy_htdocs-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/usr/local/apache2/htdocs"
+            o: addr=${SRV_SCIMMA_NFS_HOST},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/usr/local/apache2/htdocs"
 
-    ldap-state-01:
+    ldap-state-01-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/var/lib/ldap_01"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_01"
 
-    ldap-state-02:
+    ldap-state-02-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/var/lib/ldap_02"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_02"
 
-    ldap-config-01:
+    ldap-config-01-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/etc/slapd.d/ldap_01"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_01"
 
-    ldap-config-02:
+    ldap-config-02-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/etc/slapd.d/ldap_02"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_02"
 
-    ldap-ldif-01:
+    ldap-ldif-01-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/ldif/ldap_01"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_01"
 
-    ldap-ldif-02:
+    ldap-ldif-02-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/ldif/ldap_02"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_02"
 
-    ldap-schema:
+    ldap-schema-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/schema"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/schema"
 
     ldap-backups-01:
         driver: local
@@ -96,26 +96,26 @@ volumes:
             o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/scimma/ldif/02"
 
-    ldap-backups-usr-local:
+    ldap-backups-usr-local-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/usr/local/slapcat"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/usr/local/slapcat"
 
-    comanage_registry_local:
+    comanage_registry_local-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/scimma/srv/comanage-registry/local"
+            o: addr=${SRV_SCIMMA_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/srv/comanage-registry/local"
         
 services:
     pyff:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:5
         volumes:
             - type: volume
-              source: pyff_configs
+              source: pyff_configs-dedicated
               target: /etc/pyff
               read_only: false
               volume:
@@ -187,7 +187,7 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:14
         volumes:
             - type: volume
-              source: satosa_configs
+              source: satosa_configs-dedicated
               target: /etc/satosa
               read_only: false
               volume:
@@ -238,7 +238,7 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:4
         volumes:
             - type: volume
-              source: satosa_proxy_htdocs
+              source: satosa_proxy_htdocs-dedicated
               target: /usr/local/apache2/htdocs
               read_only: false
               volume:
@@ -300,7 +300,7 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:4.0.2-1
         volumes:
             - type: volume
-              source: comanage_registry_local
+              source: comanage_registry_local-dedicated
               target: /srv/comanage-registry/local
               read_only: false
               volume:
@@ -397,25 +397,25 @@ services:
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
-              source: ldap-state-01
+              source: ldap-state-01-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-01
+              source: ldap-config-01-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-ldif-01
+              source: ldap-ldif-01-dedicated
               target: /ldif
               read_only: true
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-schema
+              source: ldap-schema-dedicated
               target: /schema
               read_only: true
               volume:
@@ -466,25 +466,25 @@ services:
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
-              source: ldap-state-02
+              source: ldap-state-02-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-02
+              source: ldap-config-02-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-ldif-02
+              source: ldap-ldif-02-dedicated
               target: /ldif
               read_only: true
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-schema
+              source: ldap-schema-dedicated
               target: /schema
               read_only: true
               volume:
@@ -519,19 +519,19 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
-              source: ldap-state-01
+              source: ldap-state-01-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-01
+              source: ldap-config-01-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-backups-usr-local
+              source: ldap-backups-usr-local-dedicated
               target: /usr/local/slapcat
               read_only: false
               volume:
@@ -579,19 +579,19 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
-              source: ldap-state-02
+              source: ldap-state-02-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-02
+              source: ldap-config-02-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-backups-usr-local
+              source: ldap-backups-usr-local-dedicated
               target: /usr/local/slapcat
               read_only: false
               volume:
@@ -624,11 +624,13 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:4.0.2-1
         volumes:
             - type: volume
-              source: comanage_registry_local
+              source: comanage_registry_local-dedicated
               target: /srv/comanage-registry/local
               read_only: false
               volume:
                 nocopy: true
+        environment:
+            - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
         networks:
             - scimma
         healthcheck:
