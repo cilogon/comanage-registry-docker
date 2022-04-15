@@ -3,63 +3,63 @@ version: '3.8'
 networks:
     gw-astronomy:
         driver: overlay
-        driver_opts:
-            subnet: 10.0.101.0/24
-            encrypted: 1
+        ipam:
+            config:
+                - subnet: 10.0.101.0/24
     webgateway:
         external: true
     ldapgateway:
         external: true
 
 volumes:
-    ldap-state-01:
+    ldap-state-01-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/var/lib/ldap_01"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_01"
 
-    ldap-state-02:
+    ldap-state-02-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/var/lib/ldap_02"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_02"
 
-    ldap-config-01:
+    ldap-config-01-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/etc/slapd.d/ldap_01"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_01"
 
-    ldap-config-02:
+    ldap-config-02-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/etc/slapd.d/ldap_02"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_02"
 
-    ldap-ldif-01:
+    ldap-ldif-01-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/ldif/ldap_01"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_01"
 
-    ldap-ldif-02:
+    ldap-ldif-02-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/ldif/ldap_02"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_02"
 
-    ldap-schema:
+    ldap-schema-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/schema"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/schema"
 
     ldap-backups-01:
         driver: local
@@ -75,38 +75,38 @@ volumes:
             o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/gw-astronomy/ldif/02"
 
-    ldap-backups-usr-local:
+    ldap-backups-usr-local-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/usr/local/slapcat"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/usr/local/slapcat"
 
-    comanage-registry-local:
+    comanage-registry-local-dedicated:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/gw-astronomy/srv/comanage-registry/local"
+            o: addr=${SRV_GW_ASTRONOMY_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/srv/comanage-registry/local"
 
 services:
     aa:
         image: i2incommon/shib-idp:4.1.6_20220401
         volumes:
-            - /srv/docker/gw-astronomy/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
-            - /srv/docker/gw-astronomy/usr/local/tomcat/bin/setenv.sh:/usr/local/tomcat/bin/setenv.sh
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/idp.properties:/opt/shibboleth-idp/conf/idp.properties
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-filter.xml:/opt/shibboleth-idp/conf/attribute-filter.xml
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties:/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/attribute-resolver.xml:/opt/shibboleth-idp/conf/attribute-resolver.xml
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/metadata-providers.xml:/opt/shibboleth-idp/conf/metadata-providers.xml
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/relying-party.xml:/opt/shibboleth-idp/conf/relying-party.xml
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/access-control.xml:/opt/shibboleth-idp/conf/access-control.xml
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/conf/c14n/subject-c14n.xml:/opt/shibboleth-idp/conf/c14n/subject-c14n.xml
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/inc-md-cert-mdq.pem:/opt/shibboleth-idp/credentials/inc-md-cert-mdq.pem
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem:/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.crt:/opt/shibboleth-idp/credentials/idp-signing.crt
-            - /srv/docker/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.key:/opt/shibboleth-idp/credentials/idp-signing.key
+            - /srv/gw-astronomy/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
+            - /srv/gw-astronomy/usr/local/tomcat/bin/setenv.sh:/usr/local/tomcat/bin/setenv.sh
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/idp.properties:/opt/shibboleth-idp/conf/idp.properties
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/attribute-filter.xml:/opt/shibboleth-idp/conf/attribute-filter.xml
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties:/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/attribute-resolver.xml:/opt/shibboleth-idp/conf/attribute-resolver.xml
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/metadata-providers.xml:/opt/shibboleth-idp/conf/metadata-providers.xml
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/relying-party.xml:/opt/shibboleth-idp/conf/relying-party.xml
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/access-control.xml:/opt/shibboleth-idp/conf/access-control.xml
+            - /srv/gw-astronomy/opt/shibboleth-idp/conf/c14n/subject-c14n.xml:/opt/shibboleth-idp/conf/c14n/subject-c14n.xml
+            - /srv/gw-astronomy/opt/shibboleth-idp/credentials/inc-md-cert-mdq.pem:/opt/shibboleth-idp/credentials/inc-md-cert-mdq.pem
+            - /srv/gw-astronomy/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem:/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem
+            - /srv/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.crt:/opt/shibboleth-idp/credentials/idp-signing.crt
+            - /srv/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.key:/opt/shibboleth-idp/credentials/idp-signing.key
         networks:
             - gw-astronomy
             - webgateway
@@ -156,25 +156,25 @@ services:
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
-              source: ldap-state-01
+              source: ldap-state-01-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-01
+              source: ldap-config-01-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-ldif-01
+              source: ldap-ldif-01-dedicated
               target: /ldif
               read_only: true
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-schema
+              source: ldap-schema-dedicated
               target: /schema
               read_only: true
               volume:
@@ -224,27 +224,26 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
-        volumes:
             - type: volume
-              source: ldap-state-02
+              source: ldap-state-02-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-02
+              source: ldap-config-02-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-ldif-02
+              source: ldap-ldif-02-dedicated
               target: /ldif
               read_only: true
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-schema
+              source: ldap-schema-dedicated
               target: /schema
               read_only: true
               volume:
@@ -294,19 +293,19 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
-              source: ldap-state-01
+              source: ldap-state-01-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-01
+              source: ldap-config-01-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-backups-usr-local
+              source: ldap-backups-usr-local-dedicated
               target: /usr/local/slapcat
               read_only: false
               volume:
@@ -339,19 +338,19 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
         volumes:
             - type: volume
-              source: ldap-state-02
+              source: ldap-state-02-dedicated
               target: /var/lib/ldap
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-config-02
+              source: ldap-config-02-dedicated
               target: /etc/ldap/slapd.d
               read_only: false
               volume:
                 nocopy: true
             - type: volume
-              source: ldap-backups-usr-local
+              source: ldap-backups-usr-local-dedicated
               target: /usr/local/slapcat
               read_only: false
               volume:
@@ -384,12 +383,12 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:4.0.2-1
         volumes:
             - type: volume
-              source: comanage-registry-local
+              source: comanage-registry-local-dedicated
               target: /srv/comanage-registry/local
               read_only: false
               volume:
                 nocopy: true
-            - /srv/docker/gw-astronomy/srv/comanage-registry/app/webroot/favicon.ico:/srv/comanage-registry/app/webroot/favicon.ico
+            - /srv/gw-astronomy/srv/comanage-registry/app/webroot/favicon.ico:/srv/comanage-registry/app/webroot/favicon.ico
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/gw_astronomy_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/gw_astronomy_oidc_client_secret 
@@ -483,7 +482,7 @@ services:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:4.0.2-1
         volumes:
             - type: volume
-              source: comanage-registry-local
+              source: comanage-registry-local-dedicated
               target: /srv/comanage-registry/local
               read_only: false
               volume:
@@ -506,9 +505,9 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     orcid-saml-gateway:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-orcid-saml-gateway:6
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-orcid-saml-gateway:7
         volumes:
-            - /srv/docker/gw-astronomy/opt/satosa/orcid-saml-gateway-sp-metadata.xml:/opt/satosa/orcid-saml-gateway-sp-metadata.xml
+            - /srv/gw-astronomy/opt/satosa/orcid-saml-gateway-sp-metadata.xml:/opt/satosa/orcid-saml-gateway-sp-metadata.xml
         environment:
             - OIDC_CLIENT_ID_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/var/run/secrets/gw_astronomy_orcid_saml_gateway_oidc_client_secret
