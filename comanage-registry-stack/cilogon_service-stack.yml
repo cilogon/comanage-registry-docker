@@ -214,7 +214,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:42
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:43
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
@@ -237,7 +237,7 @@ services:
             myproxy2.cilogon.org: 141.142.149.36
         deploy:
             mode: replicated
-            replicas: 2
+            replicas: 1
             placement:
                 max_replicas_per_node: 1
             restart_policy:
