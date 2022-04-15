@@ -102,14 +102,23 @@ fi
 
 cd "${SATOSA_DIR}"
 
-gunicorn=(${SATOSA_DIR}/bin/gunicorn)
-gunicorn+=(-b${SATOSA_GUNICORN_HOST:-0.0.0.0}:${SATOSA_GUNICORN_PORT:-8000})
-gunicorn+=(--forwarded-allow-ips='*')
-gunicorn+=(--workers ${SATOSA_GUNICORN_WORKERS:-2})
-gunicorn+=(--worker-class ${SATOSA_GUNICORN_WORKER_CLASS:-gthread})
-gunicorn+=(--threads ${SATOSA_GUNICORN_THREADS:-4})
-gunicorn+=(--max-requests ${SATOSA_GUNICORN_MAX_REQUESTS:-720})
-gunicorn+=(--max-requests-jitter ${SATOSA_GUNICORN_MAX_REQUESTS_JITTER:-10})
-gunicorn+=(satosa.wsgi:app)
+uwsgi=(/opt/satosa/bin/uwsgi)
+uwsgi+=(--master)
+uwsgi+=(--strict)
+uwsgi+=(--lazy-apps)
+uwsgi+=(--single-interpreter)
+uwsgi+=(--die-on-term)
+uwsgi+=(--need-app)
+uwsgi+=(--disable-logging)
+uwsgi+=(--log-4xx)
+uwsgi+=(--log-5xx)
+uwsgi+=(--wsgi satosa.wsgi)
+uwsgi+=(--callable app)
+uwsgi+=(-b 65535)
+uwsgi+=(--http-socket 0.0.0.0:${UWSGI_PORT:-8000})
+uwsgi+=(--processes ${UWSGI_WORKERS:-2})
+uwsgi+=(--enable-threads)
+uwsgi+=(--threads ${UWSGI_THREADS:-4})
+uwsgi+=(--reload-on-rss ${UWSGI_MAX_RSS_MB:-512})
 
-exec "${gunicorn[@]}"
+exec "${uwsgi[@]}"
