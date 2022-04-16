@@ -19,7 +19,7 @@ volumes:
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:11
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:13
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -146,9 +146,9 @@ services:
             - cilogon_service
             - webgateway
         healthcheck:
-            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth2/register"]
+            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1:8888/oauth2/dbService?action=getUser&idp=http%3A%2F%2Fgoogle.com%2Faccounts%2Fo8%2Fid&idp_display_name=Google&first_name=Google&last_name=User&display_name=Google+User&email=google%40cilogon.org&loa=openid&oidc=112618836080811307185&us_idp=1"]
             interval: 30s
-            timeout: 3s
+            timeout: 5s
             retries: 3
             start_period: 60s
         extra_hosts:
@@ -170,7 +170,7 @@ services:
                 reservations:
                     memory: 512M
                 limits:
-                    memory: 2048M
+                    memory: 3072M
             labels:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
@@ -197,9 +197,9 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_cilogon_org_oauth2"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.secure=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.httpOnly=true"
-                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.path=/oauth2/register"
+                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.path=/oauth2/dbService?action=getUser&idp=http%3A%2F%2Fgoogle.com%2Faccounts%2Fo8%2Fid&idp_display_name=Google&first_name=Google&last_name=User&display_name=Google+User&email=google%40cilogon.org&loa=openid&oidc=112618836080811307185&us_idp=1"
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.interval=30s"
-                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.timeout=3s"
+                - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.timeout=5s"
                 # This horrible regex is equivalent to (?!oauth2) in Perl (due to lack of negative lookahead in Golang)
                 - "traefik.http.middlewares.oa4mp-regex1.replacepathregex.regex=^/(([^o]|o(o|a(o|u(o|t(o|ho))))*([^ao]|a([^ou]|u([^ot]|t([^ho]|h[^2o])))))*(o(o|a(o|u(o|t(o|ho))))*(a(u?|uth?))?)?)/\\.well-known/(openid-configuration|oauth-authorization-server)/?"
                 - "traefik.http.middlewares.oa4mp-regex1.replacepathregex.replacement=/oauth2/.well-known/$${18}/$${1}"
@@ -214,7 +214,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:37
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:43
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
@@ -229,7 +229,7 @@ services:
         healthcheck:
             test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
             interval: 30s
-            timeout: 5s
+            timeout: 3s
             retries: 3
             start_period: 30s
         extra_hosts:
@@ -256,11 +256,11 @@ services:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
                 - "traefik.http.routers.cilogon-web-http.entrypoints=web"
-                - "traefik.http.routers.cilogon-web-http.rule=Host(`cilogon.org`,`cilogon.com`,`cilogon.net`,`cilogin.org`,`www.cilogon.com`,`www.cilogon.net`,`www.cilogin.org`)"
+                - "traefik.http.routers.cilogon-web-http.rule=Host(`cilogon.org`,`cilogon.com`,`cilogon.net`,`cilogin.org`,`ecp.cilogon.org`,`www.cilogon.com`,`www.cilogon.net`,`www.cilogin.org`)"
                 - "traefik.http.routers.cilogon-web-http.middlewares=cilogon-web-https"
                 - "traefik.http.middlewares.cilogon-web-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.cilogon-web.entrypoints=websecure"
-                - "traefik.http.routers.cilogon-web.rule=Host(`cilogon.org`,`cilogon.com`,`cilogon.net`,`cilogin.org`,`www.cilogon.com`,`www.cilogon.net`,`www.cilogin.org`)"
+                - "traefik.http.routers.cilogon-web.rule=Host(`cilogon.org`,`cilogon.com`,`cilogon.net`,`cilogin.org`,`ecp.cilogon.org`,`www.cilogon.com`,`www.cilogon.net`,`www.cilogin.org`)"
                 - "traefik.http.routers.cilogon-web.tls=true"
                 - "traefik.http.routers.cilogon-web.middlewares=cilogon-web,cilogon-web-ratelimit"
                 - "traefik.http.services.cilogon-web.loadbalancer.server.port=80"
@@ -279,74 +279,8 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-    cilogon-ecp:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:37
-        command: ["/usr/local/bin/startup.sh"]
-        volumes:
-            - type: volume
-              source: cilogon_service_volume_dedicated
-              target: /var/local/cilogon_service
-              read_only: false
-              volume:
-                  nocopy: true
-        networks:
-            - cilogon_service
-            - webgateway
-        healthcheck:
-            test: ["CMD", "curl", "-f", "-I", "-L", "http://127.0.0.1/"]
-            interval: 30s
-            timeout: 5s
-            retries: 3
-            start_period: 30s
-        extra_hosts:
-            myproxy.cilogon.org: 141.142.149.36
-            myproxy2.cilogon.org: 141.142.149.38
-        deploy:
-            mode: replicated
-            replicas: 1
-            placement:
-                max_replicas_per_node: 1
-            restart_policy:
-                condition: on-failure
-            update_config:
-                parallelism: 1
-                delay: 30s
-                failure_action: rollback
-                order: start-first
-            resources:
-                reservations:
-                    memory: 512M
-                limits:
-                    memory: 4096M
-            labels:
-                - "traefik.enable=true"
-                - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.cilogon-ecp-http.entrypoints=web"
-                - "traefik.http.routers.cilogon-ecp-http.rule=Host(`ecp.cilogon.org`)"
-                - "traefik.http.routers.cilogon-ecp-http.middlewares=cilogon-ecp-https"
-                - "traefik.http.middlewares.cilogon-ecp-https.redirectscheme.scheme=https"
-                - "traefik.http.routers.cilogon-ecp.entrypoints=websecure"
-                - "traefik.http.routers.cilogon-ecp.rule=Host(`ecp.cilogon.org`)"
-                - "traefik.http.routers.cilogon-ecp.tls=true"
-                - "traefik.http.routers.cilogon-ecp.middlewares=cilogon-ecp,cilogon-ecp-ratelimit"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.server.port=80"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.sticky.cookie=true"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.sticky.cookie.name=_ecp_cilogon_org"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.sticky.cookie.secure=true"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.sticky.cookie.httpOnly=true"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.healthcheck.path=/"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.healthcheck.interval=30s"
-                - "traefik.http.services.cilogon-ecp.loadbalancer.healthcheck.timeout=3s"
-                - "traefik.http.middlewares.cilogon-ecp.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.cilogon-ecp-ratelimit.ratelimit.average=4"
-                - "traefik.http.middlewares.cilogon-ecp-ratelimit.ratelimit.burst=40"
-        logging:
-            driver: journald
-            options:
-                tag: "cilogon_docker_{{.Name}}"
-
     cilogon-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:6
         command: ["/usr/sbin/cron", "-f", "-L", "15"]
         volumes:
             - type: volume
