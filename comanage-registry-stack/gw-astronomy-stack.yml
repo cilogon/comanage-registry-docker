@@ -91,10 +91,9 @@ volumes:
 
 services:
     aa:
-        image: i2incommon/shib-idp:4.1.6_20220401
+        image: i2incommon/shib-idp:4.2.1_20220418
         volumes:
             - /srv/gw-astronomy/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
-            - /srv/gw-astronomy/usr/local/tomcat/bin/setenv.sh:/usr/local/tomcat/bin/setenv.sh
             - /srv/gw-astronomy/opt/shibboleth-idp/conf/idp.properties:/opt/shibboleth-idp/conf/idp.properties
             - /srv/gw-astronomy/opt/shibboleth-idp/conf/attribute-filter.xml:/opt/shibboleth-idp/conf/attribute-filter.xml
             - /srv/gw-astronomy/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties:/opt/shibboleth-idp/conf/attributes/custom/ismemberof.properties
@@ -107,6 +106,7 @@ services:
             - /srv/gw-astronomy/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem:/opt/shibboleth-idp/credentials/login.ligo.org.cert.LIGOCA.pem
             - /srv/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.crt:/opt/shibboleth-idp/credentials/idp-signing.crt
             - /srv/gw-astronomy/opt/shibboleth-idp/credentials/idp-signing.key:/opt/shibboleth-idp/credentials/idp-signing.key
+            - /srv/gw-astronomy/opt/shibboleth-idp/credentials/ldap.cilogon.org.pem:/opt/shibboleth-idp/credentials/ldap.cilogon.org.pem
         networks:
             - gw-astronomy
             - webgateway
