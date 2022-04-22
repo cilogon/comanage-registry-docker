@@ -163,7 +163,7 @@ services:
                 - "traefik.http.services.scimma-pyff.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.scimma-pyff.loadbalancer.healthcheck.timeout=1s"
                 - "traefik.http.services.scimma-pyff.loadbalancer.healthcheck.headers.Accept=application/samlmetadata+xml"
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             rollback_config:
@@ -214,7 +214,7 @@ services:
             retries: 3
             start_period: 30s
         deploy:
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             rollback_config:
@@ -276,7 +276,7 @@ services:
                 - "traefik.http.services.scimma-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
                 - "traefik.http.services.scimma-satosa-proxy.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.scimma-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             rollback_config:
@@ -372,7 +372,7 @@ services:
                 - "traefik.http.services.scimma-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
                 - "traefik.http.services.scimma-comanage-registry.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.scimma-comanage-registry.loadbalancer.healthcheck.timeout=1s"
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             rollback_config:
