@@ -80,6 +80,76 @@ volumes:
             o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
             device: ":/usr/local/slapcat"
 
+    ldap-state-01-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_01_dev"
+
+    ldap-state-02-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_02_dev"
+
+    ldap-config-01-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_01_dev"
+
+    ldap-config-02-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_02_dev"
+
+    ldap-ldif-01-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_01_dev"
+
+    ldap-ldif-02-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_02_dev"
+
+    ldap-schema-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/schema_dev"
+
+    ldap-backups-01-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/fermilab/ldif_dev/01"
+
+    ldap-backups-02-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/fermilab/ldif_dev/02"
+
+    ldap-backups-usr-local-dev:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_FERMILAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/usr/local/slapcat_dev"
+
 services:
     fermilab-ldap-01:
         image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
@@ -309,10 +379,244 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
+    fermilab-ldap-01-dev:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-01-dev
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01-dev
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01-dev
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema-dev
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/fermilab_olc_root_pw_dev
+            - OLC_SUFFIX=dc=dev,dc=fnal,dc=gov
+            - OLC_ROOT_DN=cn=admin,dc=dev,dc=fnal,dc=gov
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/fermilab_olc_root_dn_password_dev
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/fermilab_syncrepl_user_password_hash_dev
+        secrets:
+            - fermilab_olc_root_pw_dev
+            - fermilab_olc_root_dn_password_dev
+            - fermilab_syncrepl_user_password_hash_dev
+        networks:
+            - fermilab
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    fermilab-ldap-02-dev:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-02-dev
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02-dev
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02-dev
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema-dev
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/fermilab_olc_root_pw_dev
+            - OLC_SUFFIX=dc=dev,dc=fnal,dc=gov
+            - OLC_ROOT_DN=cn=admin,dc=dev,dc=fnal,dc=gov
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/fermilab_olc_root_dn_password_dev
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/fermilab_syncrepl_user_password_hash_dev
+        secrets:
+            - fermilab_olc_root_pw_dev
+            - fermilab_olc_root_dn_password_dev
+            - fermilab_syncrepl_user_password_hash_dev
+        networks:
+            - fermilab
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    fermilab-ldif-backup-01-dev:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-01-dev
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01-dev
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local-dev
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-01-dev
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=fermilab-01-dev
+            - LDIF_CRONTAB=/usr/local/slapcat_dev/etc/openldap-crontab
+        networks:
+            - fermilab
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    fermilab-ldif-backup-02-dev:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-02-dev
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02-dev
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local-dev
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-02-dev
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=fermilab-02-dev
+            - LDIF_CRONTAB=/usr/local/slapcat_dev/etc/openldap-crontab
+        networks:
+            - fermilab
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
 secrets:
     fermilab_olc_root_pw:
         external: true
     fermilab_olc_root_dn_password:
         external: true
     fermilab_syncrepl_user_password_hash:
+        external: true
+    fermilab_olc_root_pw_dev:
+        external: true
+    fermilab_olc_root_dn_password_dev:
+        external: true
+    fermilab_syncrepl_user_password_hash_dev:
         external: true
