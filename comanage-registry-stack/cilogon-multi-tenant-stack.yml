@@ -3,9 +3,9 @@ version: '3.8'
 networks:
     cilogon-multi-tenant:
         driver: overlay
-        driver_opts:
-            subnet: 10.0.100.0/24
-            encrypted: 1
+        ipam:
+          config:
+            - subnet: 10.0.100.0/24
     webgateway:
         external: true
     ldapgateway:
@@ -374,7 +374,7 @@ services:
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.cilogon_multi_tenant-comanage-registry.loadbalancer.healthcheck.timeout=1s"
-            replicas: 3
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             update_config:
