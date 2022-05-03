@@ -2,7 +2,8 @@
 #
 # https://github.com/Tecnativa/docker-socket-proxy
 #
-FROM haproxy:2.5.5-alpine
+ARG HAPROXY_VERSION
+FROM haproxy:${HAPROXY_VERSION}-alpine
 
 EXPOSE 2375
 

@@ -6,7 +6,7 @@ if [[ -z "${HAPROXY_VERSION}" ]] ; then
    exit;
 fi
 
-docker build --no-cache -t cilogon-haproxy:${HAPROXY_VERSION} .
+docker build --build-arg HAPROXY_VERSION --no-cache -t cilogon-haproxy:${HAPROXY_VERSION} .
 
 echo
 echo "Now you can tag and upload the image to AWS ECR:"
