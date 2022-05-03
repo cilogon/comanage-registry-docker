@@ -1,7 +1,13 @@
-VERSION=5
+VERSION=6
 IMAGE=comanage-registry-getssl
 
-docker build --no-cache -t ${IMAGE}:${VERSION} .
+if [[ -z "${HTTPD_VERSION}" ]] ; then
+   echo "Please set HTTPD_VERSION environment variable."
+   echo "E.g., 'export HTTPD_VERSION=2.4.53'"
+   exit;
+fi
+
+docker build --build-arg HTTPD_VERSION --no-cache -t ${IMAGE}:${VERSION} .
 
 echo
 echo "If image built successfully, do the following."
