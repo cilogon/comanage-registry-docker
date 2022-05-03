@@ -82,7 +82,7 @@ volumes:
 
 services:
     fermilab-ldap-01:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-slapd:1
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -115,19 +115,25 @@ services:
             - OLC_ROOT_DN=cn=admin,dc=fnal,dc=gov
             - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/fermilab_olc_root_dn_password
             - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/fermilab_syncrepl_user_password_hash
+            - HEALTHCHECK_REPLICA_LDAP_SERVICE_NAME=fermilab-ldap-02
+            - HEALTHCHECK_REPLICA_BIND_PASSWORD_FILE=/run/secrets/fermilab_syncrepl_user_password
+            - HEALTHCHECK_REPLICA_LDAP_URL=ldap://fermilab-ldap-02
+            - HEALTHCHECK_REPLICA_LDAP_BIND_DN=uid=syncrepl,o=system,dc=fnal,dc=gov
+            - HEALTHCHECK_REPLICA_LDAP_SEARCH_BASE=o=CO,dc=fnal,dc=gov
         secrets:
             - fermilab_olc_root_pw
             - fermilab_olc_root_dn_password
             - fermilab_syncrepl_user_password_hash
+            - fermilab_syncrepl_user_password
         networks:
             - fermilab
             - ldapgateway
         healthcheck:
-            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            test: ["CMD", "/usr/local/bin/healthcheck.sh"]
             interval: 15s
-            timeout: 1s
+            timeout: 5s
             retries: 3
-            start_period: 5s
+            start_period: 10s
         deploy:
             replicas: 1
             placement:
@@ -151,7 +157,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     fermilab-ldap-02:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-slapd:1
         command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
         volumes:
             - type: volume
@@ -184,19 +190,25 @@ services:
             - OLC_ROOT_DN=cn=admin,dc=fnal,dc=gov
             - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/fermilab_olc_root_dn_password
             - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/fermilab_syncrepl_user_password_hash
+            - HEALTHCHECK_REPLICA_LDAP_SERVICE_NAME=fermilab-ldap-01
+            - HEALTHCHECK_REPLICA_BIND_PASSWORD_FILE=/run/secrets/fermilab_syncrepl_user_password
+            - HEALTHCHECK_REPLICA_LDAP_URL=ldap://fermilab-ldap-01
+            - HEALTHCHECK_REPLICA_LDAP_BIND_DN=uid=syncrepl,o=system,dc=fnal,dc=gov
+            - HEALTHCHECK_REPLICA_LDAP_SEARCH_BASE=o=CO,dc=fnal,dc=gov
         secrets:
             - fermilab_olc_root_pw
             - fermilab_olc_root_dn_password
             - fermilab_syncrepl_user_password_hash
+            - fermilab_syncrepl_user_password
         networks:
             - fermilab
             - ldapgateway
         healthcheck:
-            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            test: ["CMD", "/usr/local/bin/healthcheck.sh"]
             interval: 15s
             timeout: 1s
             retries: 3
-            start_period: 5s
+            start_period: 10s
         deploy:
             replicas: 1
             placement:
@@ -315,4 +327,6 @@ secrets:
     fermilab_olc_root_dn_password:
         external: true
     fermilab_syncrepl_user_password_hash:
+        external: true
+    fermilab_syncrepl_user_password:
         external: true
