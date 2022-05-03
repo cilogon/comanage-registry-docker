@@ -9,6 +9,16 @@ fi
 docker build --build-arg HAPROXY_VERSION --no-cache -t cilogon-haproxy:${HAPROXY_VERSION} .
 
 echo
-echo "Now you can tag and upload the image to AWS ECR:"
-echo "docker tag cilogon-haproxy:${HAPROXY_VERSION} 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:${HAPROXY_VERSION}"
-echo "docker push 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:${HAPROXY_VERSION}"
+echo "If image built successfully, do the following."
+echo
+echo "First log in to AWS:"
+echo
+echo "    aws ecr get-login-password --region us-east-2 | \\"
+echo "    docker login --username AWS --password-stdin \\"
+echo "           495649616520.dkr.ecr.us-east-2.amazonaws.com"
+echo
+echo "Then tag and push the newly build image to AWS ECR:"
+echo
+echo "    docker tag cilogon-haproxy:${HAPROXY_VERSION} 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:${HAPROXY_VERSION}"
+echo "    docker push 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:${HAPROXY_VERSION}"
+
