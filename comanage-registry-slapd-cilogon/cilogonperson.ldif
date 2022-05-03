@@ -1,5 +1,0 @@
-dn: cn=cilogonperson,cn=schema,cn=config
-objectClass: olcSchemaConfig
-cn: cilogonperson
-olcAttributeTypes: {0}( 1.3.6.1.4.1.34998.3.2.1 NAME 'CILogonPersonMediaWikiUsername' DESC 'CILogonPerson per CILogon' EQUALITY caseExactMatch SUBSTR caseExactSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
-olcObjectClasses: {0}( 1.3.6.1.4.1.34998.3.2 NAME 'CILogonPerson' DESC 'CILogonPerson per CILogon' AUXILIARY MAY ( CILogonPersonMediaWikiUsername ) )
