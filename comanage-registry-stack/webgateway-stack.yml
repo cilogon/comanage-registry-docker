@@ -34,7 +34,7 @@ volumes:
 
 services:
     dockersocket:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.6
         volumes:
             - type: bind
               source: /var/run/docker.sock
@@ -131,7 +131,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     getssl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:6
         volumes:
             - type: volume
               source: getssl
