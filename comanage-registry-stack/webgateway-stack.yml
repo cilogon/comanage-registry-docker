@@ -157,6 +157,7 @@ services:
             update_config:
               parallelism: 1
               delay: 60s
+              order: start-first
         logging:
             driver: journald
             options:
