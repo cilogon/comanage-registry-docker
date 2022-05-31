@@ -19,7 +19,7 @@ volumes:
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:13
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:15
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -280,7 +280,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:6
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:7
         command: ["/usr/sbin/cron", "-f", "-L", "15"]
         volumes:
             - type: volume
