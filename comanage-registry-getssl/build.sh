@@ -1,4 +1,4 @@
-VERSION=6
+VERSION=7
 IMAGE=comanage-registry-getssl
 
 if [[ -z "${HTTPD_VERSION}" ]] ; then
