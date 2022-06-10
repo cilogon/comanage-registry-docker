@@ -343,7 +343,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:4.0.2-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:05bdf0c5-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -375,6 +375,9 @@ services:
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/biocommons_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/biocommons_comanage_registry_security_seed
             - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/biocommons_registry_host
+            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverT/users/36943,http://cilogon.org/serverA/users/10844461,http://cilogon.org/serverA/users/13976096
+            - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_SOURCE_DEFAULT=COmanageRegistry/default/identity_token_ldap_claim_source.qdl
+            - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_SOURCE_PROCESS=COmanageRegistry/default/identity_token_ldap_claim_process.qdl
         secrets:
             - biocommons_comanage_registry_database_user_password
             - biocommons_comanage_registry_database_host
@@ -439,7 +442,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:4.0.1-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:05bdf0c5-1
         volumes:
             - type: volume
               source: comanage-registry-local
