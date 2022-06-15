@@ -28,7 +28,7 @@ volumes:
 
 services:
     dockersocket:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.6
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-haproxy:2.5.7
         volumes:
             - type: bind
               source: /var/run/docker.sock
@@ -42,6 +42,7 @@ services:
             mode: replicated
             replicas: 3
             placement:
+              max_replicas_per_node: 1
               constraints:
                 - node.role == manager
             restart_policy:
@@ -71,25 +72,6 @@ services:
               read_only: true
               volume:
                 nocopy: true
-        secrets:
-            - gw_astronomy_saml_aa_signing_cert
-            - gw_astronomy_saml_aa_privkey
-            - registry_cilogon_org_https_cert_file
-            - registry_cilogon_org_https_privkey_file
-            - registry_gw_astronomy_org_https_cert_file
-            - registry_gw_astronomy_org_https_privkey_file
-            - orcid_saml_gateway_gw_astronomy_org_https_cert_file
-            - orcid_saml_gateway_gw_astronomy_org_https_privkey_file
-            - registry_ligo_org_https_cert_file
-            - registry_ligo_org_https_privkey_file
-            - federation_proxy_ligo_org_https_cert_file
-            - federation_proxy_ligo_org_https_privkey_file
-            - group_registry_ligo_org_https_cert_file
-            - group_registry_ligo_org_https_privkey_file
-            - login_chooser_ligo_org_https_cert_file
-            - login_chooser_ligo_org_https_privkey_file
-            - mdq_ligo_org_https_cert_file
-            - mdq_ligo_org_https_privkey_file
         networks:
             - webgateway
             - dockersocket
@@ -110,6 +92,7 @@ services:
             mode: replicated
             replicas: 3
             placement:
+              max_replicas_per_node: 1
               constraints:
                 - node.role == manager
             restart_policy:
@@ -123,7 +106,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     getssl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:6
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-getssl:7
         volumes:
             - type: volume
               source: getssl
@@ -163,40 +146,3 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-secrets:
-    gw_astronomy_saml_aa_signing_cert:
-        external: true
-    gw_astronomy_saml_aa_privkey:
-        external: true
-    registry_cilogon_org_https_cert_file:
-        external: true
-    registry_cilogon_org_https_privkey_file:
-        external: true
-    registry_gw_astronomy_org_https_cert_file:
-        external: true
-    registry_gw_astronomy_org_https_privkey_file:
-        external: true
-    orcid_saml_gateway_gw_astronomy_org_https_cert_file:
-        external: true
-    orcid_saml_gateway_gw_astronomy_org_https_privkey_file:
-        external: true
-    registry_ligo_org_https_cert_file:
-        external: true
-    registry_ligo_org_https_privkey_file:
-        external: true
-    federation_proxy_ligo_org_https_cert_file:
-        external: true
-    federation_proxy_ligo_org_https_privkey_file:
-        external: true
-    group_registry_ligo_org_https_cert_file:
-        external: true
-    group_registry_ligo_org_https_privkey_file:
-        external: true
-    login_chooser_ligo_org_https_cert_file:
-        external: true
-    login_chooser_ligo_org_https_privkey_file:
-        external: true
-    mdq_ligo_org_https_cert_file:
-        external: true
-    mdq_ligo_org_https_privkey_file:
-        external: true
