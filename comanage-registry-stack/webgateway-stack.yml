@@ -78,6 +78,9 @@ services:
               read_only: true
               volume:
                 nocopy: true
+        secrets:
+            - gw_astronomy_saml_aa_signing_cert
+            - gw_astronomy_saml_aa_privkey
         networks:
             - webgateway
             - dockersocket
@@ -186,3 +189,9 @@ services:
             driver: journald
             options:
                 tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    gw_astronomy_saml_aa_signing_cert:
+        external: true
+    gw_astronomy_saml_aa_privkey:
+        external: true
