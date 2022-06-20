@@ -354,7 +354,6 @@ services:
             - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/bnl_registry_oidc_provider_metadata_url 
             - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/bnl_registry_oidc_crypto_passphrase 
             - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/bnl_registry_host 
-            - REGISTRY_HOST_FILE=/run/secrets/bnl_registry_host 
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
@@ -372,6 +371,9 @@ services:
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/bnl_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/bnl_comanage_registry_security_seed
+            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverA/users/10844461
+            - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_SOURCE_DEFAULT=COmanageRegistry/default/identity_token_ldap_claim_source.qdl
+            - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_SOURCE_PROCESS=COmanageRegistry/default/identity_token_ldap_claim_process.qdl
         secrets:
             - bnl_comanage_registry_database_user_password
             - bnl_comanage_registry_database_host
