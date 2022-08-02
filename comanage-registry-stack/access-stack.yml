@@ -340,7 +340,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:05bdf0c5-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:99b1a9aa-2
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -353,6 +353,7 @@ services:
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/access_registry_oidc_client_secret 
             - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/access_registry_oidc_provider_metadata_url 
             - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/access_registry_oidc_crypto_passphrase 
+            - OIDC_REMOTE_USER_CLAIM=eppn
             - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/access_registry_host 
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
