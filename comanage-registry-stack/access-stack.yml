@@ -354,6 +354,7 @@ services:
             - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/access_registry_oidc_provider_metadata_url 
             - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/access_registry_oidc_crypto_passphrase 
             - OIDC_REMOTE_USER_CLAIM=eppn
+            - KRB5_CONFIG=/srv/comanage-registry/local/krb5.conf
             - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/access_registry_host 
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
