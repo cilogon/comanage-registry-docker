@@ -343,7 +343,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:05bdf0c5-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:99b1a9aa-3
         volumes:
             - type: volume
               source: comanage-registry-local
