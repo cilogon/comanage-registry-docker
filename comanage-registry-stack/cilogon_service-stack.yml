@@ -19,7 +19,7 @@ volumes:
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:15
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:16
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -214,7 +214,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:52
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:54
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
