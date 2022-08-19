@@ -214,7 +214,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:55
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:56
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
