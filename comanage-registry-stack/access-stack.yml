@@ -439,45 +439,45 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-#    comanage-registry-cron:
-#        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:99b1a9aa-1
-#        volumes:
-#            - type: volume
-#              source: comanage-registry-local
-#              target: /srv/comanage-registry/local
-#              read_only: false
-#              volume:
-#                nocopy: true
-#        environment:
-#            - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
-#        networks:
-#            - access
-#        healthcheck:
-#            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
-#            interval: 15s
-#            timeout: 1s
-#            retries: 3
-#            start_period: 5s
-#        deploy:
-#            labels:
-#                - "traefik.enable=false"
-#            replicas: 1
-#            rollback_config:
-#              parallelism: 1
-#              delay: 0s
-#              failure_action: pause
-#              monitor: 5s
-#              order: stop-first
-#            update_config:
-#              parallelism: 1
-#              delay: 0s
-#              failure_action: rollback
-#              monitor: 5s
-#              order: stop-first
-#        logging:
-#            driver: journald
-#            options:
-#                tag: "cilogon_docker_{{.Name}}"
+    comanage-registry-cron:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:99b1a9aa-1
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
+        networks:
+            - access
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
 
 #    pyff:
 #        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:5
