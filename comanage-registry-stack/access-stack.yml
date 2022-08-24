@@ -340,7 +340,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:a9ade120-1 
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:3ad63aa7-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -440,7 +440,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:a9ade120-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron-cilogon:3ad63aa7-1
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -450,6 +450,8 @@ services:
                 nocopy: true
         environment:
             - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
+            - COMANAGE_REGISTRY_CRON_USER=root
+            - KRB5_CONFIG=/srv/comanage-registry/local/krb5.conf
         networks:
             - access
         healthcheck:
