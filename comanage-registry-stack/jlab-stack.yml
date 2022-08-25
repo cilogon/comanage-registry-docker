@@ -16,50 +16,50 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/var/lib/ldap_01"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_01"
 
     ldap-state-02:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/var/lib/ldap_02"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_02"
 
     ldap-config-01:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/etc/slapd.d/ldap_01"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_01"
 
     ldap-config-02:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/etc/slapd.d/ldap_02"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_02"
 
     ldap-ldif-01:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/ldif/ldap_01"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_01"
 
     ldap-ldif-02:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/ldif/ldap_02"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_02"
 
     ldap-schema:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/schema"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/schema"
 
     ldap-backups-01:
         driver: local
@@ -79,36 +79,36 @@ volumes:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/usr/local/slapcat"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/usr/local/slapcat"
 
     comanage-registry-local:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/srv/comanage-registry/local"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/srv/comanage-registry/local"
 
     pyff-configs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/etc/pyff"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/pyff"
 
     satosa-proxy-htdocs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/usr/local/apache2/htdocs"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/usr/local/apache2/htdocs"
 
     satosa-configs:
         driver: local
         driver_opts:
             type: nfs
-            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
-            device: ":/jlab/etc/satosa"
+            o: addr=${SRV_JLAB_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/satosa"
 
 services:
     jlab-ldap-01:
