@@ -447,6 +447,7 @@ services:
                 nocopy: true
         environment:
             - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
+            - COMANAGE_REGISTRY_CRON_USER=root
         networks:
             - jlab
         healthcheck:
