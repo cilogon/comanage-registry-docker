@@ -440,7 +440,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron-cilogon:3ad63aa7-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron-cilogon:3ad63aa7-2
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -455,7 +455,7 @@ services:
         networks:
             - access
         healthcheck:
-            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "root"]
             interval: 15s
             timeout: 1s
             retries: 3
