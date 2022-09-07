@@ -1,0 +1,470 @@
+version: '3.8'
+
+networks:
+    lsst_dev:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.107.0/24
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+volumes:
+    ldap-state-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/var/lib/ldap_01"
+
+    ldap-state-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/var/lib/ldap_02"
+
+    ldap-config-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/etc/slapd.d/ldap_01"
+
+    ldap-config-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/etc/slapd.d/ldap_02"
+
+    ldap-ldif-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/ldif/ldap_01"
+
+    ldap-ldif-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/ldif/ldap_02"
+
+    ldap-backups-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/ldif/01"
+
+    ldap-backups-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/ldif/02"
+
+    ldap-backups-usr-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/usr/local/slapcat"
+
+    comanage-registry-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_DOCKER_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/lsst_dev/srv/comanage-registry/local"
+
+services:
+    lsst_dev-ldap-01:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/lsst_dev_olc_root_pw
+            - OLC_SUFFIX=dc=lsst_dev,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=lsst_dev,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/lsst_dev_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/lsst_dev_syncrepl_user_password_hash
+        secrets:
+            - lsst_dev_olc_root_pw
+            - lsst_dev_olc_root_dn_password
+            - lsst_dev_syncrepl_user_password_hash
+        networks:
+            - lsst_dev
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    lsst_dev-ldap-02:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/lsst_dev_olc_root_pw
+            - OLC_SUFFIX=dc=lsst_dev,dc=org
+            - OLC_ROOT_DN=cn=admin,dc=lsst_dev,dc=org
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/lsst_dev_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/lsst_dev_syncrepl_user_password_hash
+        secrets:
+            - lsst_dev_olc_root_pw
+            - lsst_dev_olc_root_dn_password
+            - lsst_dev_syncrepl_user_password_hash
+        networks:
+            - lsst_dev
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    lsst_dev-ldif-backup-01:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-01
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=lsst-01
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - lsst_dev
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    lsst_dev-ldif-backup-02:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-02
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=lsst-02
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+        networks:
+            - lsst_dev
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:4.0.2-1
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - OIDC_CLIENT_ID_FILE=/run/secrets/lsst_dev_registry_oidc_client_id 
+            - OIDC_CLIENT_SECRET_FILE=/run/secrets/lsst_dev_registry_oidc_client_secret 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/lsst_dev_registry_oidc_provider_metadata_url 
+            - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/lsst_dev_registry_oidc_crypto_passphrase 
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN=id-dev.lsst.cloud
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=lsst_dev_registry_test
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/lsst_dev_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=lv_registry_tst
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/lsst_dev_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/lsst_dev_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/lsst_dev_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=LSST Registry DEV
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_ENABLE_PLUGIN=ServicesWidget,AnnouncementsWidget
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/lsst_dev_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/lsst_dev_comanage_registry_security_seed
+        secrets:
+            - lsst_dev_comanage_registry_database_user_password
+            - lsst_dev_comanage_registry_database_host
+            - lsst_dev_comanage_registry_email_account
+            - lsst_dev_comanage_registry_email_account_password
+            - lsst_dev_comanage_registry_email_from
+            - lsst_dev_comanage_registry_security_salt
+            - lsst_dev_comanage_registry_security_seed
+            - lsst_dev_registry_oidc_client_id
+            - lsst_dev_registry_oidc_client_secret
+            - lsst_dev_registry_oidc_provider_metadata_url
+            - lsst_dev_registry_oidc_crypto_passphrase
+            - lsst_dev_registry_host
+        networks:
+            - lsst_dev
+            - webgateway
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 180s
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.lsst_dev-comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.lsst_dev-comanage-registry-http.rule=Host(`id-dev.lsst.cloud`)"
+                - "traefik.http.routers.lsst_dev-comanage-registry-http.middlewares=lsst_dev-comanage-registry-https"
+                - "traefik.http.middlewares.lsst_dev-comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.lsst_dev-comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.lsst_dev-comanage-registry.rule=Host(`id-dev.lsst.cloud`)"
+                - "traefik.http.routers.lsst_dev-comanage-registry.tls=true"
+                - "traefik.http.routers.lsst_dev-comanage-registry.middlewares=lsst_dev-comanage-registry"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.sticky.cookie.name=_id_dev_lsst_cloud"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.middlewares.lsst_dev-comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.lsst_dev-comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.healthcheck.interval=5s"
+                - "traefik.http.services.lsst_dev-comanage-registry.loadbalancer.healthcheck.timeout=1s"
+            replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:4.0.2-2
+        volumes:
+            - type: volume
+              source: comanage-registry-local
+              target: /srv/comanage-registry/local
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - COMANAGE_REGISTRY_NO_DATABASE_CONFIG=1
+            - COMANAGE_REGISTRY_CRON_USER=root
+        networks:
+            - lsst_dev
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "www-data"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    lsst_dev_olc_root_pw:
+        external: true
+    lsst_dev_comanage_registry_database_user_password:
+        external: true
+    lsst_dev_comanage_registry_database_host:
+        external: true
+    lsst_dev_comanage_registry_email_account:
+        external: true
+    lsst_dev_comanage_registry_email_account_password:
+        external: true
+    lsst_dev_comanage_registry_email_from:
+        external: true
+    lsst_dev_comanage_registry_security_salt:
+        external: true
+    lsst_dev_comanage_registry_security_seed:
+        external: true
+    lsst_dev_registry_oidc_client_id:
+        external: true
+    lsst_dev_registry_oidc_client_secret:
+        external: true
+    lsst_dev_registry_oidc_provider_metadata_url:
+        external: true
+    lsst_dev_registry_oidc_crypto_passphrase:
+        external: true
+    lsst_dev_olc_root_dn_password:
+        external: true
+    lsst_dev_registry_host:
+        external: true
+    lsst_dev_syncrepl_user_password_hash:
+        external: true
