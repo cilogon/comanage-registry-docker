@@ -19,7 +19,7 @@ volumes:
 
 services:
     cilogon-crl:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:16
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-crl:17
         command: ["apache2-foreground"]
         volumes:
             - type: volume
@@ -75,7 +75,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-demo:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:10
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:11
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -133,7 +133,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:22
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:23
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -214,7 +214,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:58
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:59
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
@@ -280,7 +280,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:8
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-cron:9
         command: ["/usr/sbin/cron", "-f", "-L", "15"]
         volumes:
             - type: volume
