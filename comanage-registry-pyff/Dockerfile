@@ -1,16 +1,16 @@
-FROM redis:5.0.12-buster
+FROM redis:5.0.14-bullseye
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         curl \
-        git \
-        python-virtualenv \
+        git \ 
+        python3-venv \
         redis-tools \
         supervisor \
         virtualenv 
 
 RUN mkdir -p /opt/pyff \
     && adduser --home /opt/pyff --no-create-home --system pyff --group \
-    && virtualenv /opt/pyff --no-site-packages --python=python3 \
+    && python3 -m venv /opt/pyff \
     && . /opt/pyff/bin/activate \
     && pip install --upgrade pip \
     && pip install pyff==2.0.0 \
