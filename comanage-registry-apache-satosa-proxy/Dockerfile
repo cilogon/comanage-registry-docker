@@ -1,6 +1,6 @@
-FROM httpd:2.4.48
+FROM httpd:2.4.54
 
 COPY httpd.conf /usr/local/apache2/conf/httpd.conf
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         curl
