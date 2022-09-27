@@ -22,6 +22,7 @@ services:
             - /srv/docker/satosa-sp-check/etc/shibboleth/sp-cert.pem:/etc/shibboleth/sp-encrypt-cert.pem
             - /srv/docker/satosa-sp-check/etc/shibboleth/sp-key.pem:/etc/shibboleth/sp-encrypt-key.pem
             - /srv/docker/satosa-sp-check/etc/shibboleth/federation-proxy-dev.rmacc.org-idp-metadata.xml:/etc/shibboleth/federation-proxy-dev.rmacc.org-idp-metadata.xml
+            - /srv/docker/satosa-sp-check/etc/shibboleth/federation-proxy-test.rmacc.org-idp-metadata.xml:/etc/shibboleth/federation-proxy-test.rmacc.org-idp-metadata.xml
         networks:
             - webgateway
             - satosa-sp-check
