@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         build-essential \
         curl \
         libpcre3-dev \
