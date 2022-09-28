@@ -1,0 +1,66 @@
+version: '3.8'
+
+networks:
+    satosa-sp-check:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.117.0/24
+    webgateway:
+        external: true
+
+services:
+    sp:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/satosa-sp-check:1
+        volumes:
+            - /srv/docker/satosa-sp-check/etc/apache2/sites-available/000-default.conf:/etc/apache2/sites-available/000-default.conf
+            - /srv/docker/satosa-sp-check/var/www/html:/var/www/html
+            - /srv/docker/satosa-sp-check/etc/shibboleth/shibboleth2.xml:/etc/shibboleth/shibboleth2.xml
+            - /srv/docker/satosa-sp-check/etc/shibboleth/attribute-map.xml:/etc/shibboleth/attribute-map.xml
+            - /srv/docker/satosa-sp-check/etc/shibboleth/sp-cert.pem:/etc/shibboleth/sp-signing-cert.pem
+            - /srv/docker/satosa-sp-check/etc/shibboleth/sp-key.pem:/etc/shibboleth/sp-signing-key.pem
+            - /srv/docker/satosa-sp-check/etc/shibboleth/sp-cert.pem:/etc/shibboleth/sp-encrypt-cert.pem
+            - /srv/docker/satosa-sp-check/etc/shibboleth/sp-key.pem:/etc/shibboleth/sp-encrypt-key.pem
+            - /srv/docker/satosa-sp-check/etc/shibboleth/federation-proxy-dev.rmacc.org-idp-metadata.xml:/etc/shibboleth/federation-proxy-dev.rmacc.org-idp-metadata.xml
+            - /srv/docker/satosa-sp-check/etc/shibboleth/federation-proxy-test.rmacc.org-idp-metadata.xml:/etc/shibboleth/federation-proxy-test.rmacc.org-idp-metadata.xml
+        networks:
+            - webgateway
+            - satosa-sp-check
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.satosa-sp-check-http.entrypoints=web"
+                - "traefik.http.routers.satosa-sp-check-http.rule=Host(`satosa-sp-check.cilogon.org`)"
+                - "traefik.http.routers.satosa-sp-check-http.middlewares=satosa-sp-check-https"
+                - "traefik.http.middlewares.satosa-sp-check-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.satosa-sp-check.entrypoints=websecure"
+                - "traefik.http.routers.satosa-sp-check.rule=Host(`satosa-sp-check.cilogon.org`)"
+                - "traefik.http.routers.satosa-sp-check.tls=true"
+                - "traefik.http.routers.satosa-sp-check.middlewares=satosa-sp-check"
+                - "traefik.http.services.satosa-sp-check.loadbalancer.server.port=80"
+                - "traefik.http.services.satosa-sp-check.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.satosa-sp-check.loadbalancer.sticky.cookie.name=_satosa_sp_check_cilogon_org"
+                - "traefik.http.services.satosa-sp-check.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.satosa-sp-check.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.middlewares.satosa-sp-check.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.satosa-sp-check.headers.stsincludesubdomains=true"
+            replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 30s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
