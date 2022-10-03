@@ -64,7 +64,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
           
     webgateway:
-        image: traefik:v2.8.7
+        image: traefik:v2.8.8
         volumes:
             - type: volume
               source: traefik
