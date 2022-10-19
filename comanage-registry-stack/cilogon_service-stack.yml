@@ -262,7 +262,7 @@ services:
                 - "traefik.http.routers.cilogon-web.entrypoints=websecure"
                 - "traefik.http.routers.cilogon-web.rule=Host(`test.cilogon.org`,`test.cilogon.com`,`test.cilogon.net`,`test.cilogin.org`)"
                 - "traefik.http.routers.cilogon-web.tls=true"
-                - "traefik.http.routers.cilogon-web.middlewares=cilogon-web,cilogon-web-ratelimit"
+                - "traefik.http.routers.cilogon-web.middlewares=cilogon-web,cilogon-web-ratelimit,cilogon-web-regex"
                 - "traefik.http.services.cilogon-web.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_test_cilogon_org"
@@ -274,6 +274,8 @@ services:
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=40"
+                - "traefik.http.middlewares.cilogon-web-regex.replacepathregex.regex=^/authorize([^/]*)/?"
+                - "traefik.http.middlewares.cilogon-web-regex.replacepathregex.replacement=/authorize$${1}/"
         logging:
             driver: journald
             options:
