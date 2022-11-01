@@ -11,7 +11,7 @@ networks:
 
 services:
     pyff:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:6
         volumes:
             - /srv/docker/cloudbank/opt/pyff/cloudbank_mdx.yaml:/opt/pyff/cloudbank_mdx.yaml
             - /srv/docker/cloudbank/opt/pyff/aws-saml-metadata.xml:/opt/pyff/aws-saml-metadata.xml
@@ -64,7 +64,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:5
         volumes:
             - /srv/docker/cloudbank/usr/local/apache2/htdocs:/usr/local/apache2/htdocs
             - /srv/docker/cloudbank/usr/local/apache2/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
@@ -122,7 +122,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:16
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:17
         volumes:
             - /srv/docker/cloudbank/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
             - /srv/docker/cloudbank/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
