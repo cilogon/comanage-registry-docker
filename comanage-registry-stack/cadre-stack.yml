@@ -477,7 +477,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     pyff:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:5
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-pyff:6
         volumes:
             - type: volume
               source: pyff-configs
@@ -549,7 +549,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa-proxy:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:4
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-apache-satosa-proxy:5
         volumes:
             - type: volume
               source: satosa-proxy-htdocs
@@ -611,7 +611,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:14
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:17
         volumes:
             - type: volume
               source: satosa-configs
