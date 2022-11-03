@@ -75,7 +75,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-demo:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:10
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:12
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -133,7 +133,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:22
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:25
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -214,7 +214,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     cilogon-web:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:67
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/cilogon-web:70
         command: ["/usr/local/bin/startup.sh"]
         volumes:
             - type: volume
@@ -262,7 +262,7 @@ services:
                 - "traefik.http.routers.cilogon-web.entrypoints=websecure"
                 - "traefik.http.routers.cilogon-web.rule=Host(`cilogon.org`,`cilogon.com`,`cilogon.net`,`cilogin.org`,`ecp.cilogon.org`,`www.cilogon.com`,`www.cilogon.net`,`www.cilogin.org`)"
                 - "traefik.http.routers.cilogon-web.tls=true"
-                - "traefik.http.routers.cilogon-web.middlewares=cilogon-web,cilogon-web-ratelimit"
+                - "traefik.http.routers.cilogon-web.middlewares=cilogon-web,cilogon-web-ratelimit,cilogon-web-regex"
                 - "traefik.http.services.cilogon-web.loadbalancer.server.port=80"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.cilogon-web.loadbalancer.sticky.cookie.name=_cilogon_org"
@@ -274,6 +274,8 @@ services:
                 - "traefik.http.middlewares.cilogon-web.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.cilogon-web-ratelimit.ratelimit.burst=40"
+                - "traefik.http.middlewares.cilogon-web-regex.replacepathregex.regex=^/authorize([^/]*)/?"
+                - "traefik.http.middlewares.cilogon-web-regex.replacepathregex.replacement=/authorize$${1}/"
         logging:
             driver: journald
             options:
