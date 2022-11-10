@@ -340,7 +340,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:4.0.2-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:8f3ac1a3-3
         volumes:
             - type: volume
               source: comanage-registry-local
@@ -372,6 +372,8 @@ services:
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/cadre_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/cadre_comanage_registry_security_seed
+            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverT/users/36943,http://cilogon.org/serverA/users/10844461,http://cilogon.org/serverA/users/13976096
+            - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_DEFAULT=COmanageRegistry/default/ldap_claims.qdl
         secrets:
             - cadre_comanage_registry_database_user_password
             - cadre_comanage_registry_database_host
