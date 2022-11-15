@@ -627,7 +627,7 @@ services:
             - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/biocommons_satosa_cilogon_backend_client_secret
             - SATOSA_FRONTEND_CERT_FILE=/run/secrets/biocommons_satosa_saml_frontend_cert_file
             - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/biocommons_satosa_saml_frontend_privkey_file
-            - SATOSA_LDAP_BIND_PASSWORD_FILE=/run/secrets/biocommons_satosa_ldap_bind_password
+            - SATOSA_LDAP_TSI_BIND_PASSWORD_FILE=/run/secrets/biocommons_tsi_proxy_user_ldap_password
             - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/biocommons_satosa_state_encryption_key
         secrets:
             - biocommons_satosa_cilogon_backend_client_secret
@@ -635,6 +635,7 @@ services:
             - biocommons_satosa_saml_frontend_cert_file
             - biocommons_satosa_saml_frontend_privkey_file
             - biocommons_satosa_state_encryption_key
+            - biocommons_tsi_proxy_user_ldap_password
         networks:
             - biocommons
         healthcheck:
@@ -706,4 +707,6 @@ secrets:
     biocommons_satosa_state_encryption_key:
         external: true
     biocommons_syncrepl_user_password_hash:
+        external: true
+    biocommons_tsi_proxy_user_ldap_password:
         external: true
