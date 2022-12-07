@@ -40,7 +40,7 @@ services:
             - TASKS=1
         deploy:
             mode: replicated
-            replicas: 3
+            replicas: 6
             placement:
               max_replicas_per_node: 1
               constraints:
@@ -93,7 +93,7 @@ services:
               mode: host
         deploy:
             mode: replicated
-            replicas: 3
+            replicas: 6
             placement:
               max_replicas_per_node: 1
               constraints:
