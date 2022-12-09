@@ -313,20 +313,20 @@ services:
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/lsst_registry_oidc_client_secret 
             - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/lsst_registry_oidc_provider_metadata_url 
             - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/lsst_registry_oidc_crypto_passphrase 
-            - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN=id-int.lsst.cloud
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN=id.lsst.cloud
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
-            - COMANAGE_REGISTRY_DATABASE=lsst_registry_test
+            - COMANAGE_REGISTRY_DATABASE=lsst_registry
             - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/lsst_comanage_registry_database_host
-            - COMANAGE_REGISTRY_DATABASE_USER=lt_registry_tst
+            - COMANAGE_REGISTRY_DATABASE_USER=lt_registry
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/lsst_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/lsst_comanage_registry_email_account
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/lsst_comanage_registry_email_account_password
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
             - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
-            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=LSST Registry TEST
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=LSST Registry
             - COMANAGE_REGISTRY_EMAIL_PORT=465
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_ENABLE_PLUGIN=ServicesWidget,AnnouncementsWidget
@@ -361,16 +361,16 @@ services:
                 - "traefik.enable=true"
                 - "traefik.docker.network=webgateway"
                 - "traefik.http.routers.lsst-comanage-registry-http.entrypoints=web"
-                - "traefik.http.routers.lsst-comanage-registry-http.rule=Host(`id-int.lsst.cloud`)"
+                - "traefik.http.routers.lsst-comanage-registry-http.rule=Host(`id.lsst.cloud`)"
                 - "traefik.http.routers.lsst-comanage-registry-http.middlewares=lsst-comanage-registry-https"
                 - "traefik.http.middlewares.lsst-comanage-registry-https.redirectscheme.scheme=https"
                 - "traefik.http.routers.lsst-comanage-registry.entrypoints=websecure"
-                - "traefik.http.routers.lsst-comanage-registry.rule=Host(`id-int.lsst.cloud`)"
+                - "traefik.http.routers.lsst-comanage-registry.rule=Host(`id.lsst.cloud`)"
                 - "traefik.http.routers.lsst-comanage-registry.tls=true"
                 - "traefik.http.routers.lsst-comanage-registry.middlewares=lsst-comanage-registry"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.server.port=80"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie=true"
-                - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.name=_id_int_lsst_cloud"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.name=_id_lsst_cloud"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.secure=true"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsseconds=63072000"
@@ -378,7 +378,7 @@ services:
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.timeout=1s"
-            replicas: 1
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             rollback_config:
