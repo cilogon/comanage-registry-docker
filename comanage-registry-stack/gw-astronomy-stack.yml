@@ -91,7 +91,7 @@ volumes:
 
 services:
     aa:
-        image: i2incommon/shib-idp:4.2.1_20220418
+        image: i2incommon/shib-idp:4.2.1_20221213
         volumes:
             - /srv/gw-astronomy/usr/local/tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
             - /srv/gw-astronomy/opt/shibboleth-idp/conf/idp.properties:/opt/shibboleth-idp/conf/idp.properties
