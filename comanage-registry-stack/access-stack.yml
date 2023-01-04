@@ -419,7 +419,7 @@ services:
                 - "traefik.http.services.access-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
                 - "traefik.http.services.access-comanage-registry.loadbalancer.healthcheck.interval=5s"
                 - "traefik.http.services.access-comanage-registry.loadbalancer.healthcheck.timeout=1s"
-            replicas: 1
+            replicas: 4
             placement:
                 max_replicas_per_node: 1
             rollback_config:
