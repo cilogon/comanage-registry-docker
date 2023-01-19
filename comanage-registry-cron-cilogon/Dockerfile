@@ -1,6 +1,6 @@
-ARG COMANAGE_REGISTRY_VERSION=4.0.2
+ARG COMANAGE_REGISTRY_VERSION=4.1.0
 ARG COMANAGE_REGISTRY_CRON_BASE_IMAGE_VERSION=1
-FROM comanage-registry-cron:${COMANAGE_REGISTRY_VERSION}-${COMANAGE_REGISTRY_CRON_BASE_IMAGE_VERSION}
+FROM public.ecr.aws/cilogon/comanage-registry-cron:${COMANAGE_REGISTRY_VERSION}-${COMANAGE_REGISTRY_CRON_BASE_IMAGE_VERSION}
 
 # Install MIT Kerberos runtime libraries and development files.
 RUN apt-get update && apt-get install -y \
