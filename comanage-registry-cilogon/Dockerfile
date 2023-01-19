@@ -1,12 +1,6 @@
-ARG COMANAGE_REGISTRY_VERSION=4.0.2
+ARG COMANAGE_REGISTRY_VERSION=4.1.0
 ARG COMANAGE_REGISTRY_BASE_IMAGE_VERSION=1
-FROM comanage-registry:${COMANAGE_REGISTRY_VERSION}-mod-auth-openidc-${COMANAGE_REGISTRY_BASE_IMAGE_VERSION}
-
-# Enable the remoteip module since we run behind load balancer
-COPY remoteip.conf /etc/apache2/mods-available/remoteip.conf
-RUN a2enmod remoteip
-
-COPY 000-comanage.conf /etc/apache2/sites-available/000-comanage.conf
+FROM public.ecr.aws/cilogon/comanage-registry:${COMANAGE_REGISTRY_VERSION}-mod_auth_openidc-${COMANAGE_REGISTRY_BASE_IMAGE_VERSION}
 
 # Deploy the CILogon ePPN enroller plugin
 ARG CILOGON_EPPN_ENROLLER_PLUGIN_SRC_URL=https://github.com/cilogon/CilogonEppnEnroller/archive/master.tar.gz
@@ -18,17 +12,13 @@ RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" \
       && cd "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller/View/CilogonEppnEnrollers" \
       && ln -s ../../../../View/Standard/edit.ctp edit.ctp
 
-# Deploy Oa4mpClient plugin version 5.3.0
-ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/5.3.0.tar.gz
+# Deploy Oa4mpClient plugin version 5.4.0
+ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/5.4.0.tar.gz
 
 RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" \
       && wget -O Oa4mpClient.tar.gz $CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL \
       && tar -zxf Oa4mpClient.tar.gz -C "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" --strip-components=1 \
       && rm -f Oa4mpClient.tar.gz
-
-COPY mod-auth-openidc.conf /etc/apache2/conf-enabled/mod-auth-openidc.conf
-
-COPY docker-comanage-entrypoint /usr/local/bin/
 
 # Copy customized core.php that sets a session timeout to 8 hours
 COPY core.php "$COMANAGE_REGISTRY_DIR/app/Config/"
