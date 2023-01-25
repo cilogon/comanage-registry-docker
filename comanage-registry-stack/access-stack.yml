@@ -378,7 +378,7 @@ services:
         healthcheck:
             test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
             interval: 15s
-            timeout: 1s
+            timeout: 5s
             retries: 3
             start_period: 180s
         deploy:
@@ -402,7 +402,7 @@ services:
                 - "traefik.http.middlewares.access-comanage-registry.headers.stsincludesubdomains=true"
                 - "traefik.http.services.access-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
                 - "traefik.http.services.access-comanage-registry.loadbalancer.healthcheck.interval=5s"
-                - "traefik.http.services.access-comanage-registry.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.access-comanage-registry.loadbalancer.healthcheck.timeout=5s"
             replicas: 1
             placement:
                 max_replicas_per_node: 1
