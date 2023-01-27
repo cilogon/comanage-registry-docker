@@ -465,77 +465,77 @@ services:
             options:
                 tag: "cilogon_docker_{{.Name}}"
 
-    satosa:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:17
-        volumes:
-            - type: volume
-              source: satosa-configs
-              target: /etc/satosa
-              read_only: true
-              volume:
-                nocopy: true
-        environment:
-            - PROXY_PORT=9000
-            - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
-            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/access_satosa_cilogon_backend_client_secret
-            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/access_satosa_saml_frontend_cert_file
-            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/access_satosa_saml_frontend_privkey_file
-            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/access_satosa_state_encryption_key
-        secrets:
-            - access_satosa_cilogon_backend_client_secret
-            - access_satosa_saml_frontend_cert_file
-            - access_satosa_saml_frontend_privkey_file
-            - access_satosa_state_encryption_key
-        networks:
-            - access
-            - webgateway
-        healthcheck:
-            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:9000/ping"]
-            interval: 15s
-            timeout: 1s
-            retries: 3
-            start_period: 30s
-        deploy:
-            labels:
-                - "traefik.enable=true"
-                - "traefik.docker.network=webgateway"
-                - "traefik.http.routers.access-satosa-http.entrypoints=web"
-                - "traefik.http.routers.access-satosa-http.rule=Host(`federation-proxy-test.access-ci.org`)"
-                - "traefik.http.routers.access-satosa-http.middlewares=access-satosa-https"
-                - "traefik.http.middlewares.access-satosa-https.redirectscheme.scheme=https"
-                - "traefik.http.routers.access-satosa.entrypoints=websecure"
-                - "traefik.http.routers.access-satosa.rule=Host(`federation-proxy-test.access-ci.org`)"
-                - "traefik.http.routers.access-satosa.tls=true"
-                - "traefik.http.routers.access-satosa.middlewares=access-satosa"
-                - "traefik.http.services.access-satosa.loadbalancer.server.port=9000"
-                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie=true"
-                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie.name=_federation_proxy_test_access_org"
-                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie.secure=true"
-                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie.httpOnly=true"
-                - "traefik.http.middlewares.access-satosa.headers.stsseconds=63072000"
-                - "traefik.http.middlewares.access-satosa.headers.stsincludesubdomains=true"
-                - "traefik.http.services.access-satosa.loadbalancer.healthcheck.path=/ping/"
-                - "traefik.http.services.access-satosa.loadbalancer.healthcheck.interval=5s"
-                - "traefik.http.services.access-satosa.loadbalancer.healthcheck.timeout=1s"
-            replicas: 1
-            placement:
-                max_replicas_per_node: 1
-            rollback_config:
-              parallelism: 1
-              delay: 0s
-              failure_action: pause
-              monitor: 5s
-              order: stop-first
-            update_config:
-              parallelism: 1
-              delay: 120s
-              failure_action: rollback
-              monitor: 5s
-              order: stop-first
-        logging:
-            driver: journald
-            options:
-                tag: "cilogon_docker_{{.Name}}"
+#    satosa:
+#        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:17
+#        volumes:
+#            - type: volume
+#              source: satosa-configs
+#              target: /etc/satosa
+#              read_only: true
+#              volume:
+#                nocopy: true
+#        environment:
+#            - PROXY_PORT=9000
+#            - SATOSA_CONFIG=/etc/satosa/proxy_conf.yaml
+#            - SATOSA_CILOGON_BACKEND_CLIENT_SECRET_FILE=/run/secrets/access_satosa_cilogon_backend_client_secret
+#            - SATOSA_FRONTEND_CERT_FILE=/run/secrets/access_satosa_saml_frontend_cert_file
+#            - SATOSA_FRONTEND_PRIVKEY_FILE=/run/secrets/access_satosa_saml_frontend_privkey_file
+#            - SATOSA_STATE_ENCRYPTION_KEY_FILE=/run/secrets/access_satosa_state_encryption_key
+#        secrets:
+#            - access_satosa_cilogon_backend_client_secret
+#            - access_satosa_saml_frontend_cert_file
+#            - access_satosa_saml_frontend_privkey_file
+#            - access_satosa_state_encryption_key
+#        networks:
+#            - access
+#            - webgateway
+#        healthcheck:
+#            test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:9000/ping"]
+#            interval: 15s
+#            timeout: 1s
+#            retries: 3
+#            start_period: 30s
+#        deploy:
+#            labels:
+#                - "traefik.enable=true"
+#                - "traefik.docker.network=webgateway"
+#                - "traefik.http.routers.access-satosa-http.entrypoints=web"
+#                - "traefik.http.routers.access-satosa-http.rule=Host(`federation-proxy-test.access-ci.org`)"
+#                - "traefik.http.routers.access-satosa-http.middlewares=access-satosa-https"
+#                - "traefik.http.middlewares.access-satosa-https.redirectscheme.scheme=https"
+#                - "traefik.http.routers.access-satosa.entrypoints=websecure"
+#                - "traefik.http.routers.access-satosa.rule=Host(`federation-proxy-test.access-ci.org`)"
+#                - "traefik.http.routers.access-satosa.tls=true"
+#                - "traefik.http.routers.access-satosa.middlewares=access-satosa"
+#                - "traefik.http.services.access-satosa.loadbalancer.server.port=9000"
+#                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie=true"
+#                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie.name=_federation_proxy_test_access_org"
+#                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie.secure=true"
+#                - "traefik.http.services.access-satosa.loadbalancer.sticky.cookie.httpOnly=true"
+#                - "traefik.http.middlewares.access-satosa.headers.stsseconds=63072000"
+#                - "traefik.http.middlewares.access-satosa.headers.stsincludesubdomains=true"
+#                - "traefik.http.services.access-satosa.loadbalancer.healthcheck.path=/ping/"
+#                - "traefik.http.services.access-satosa.loadbalancer.healthcheck.interval=5s"
+#                - "traefik.http.services.access-satosa.loadbalancer.healthcheck.timeout=1s"
+#            replicas: 1
+#            placement:
+#                max_replicas_per_node: 1
+#            rollback_config:
+#              parallelism: 1
+#              delay: 0s
+#              failure_action: pause
+#              monitor: 5s
+#              order: stop-first
+#            update_config:
+#              parallelism: 1
+#              delay: 120s
+#              failure_action: rollback
+#              monitor: 5s
+#              order: stop-first
+#        logging:
+#            driver: journald
+#            options:
+#                tag: "cilogon_docker_{{.Name}}"
 
 secrets:
     access_olc_root_pw:
