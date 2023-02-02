@@ -309,7 +309,7 @@ services:
                 nocopy: true
         environment:
             - LDIF_BACKUP_FILE_PREFIX=access-02
-            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab2
         networks:
             - access
         healthcheck:
