@@ -1,8 +1,9 @@
 #!/bin/bash
 
-ldif_file=${LDIF_BACKUP_DIR}/${LDIF_BACKUP_FILE_PREFIX}-`date +%F-%H.%M.%S`.ldif
+ldif_file=${LDIF_BACKUP_DIR}/${LDIF_BACKUP_FILE_PREFIX}-`date +%F-%H.%M.%S`.ldif.bz2
 
-/usr/sbin/slapcat \
-    -n${LDIF_BACKUP_DBNUM} \
-    > $ldif_file \
-    && /bin/bzip2 $ldif_file
+/usr/sbin/slapcat -n${LDIF_BACKUP_DBNUM} | while read line; do
+    # Use -E flag to supress interpretation of backslashes.
+    echo -E "$line"
+    /bin/sleep "${SLEEP_ARG:-0s}"
+done | /bin/bzip2 > $ldif_file
