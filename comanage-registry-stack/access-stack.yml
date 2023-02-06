@@ -236,7 +236,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     access-ldif-backup-01:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:2
         volumes:
             - type: volume
               source: ldap-state-01
@@ -265,6 +265,7 @@ services:
         environment:
             - LDIF_BACKUP_FILE_PREFIX=access-01
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+            - SLEEP_ARG=0.001s
         networks:
             - access
         healthcheck:
@@ -281,7 +282,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     access-ldif-backup-02:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:2
         volumes:
             - type: volume
               source: ldap-state-02
@@ -310,6 +311,7 @@ services:
         environment:
             - LDIF_BACKUP_FILE_PREFIX=access-02
             - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab2
+            - SLEEP_ARG=0.001s
         networks:
             - access
         healthcheck:
