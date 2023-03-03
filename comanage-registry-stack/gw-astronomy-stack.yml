@@ -414,7 +414,7 @@ services:
             - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/gw_astronomy_registry_host
             - GW_ASTRONOMY_GOOGLE_EPPN=1
             - GW_ASTRONOMY_ORCID_EPPN=orcid-saml-gateway-dev.gw-astronomy.org
-            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverT/users/36943,http://cilogon.org/serverA/users/10844461
+            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverT/users/36943,http://cilogon.org/serverA/users/10844461,http://cilogon.org/serverT/users/173048
             - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_DEFAULT=COmanageRegistry/default/ldap_claims.qdl
         secrets:
             - gw_astronomy_comanage_registry_database_user_password

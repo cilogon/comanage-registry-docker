@@ -343,7 +343,7 @@ services:
             - COMANAGE_REGISTRY_VIRTUAL_HOST_REDIRECT_HTTP_NO=1
             - COMANAGE_REGISTRY_VIRTUAL_HOST_PORT=443
             - COMANAGE_REGISTRY_VIRTUAL_HOST_SCHEME=https
-            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverT/users/36943,http://cilogon.org/serverA/users/10844461
+            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverT/users/36943,http://cilogon.org/serverA/users/10844461,http://cilogon.org/serverT/users/173048
             - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_DEFAULT=COmanageRegistry/default/ldap_claims.qdl
         secrets:
             - cilogon_multi_tenant_comanage_registry_database_user_password
