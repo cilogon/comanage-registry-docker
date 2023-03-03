@@ -360,7 +360,7 @@ services:
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/access_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/access_comanage_registry_security_seed
-            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverA/users/10844461
+            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverA/users/10844461,http://cilogon.org/serverT/users/173048
             - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_SOURCE_DEFAULT=COmanageRegistry/default/identity_token_ldap_claim_source.qdl
             - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_SOURCE_PROCESS=COmanageRegistry/default/identity_token_ldap_claim_process.qdl
         secrets:
