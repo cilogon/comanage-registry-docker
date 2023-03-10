@@ -13,8 +13,8 @@ RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" \
       && cd "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller/View/CilogonEppnEnrollers" \
       && ln -s ../../../../View/Standard/edit.ctp edit.ctp
 
-# Deploy Oa4mpClient plugin version 5.4.1
-ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/5.4.1.tar.gz
+# Deploy Oa4mpClient plugin version 5.4.2
+ARG CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL=https://github.com/cilogon/Oa4mpClient/archive/5.4.2.tar.gz
 
 RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/Oa4mpClient" \
       && wget -O Oa4mpClient.tar.gz $CILOGON_OA4MP_CLIENT_PLUGIN_SRC_URL \
