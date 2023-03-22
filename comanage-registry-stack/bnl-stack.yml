@@ -351,7 +351,7 @@ services:
         environment:
             - OIDC_CLIENT_ID_FILE=/run/secrets/bnl_registry_oidc_client_id 
             - OIDC_CLIENT_SECRET_FILE=/run/secrets/bnl_registry_oidc_client_secret 
-            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/bnl_registry_oidc_provider_metadata_url 
+            - OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/bnl_registry_oidc_provider_metadata_url_2 
             - OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/bnl_registry_oidc_crypto_passphrase 
             - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/bnl_registry_host 
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
@@ -383,7 +383,7 @@ services:
             - bnl_comanage_registry_security_seed
             - bnl_registry_oidc_client_id
             - bnl_registry_oidc_client_secret
-            - bnl_registry_oidc_provider_metadata_url
+            - bnl_registry_oidc_provider_metadata_url_2
             - bnl_registry_oidc_crypto_passphrase
             - bnl_registry_host
         networks:
