@@ -14,13 +14,13 @@ services:
             - /srv/docker/ldapgateway/schema/ligo.ldif:/schema/ligo.ldif
             - /srv/docker/ldapgateway/ldif/config/ldap_gateway_proxy_config.ldif:/ldif/config/ldap_gateway_proxy_config.ldif
         environment:
-            - SLAPD_CERT_FILE=/run/secrets/ldap_gateway_slapd_cert_file_3
-            - SLAPD_PRIVKEY_FILE=/run/secrets/ldap_gateway_slapd_privkey_file_3
-            - SLAPD_CHAIN_FILE=/run/secrets/ldap_gateway_slapd_chain_file_3
+            - SLAPD_CERT_FILE=/run/secrets/ldap_gateway_slapd_cert_file_4
+            - SLAPD_PRIVKEY_FILE=/run/secrets/ldap_gateway_slapd_privkey_file_4
+            - SLAPD_CHAIN_FILE=/run/secrets/ldap_gateway_slapd_chain_file_4
         secrets:
-            - ldap_gateway_slapd_cert_file_3
-            - ldap_gateway_slapd_privkey_file_3
-            - ldap_gateway_slapd_chain_file_3
+            - ldap_gateway_slapd_cert_file_4
+            - ldap_gateway_slapd_privkey_file_4
+            - ldap_gateway_slapd_chain_file_4
         networks:
             - ldapgateway
         ports:
@@ -44,9 +44,9 @@ services:
               delay: 60s
 
 secrets:
-    ldap_gateway_slapd_cert_file_3:
+    ldap_gateway_slapd_cert_file_4:
         external: true
-    ldap_gateway_slapd_privkey_file_3:
+    ldap_gateway_slapd_privkey_file_4:
         external: true
-    ldap_gateway_slapd_chain_file_3:
+    ldap_gateway_slapd_chain_file_4:
         external: true
