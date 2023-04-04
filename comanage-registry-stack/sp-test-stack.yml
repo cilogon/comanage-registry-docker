@@ -17,6 +17,7 @@ services:
             - /srv/docker/satosa-sp-check/var/www/html:/var/www/html
             - /srv/docker/satosa-sp-check/etc/shibboleth/shibboleth2.xml:/etc/shibboleth/shibboleth2.xml
             - /srv/docker/satosa-sp-check/etc/shibboleth/attribute-map.xml:/etc/shibboleth/attribute-map.xml
+            - /srv/docker/satosa-sp-check/etc/shibboleth/attribute-policy.xml:/etc/shibboleth/attribute-policy.xml
             - /srv/docker/satosa-sp-check/etc/shibboleth/sp-cert.pem:/etc/shibboleth/sp-signing-cert.pem
             - /srv/docker/satosa-sp-check/etc/shibboleth/sp-key.pem:/etc/shibboleth/sp-signing-key.pem
             - /srv/docker/satosa-sp-check/etc/shibboleth/sp-cert.pem:/etc/shibboleth/sp-encrypt-cert.pem
