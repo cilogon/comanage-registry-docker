@@ -133,7 +133,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:31
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:32
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -191,7 +191,7 @@ services:
                       `/{url3:\\.well-known/(openid-configuration|oauth-authorization-server)/([^/]+)}`
                     )"
                 - "traefik.http.routers.oa4mp-server.tls=true"
-                - "traefik.http.routers.oa4mp-server.middlewares=oa4mp-server,oa4mp-server-ratelimit,oa4mp-regex1,oa4mp-regex2"
+                - "traefik.http.routers.oa4mp-server.middlewares=oa4mp-server,oa4mp-server-ratelimit"
                 - "traefik.http.services.oa4mp-server.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_dev_cilogon_org_oauth2"
@@ -200,11 +200,6 @@ services:
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.path=/oauth2/dbService?action=getUser&idp=http%3A%2F%2Fgoogle.com%2Faccounts%2Fo8%2Fid&idp_display_name=Google&first_name=Google&last_name=User&display_name=Google+User&email=google%40cilogon.org&loa=openid&oidc=112618836080811307185&us_idp=1"
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.interval=30s"
                 - "traefik.http.services.oa4mp-server.loadbalancer.healthcheck.timeout=5s"
-                # This horrible regex is equivalent to (?!oauth2) in Perl (due to lack of negative lookahead in Golang)
-                - "traefik.http.middlewares.oa4mp-regex1.replacepathregex.regex=^/(([^o]|o(o|a(o|u(o|t(o|ho))))*([^ao]|a([^ou]|u([^ot]|t([^ho]|h[^2o])))))*(o(o|a(o|u(o|t(o|ho))))*(a(u?|uth?))?)?)/\\.well-known/(openid-configuration|oauth-authorization-server)/?"
-                - "traefik.http.middlewares.oa4mp-regex1.replacepathregex.replacement=/oauth2/.well-known/$${18}/$${1}"
-                - "traefik.http.middlewares.oa4mp-regex2.replacepathregex.regex=^/\\.well-known/(openid-configuration|oauth-authorization-server)/([^/]+)/?"
-                - "traefik.http.middlewares.oa4mp-regex2.replacepathregex.replacement=/oauth2/.well-known/$${1}/$${2}"
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=40"
