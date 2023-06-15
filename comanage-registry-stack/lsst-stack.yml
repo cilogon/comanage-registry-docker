@@ -352,8 +352,8 @@ services:
             - webgateway
         healthcheck:
             test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
-            interval: 15s
-            timeout: 1s
+            interval: 60s
+            timeout: 15s
             retries: 3
             start_period: 180s
         deploy:
@@ -376,9 +376,9 @@ services:
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsincludesubdomains=true"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
-                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.interval=5s"
-                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.timeout=1s"
-            replicas: 2
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.timeout=10"
+            replicas: 4
             placement:
                 max_replicas_per_node: 1
             rollback_config:
