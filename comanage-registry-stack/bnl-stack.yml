@@ -401,8 +401,8 @@ services:
             - webgateway
         healthcheck:
             test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
-            interval: 15s
-            timeout: 1s
+            interval: 60s
+            timeout: 10s
             retries: 3
             start_period: 180s
         deploy:
@@ -425,8 +425,8 @@ services:
                 - "traefik.http.middlewares.bnl-comanage-registry.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.bnl-comanage-registry.headers.stsincludesubdomains=true"
                 - "traefik.http.services.bnl-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
-                - "traefik.http.services.bnl-comanage-registry.loadbalancer.healthcheck.interval=5s"
-                - "traefik.http.services.bnl-comanage-registry.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.bnl-comanage-registry.loadbalancer.healthcheck.interval=60s"
+                - "traefik.http.services.bnl-comanage-registry.loadbalancer.healthcheck.timeout=10s"
             replicas: 1
             placement:
                 max_replicas_per_node: 1
