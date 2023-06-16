@@ -33,8 +33,8 @@ services:
             - cloudbank
         healthcheck:
             test: ["CMD", "curl", "-I", "--fail", "-H", "Accept: application/samlmetadata+xml", "http://127.0.0.1:8080/entities/"]
-            interval: 15s
-            timeout: 1s
+            interval: 60s
+            timeout: 5s
             retries: 3
             start_period: 30s
         deploy:
@@ -75,8 +75,8 @@ services:
             - cloudbank
         healthcheck:
             test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1/noproxy/alive.html"]
-            interval: 15s
-            timeout: 1s
+            interval: 60s
+            timeout: 5s
             retries: 3
             start_period: 5s
         deploy:
@@ -99,8 +99,8 @@ services:
                 - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.cloudbank-satosa-proxy.headers.stsincludesubdomains=true"
                 - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.path=/ping/"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.interval=5s"
-                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.interval=60s"
+                - "traefik.http.services.cloudbank-satosa-proxy.loadbalancer.healthcheck.timeout=5s"
             replicas: 3
             placement:
                 max_replicas_per_node: 1
@@ -147,8 +147,8 @@ services:
             - cloudbank
         healthcheck:
             test: ["CMD", "curl", "-I", "--fail", "http://127.0.0.1:8080/ping"]
-            interval: 15s
-            timeout: 1s
+            interval: 60s
+            timeout: 5s
             retries: 3
             start_period: 30s
         deploy:
