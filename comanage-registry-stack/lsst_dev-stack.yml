@@ -319,7 +319,7 @@ services:
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
             - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
             - COMANAGE_REGISTRY_DATABASE=lsst_dev_registry_test
-            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/lsst_dev_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_HOST=comanage-registry-proxy.proxy-chnfiwoxacjh.us-east-2.rds.amazonaws.com
             - COMANAGE_REGISTRY_DATABASE_USER=lv_registry_tst
             - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/lsst_dev_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/lsst_dev_comanage_registry_email_account
