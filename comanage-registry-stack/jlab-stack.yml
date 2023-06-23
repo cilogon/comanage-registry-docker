@@ -474,6 +474,14 @@ services:
             - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/jlab_comanage_registry_email_account_password
             - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/jlab_comanage_registry_security_salt
             - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/jlab_comanage_registry_security_seed
+        secrets:
+            - jlab_comanage_registry_database_user_password
+            - jlab_comanage_registry_database_host
+            - jlab_comanage_registry_email_account
+            - jlab_comanage_registry_email_account_password
+            - jlab_comanage_registry_email_from
+            - jlab_comanage_registry_security_salt
+            - jlab_comanage_registry_security_seed
         networks:
             - jlab
         healthcheck:
