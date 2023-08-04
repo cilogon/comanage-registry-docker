@@ -191,7 +191,7 @@ services:
                       `/{url3:\\.well-known/(openid-configuration|oauth-authorization-server)/([^/]+)}`
                     )"
                 - "traefik.http.routers.oa4mp-server.tls=true"
-                - "traefik.http.routers.oa4mp-server.middlewares=oa4mp-server,oa4mp-server-ratelimit"
+                - "traefik.http.routers.oa4mp-server.middlewares=oa4mp-server,oa4mp-server-ratelimit,redirect-register"
                 - "traefik.http.services.oa4mp-server.loadbalancer.server.port=8888"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie=true"
                 - "traefik.http.services.oa4mp-server.loadbalancer.sticky.cookie.name=_cilogon_org_oauth2"
@@ -203,6 +203,9 @@ services:
                 - "traefik.http.middlewares.oa4mp-server.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=40"
+                - "traefik.http.middlewares.redirect-register.redirectregex.regex=^https://cilogon.org/oauth2/register"
+                - "traefik.http.middlewares.redirect-register.redirectregex.replacement=https://www.cilogon.org/client-registration-unavailable"
+                - "traefik.http.middlewares.redirect-register.redirectregex.permanent=false"
         logging:
             driver: journald
             options:
