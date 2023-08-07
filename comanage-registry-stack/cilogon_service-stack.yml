@@ -75,7 +75,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-demo:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:20
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-demo:21
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
@@ -133,7 +133,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     oa4mp-server:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:40
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/oa4mp-server:41
         command: ["catalina.sh", "run"]
         volumes:
             - type: volume
