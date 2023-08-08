@@ -204,7 +204,7 @@ services:
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.average=4"
                 - "traefik.http.middlewares.oa4mp-server-ratelimit.ratelimit.burst=40"
                 - "traefik.http.middlewares.redirect-register.redirectregex.regex=^https://cilogon.org/oauth2/register"
-                - "traefik.http.middlewares.redirect-register.redirectregex.replacement=https://www.cilogon.org/client-registration-unavailable"
+                - "traefik.http.middlewares.redirect-register.redirectregex.replacement=https://test.cilogon.org/oauth2/register"
                 - "traefik.http.middlewares.redirect-register.redirectregex.permanent=false"
         logging:
             driver: journald
