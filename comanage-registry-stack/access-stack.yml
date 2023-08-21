@@ -328,7 +328,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:access-c3ad379c-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:access-65d2f008-1
         volumes:
             - type: volume
               source: comanage-registry-slashRoot
@@ -437,7 +437,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:access-c3ad379c-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:access-65d2f008-1
         volumes:
             - type: volume
               source: comanage-registry-slashRoot
