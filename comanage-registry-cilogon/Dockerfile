@@ -4,7 +4,7 @@ ARG COMANAGE_REGISTRY_REPOSITORY=public.ecr.aws/cilogon/comanage-registry
 FROM ${COMANAGE_REGISTRY_REPOSITORY}:${COMANAGE_REGISTRY_VERSION}-mod_auth_openidc-${COMANAGE_REGISTRY_BASE_IMAGE_VERSION}
 
 # Deploy the CILogon ePPN enroller plugin
-ARG CILOGON_EPPN_ENROLLER_PLUGIN_SRC_URL=https://github.com/cilogon/CilogonEppnEnroller/archive/master.tar.gz
+ARG CILOGON_EPPN_ENROLLER_PLUGIN_SRC_URL=https://github.com/cilogon/CilogonEppnEnroller/archive/main.tar.gz
 
 RUN mkdir -p "$COMANAGE_REGISTRY_DIR/app/Plugin/CilogonEppnEnroller" \
       && wget -O CilogonEppnEnroller.tar.gz $CILOGON_EPPN_ENROLLER_PLUGIN_SRC_URL \
