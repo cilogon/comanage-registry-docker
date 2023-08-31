@@ -377,7 +377,7 @@ services:
                 - "traefik.http.middlewares.lsst-comanage-registry.headers.stsincludesubdomains=true"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
                 - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.interval=30s"
-                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.timeout=10"
+                - "traefik.http.services.lsst-comanage-registry.loadbalancer.healthcheck.timeout=10s"
             replicas: 4
             placement:
                 max_replicas_per_node: 1
