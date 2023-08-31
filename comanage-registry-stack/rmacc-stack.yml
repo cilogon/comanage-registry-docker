@@ -81,8 +81,9 @@ services:
                 - "traefik.http.services.rmacc-pyff.loadbalancer.sticky.cookie.httpOnly=true"
                 - "traefik.http.middlewares.rmacc-pyff.headers.stsseconds=63072000"
                 - "traefik.http.middlewares.rmacc-pyff.headers.stsincludesubdomains=true"
-                - "traefik.http.services.rmacc-pyff.loadbalancer.healthcheck.interval=5s"
-                - "traefik.http.services.rmacc-pyff.loadbalancer.healthcheck.timeout=1s"
+                - "traefik.http.services.rmacc-pyff.loadbalancer.healthcheck.path=/entities/"
+                - "traefik.http.services.rmacc-pyff.loadbalancer.healthcheck.interval=30s"
+                - "traefik.http.services.rmacc-pyff.loadbalancer.healthcheck.timeout=10s"
                 - "traefik.http.services.rmacc-pyff.loadbalancer.healthcheck.headers.Accept=application/samlmetadata+xml"
             replicas: 1
             placement:
