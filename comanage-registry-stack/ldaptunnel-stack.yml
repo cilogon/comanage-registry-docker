@@ -1,0 +1,32 @@
+version: '3.8'
+
+networks:
+    ldapgateway:
+        external: true
+
+services:
+    ldaptunnel:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd-proxy:8
+        command: ["slapd", "-d", "0", "-h", "ldapi:/// ldap://:9389/", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - /srv/docker/ldaptunnel/schema/cilogonperson.ldif:/schema/cilogonperson.ldif
+            - /srv/docker/ldaptunnel/schema/kerberos.ldif:/schema/kerberos.ldif
+            - /srv/docker/ldaptunnel/schema/ligo.ldif:/schema/ligo.ldif
+            - /srv/docker/ldaptunnel/ldif/config/ldap_tunnel_proxy_config.ldif:/ldif/config/ldap_tunnel_proxy_config.ldif
+        networks:
+            - ldapgateway
+        ports:
+            - target: 9389
+              published: 9389
+              protocol: tcp
+              mode: host
+        deploy:
+            mode: global
+            placement:
+              constraints:
+                - node.role == manager
+            restart_policy:
+              condition: on-failure
+            update_config:
+              parallelism: 1
+              delay: 60s
