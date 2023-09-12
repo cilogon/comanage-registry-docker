@@ -1,0 +1,545 @@
+version: '3.8'
+
+networks:
+    icomputes:
+        driver: overlay
+        ipam:
+            config:
+                - subnet: 10.0.120.0/24
+    webgateway:
+        external: true
+    ldapgateway:
+        external: true
+
+volumes:
+    ldap-state-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_01"
+
+    ldap-state-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/var/lib/ldap_02"
+
+    ldap-config-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_01"
+
+    ldap-config-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/slapd.d/ldap_02"
+
+    ldap-ldif-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_01"
+
+    ldap-ldif-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/ldif/ldap_02"
+
+    ldap-schema:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/schema"
+
+    ldap-backups-01:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/access/ldif/01"
+
+    ldap-backups-02:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_BACKUPS_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/access/ldif/02"
+
+    ldap-backups-usr-local:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/usr/local/slapcat"
+
+    comanage-registry-slashRoot:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/opt/registry/slashRoot"
+
+    satosa-configs:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=${SRV_ICOMPUTES_NFS_HOST:?err},nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport
+            device: ":/etc/satosa"
+
+services:
+    icomputes-ldap-01:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-01
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/icomputes_olc_root_pw
+            - OLC_SUFFIX=dc=computes,dc=illinois,dc=edu
+            - OLC_ROOT_DN=cn=admin,dc=computes,dc=illinois,dc=edu
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/icomputes_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/icomputes_syncrepl_user_password_hash
+        secrets:
+            - icomputes_olc_root_pw
+            - icomputes_olc_root_dn_password
+            - icomputes_syncrepl_user_password_hash
+        networks:
+            - icomputes
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==manager"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    icomputes-ldap-02:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-slapd:8
+        command: ["slapd", "-d", "256", "-h", "ldapi:/// ldap:///", "-u", "openldap", "-g", "openldap"]
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-ldif-02
+              target: /ldif
+              read_only: true
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-schema
+              target: /schema
+              read_only: true
+              volume:
+                nocopy: true
+        environment:
+            - OLC_ROOT_PW_FILE=/run/secrets/icomputes_olc_root_pw
+            - OLC_SUFFIX=dc=computes,dc=illinois,dc=edu
+            - OLC_ROOT_DN=cn=admin,dc=computes,dc=illinois,dc=edu
+            - OLC_ROOT_DN_PASSWORD_FILE=/run/secrets/icomputes_olc_root_dn_password
+            - SYNCREPL_USER_PASSWORD_HASH_FILE=/run/secrets/icomputes_syncrepl_user_password_hash
+        secrets:
+            - icomputes_olc_root_pw
+            - icomputes_olc_root_dn_password
+            - icomputes_syncrepl_user_password_hash
+        networks:
+            - icomputes
+            - ldapgateway
+        healthcheck:
+            test: ["CMD", "/usr/bin/ldapsearch", "-LLL", "-H", "ldapi:///", "-Y", "EXTERNAL", "-b", "cn=config"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+            placement:
+              constraints:
+                - "node.role==worker"
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    icomputes-ldif-backup-01:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:2
+        volumes:
+            - type: volume
+              source: ldap-state-01
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-01
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-01
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=icomputes-01
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab
+            - SLEEP_ARG=0.001s
+        networks:
+            - icomputes
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    icomputes-ldif-backup-02:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/ldif-backup:2
+        volumes:
+            - type: volume
+              source: ldap-state-02
+              target: /var/lib/ldap
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-config-02
+              target: /etc/ldap/slapd.d
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-usr-local
+              target: /usr/local/slapcat
+              read_only: false
+              volume:
+                nocopy: true
+            - type: volume
+              source: ldap-backups-02
+              target: /srv/backups/ldif
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - LDIF_BACKUP_FILE_PREFIX=icomputes-02
+            - LDIF_CRONTAB=/usr/local/slapcat/etc/openldap-crontab2
+            - SLEEP_ARG=0.001s
+        networks:
+            - icomputes
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-u", "openldap", "-l"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            replicas: 1
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:access-65d2f008-1
+        volumes:
+            - type: volume
+              source: comanage-registry-slashRoot
+              target: /opt/registry/slashRoot
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
+            - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
+            - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=icomputes_registry
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/icomputes_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=is_registry
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/icomputes_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=Illinois Computes Registry
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/icomputes_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/icomputes_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_HTTPS_NO=1
+            - COMANAGE_REGISTRY_OIDC_CLIENT_ID_FILE=/run/secrets/icomputes_registry_oidc_client_id 
+            - COMANAGE_REGISTRY_OIDC_CLIENT_SECRET_FILE=/run/secrets/icomputes_registry_oidc_client_secret 
+            - COMANAGE_REGISTRY_OIDC_CRYPTO_PASSPHRASE_FILE=/run/secrets/icomputes_registry_oidc_crypto_passphrase 
+            - COMANAGE_REGISTRY_OIDC_FORWARD_HEADERS=1
+            - COMANAGE_REGISTRY_OIDC_PROVIDER_METADATA_URL_FILE=/run/secrets/icomputes_registry_oidc_provider_metadata_url 
+            - COMANAGE_REGISTRY_OIDC_SCOPES=openid email profile org.cilogon.userinfo
+            - COMANAGE_REGISTRY_OIDC_SESSION_INACTIVITY_TIMEOUT=28800
+            - COMANAGE_REGISTRY_OIDC_SESSION_MAX_DURATION=28800
+            - COMANAGE_REGISTRY_REMOTE_IP=1
+            - COMANAGE_REGISTRY_REMOTE_IP_INTERNAL_PROXY=10.0.4.0/24
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/icomputes_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/icomputes_comanage_registry_security_seed
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_FQDN_FILE=/run/secrets/icomputes_registry_host 
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_REDIRECT_HTTP_NO=1
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_PORT=443
+            - COMANAGE_REGISTRY_VIRTUAL_HOST_SCHEME=https
+            - COMANAGE_REGISTRY_OA4MP_ADMIN_USERS=http://cilogon.org/serverT/users/64703,http://cilogon.org/serverT/users/37233,http://cilogon.org/serverA/users/10844461,http://cilogon.org/serverT/users/173048
+            - COMANAGE_REGISTRY_OA4MP_QDL_CLAIM_DEFAULT=COmanageRegistry/default/ldap_claims.qdl
+        secrets:
+            - icomputes_comanage_registry_database_user_password
+            - icomputes_comanage_registry_database_host
+            - icomputes_comanage_registry_email_account
+            - icomputes_comanage_registry_email_account_password
+            - icomputes_comanage_registry_email_from
+            - icomputes_comanage_registry_security_salt
+            - icomputes_comanage_registry_security_seed
+            - icomputes_registry_oidc_client_id
+            - icomputes_registry_oidc_client_secret
+            - icomputes_registry_oidc_provider_metadata_url
+            - icomputes_registry_oidc_crypto_passphrase
+            - icomputes_registry_host
+        networks:
+            - webgateway
+            - icomputes
+        healthcheck:
+            test: ["CMD", "curl", "--fail", "-I", "http://127.0.0.1/registry/index.php"]
+            interval: 15s
+            timeout: 5s
+            retries: 3
+            start_period: 180s
+        deploy:
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=webgateway"
+                - "traefik.http.routers.icomputes-comanage-registry-http.entrypoints=web"
+                - "traefik.http.routers.icomputes-comanage-registry-http.rule=Host(`registry.computes.illinois.edu`)"
+                - "traefik.http.routers.icomputes-comanage-registry-http.middlewares=icomputes-comanage-registry-https"
+                - "traefik.http.middlewares.icomputes-comanage-registry-https.redirectscheme.scheme=https"
+                - "traefik.http.routers.icomputes-comanage-registry.entrypoints=websecure"
+                - "traefik.http.routers.icomputes-comanage-registry.rule=Host(`registry.computes.illinois.edu`)"
+                - "traefik.http.routers.icomputes-comanage-registry.tls=true"
+                - "traefik.http.routers.icomputes-comanage-registry.middlewares=icomputes-comanage-registry"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.server.port=80"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.sticky.cookie=true"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.sticky.cookie.name=_registry_computes_illinois_edu"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.sticky.cookie.secure=true"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.sticky.cookie.httpOnly=true"
+                - "traefik.http.middlewares.icomputes-comanage-registry.headers.stsseconds=63072000"
+                - "traefik.http.middlewares.icomputes-comanage-registry.headers.stsincludesubdomains=true"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.healthcheck.interval=60s"
+                - "traefik.http.services.icomputes-comanage-registry.loadbalancer.healthcheck.timeout=10s"
+            replicas: 1
+            placement:
+                max_replicas_per_node: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 120s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+    comanage-registry-cron:
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:access-65d2f008-1
+        volumes:
+            - type: volume
+              source: comanage-registry-slashRoot
+              target: /opt/registry/slashRoot
+              read_only: false
+              volume:
+                nocopy: true
+        environment:
+            - COMANAGE_REGISTRY_CRON_USER=root
+            - COMANAGE_REGISTRY_SKIP_SETUP=1
+            - COMANAGE_REGISTRY_SKIP_UPGRADE=1
+            - COMANAGE_REGISTRY_DATASOURCE=Database/Mysql
+            - COMANAGE_REGISTRY_DATABASE=icomputes_registry
+            - COMANAGE_REGISTRY_DATABASE_HOST_FILE=/run/secrets/icomputes_comanage_registry_database_host
+            - COMANAGE_REGISTRY_DATABASE_USER=is_registry
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/icomputes_comanage_registry_database_user_password
+            - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
+            - COMANAGE_REGISTRY_EMAIL_FROM_NAME=Illinois Computes Registry
+            - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
+            - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
+            - COMANAGE_REGISTRY_EMAIL_PORT=465
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_FILE=/run/secrets/icomputes_comanage_registry_email_account
+            - COMANAGE_REGISTRY_EMAIL_ACCOUNT_PASSWORD_FILE=/run/secrets/icomputes_comanage_registry_email_account_password
+            - COMANAGE_REGISTRY_SECURITY_SALT_FILE=/run/secrets/icomputes_comanage_registry_security_salt
+            - COMANAGE_REGISTRY_SECURITY_SEED_FILE=/run/secrets/icomputes_comanage_registry_security_seed
+            - KRB5_CONFIG=/srv/comanage-registry/local/krb5.conf
+        secrets:
+            - icomputes_comanage_registry_database_user_password
+            - icomputes_comanage_registry_database_host
+            - icomputes_comanage_registry_email_account
+            - icomputes_comanage_registry_email_account_password
+            - icomputes_comanage_registry_email_from
+            - icomputes_comanage_registry_security_salt
+            - icomputes_comanage_registry_security_seed
+        networks:
+            - icomputes
+        healthcheck:
+            test: ["CMD", "/usr/bin/crontab", "-l", "-u", "root"]
+            interval: 15s
+            timeout: 1s
+            retries: 3
+            start_period: 5s
+        deploy:
+            labels:
+                - "traefik.enable=false"
+            replicas: 1
+            rollback_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: pause
+              monitor: 5s
+              order: stop-first
+            update_config:
+              parallelism: 1
+              delay: 0s
+              failure_action: rollback
+              monitor: 5s
+              order: stop-first
+        logging:
+            driver: journald
+            options:
+                tag: "cilogon_docker_{{.Name}}"
+
+secrets:
+    icomputes_olc_root_pw:
+        external: true
+    icomputes_comanage_registry_database_user_password:
+        external: true
+    icomputes_comanage_registry_database_host:
+        external: true
+    icomputes_comanage_registry_email_account:
+        external: true
+    icomputes_comanage_registry_email_account_password:
+        external: true
+    icomputes_comanage_registry_email_from:
+        external: true
+    icomputes_comanage_registry_security_salt:
+        external: true
+    icomputes_comanage_registry_security_seed:
+        external: true
+    icomputes_metadata_signer_cert_file:
+        external: true
+    icomputes_metadata_signer_privkey_file:
+        external: true
+    icomputes_registry_oidc_client_id:
+        external: true
+    icomputes_registry_oidc_client_secret:
+        external: true
+    icomputes_registry_oidc_provider_metadata_url:
+        external: true
+    icomputes_registry_oidc_crypto_passphrase:
+        external: true
+    icomputes_olc_root_dn_password:
+        external: true
+    icomputes_registry_host:
+        external: true
+    icomputes_satosa_cilogon_backend_client_secret:
+        external: true
+    icomputes_satosa_saml_frontend_cert_file:
+        external: true
+    icomputes_satosa_saml_frontend_privkey_file:
+        external: true
+    icomputes_satosa_state_encryption_key:
+        external: true
+    icomputes_syncrepl_user_password_hash:
+        external: true
