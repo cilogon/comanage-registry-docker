@@ -415,7 +415,7 @@ services:
                 - "traefik.http.services.icomputes-comanage-registry.loadbalancer.healthcheck.path=/registry/index.php"
                 - "traefik.http.services.icomputes-comanage-registry.loadbalancer.healthcheck.interval=60s"
                 - "traefik.http.services.icomputes-comanage-registry.loadbalancer.healthcheck.timeout=10s"
-            replicas: 1
+            replicas: 2
             placement:
                 max_replicas_per_node: 1
             rollback_config:
