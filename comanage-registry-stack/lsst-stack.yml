@@ -300,7 +300,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:access-31d7e40d-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry:access-153d4936-1
         volumes:
             - type: volume
               source: comanage-registry-slashRoot
@@ -309,6 +309,7 @@ services:
               volume:
                 nocopy: true
         environment:
+            - COMANAGE_REGISTRY_VERSION=4.3.0
             - COMANAGE_REGISTRY_ADMIN_GIVEN_NAME=ScottCmpAdmin
             - COMANAGE_REGISTRY_ADMIN_FAMILY_NAME=Koranda
             - COMANAGE_REGISTRY_ADMIN_USERNAME=http://cilogon.org/serverT/users/64703
@@ -409,7 +410,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     comanage-registry-cron:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:access-31d7e40d-1
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-cron:access-153d4936-1
         volumes:
             - type: volume
               source: comanage-registry-slashRoot
