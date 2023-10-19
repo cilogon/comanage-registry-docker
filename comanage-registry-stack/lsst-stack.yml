@@ -316,9 +316,9 @@ services:
             - COMANAGE_REGISTRY_DATABASE=lsst_registry
             - COMANAGE_REGISTRY_DATABASE_HOST=comanage-registry-proxy.proxy-chnfiwoxacjh.us-east-2.rds.amazonaws.com
             - COMANAGE_REGISTRY_DATABASE_USER=lt_registry
+            - COMANAGE_REGISTRY_DATABASE_USER_PASSWORD_FILE=/run/secrets/lsst_comanage_registry_database_user_password
             - COMANAGE_REGISTRY_EMAIL_FROM_EMAIL=registry@cilogon.org
             - COMANAGE_REGISTRY_EMAIL_FROM_NAME=LSST Registry
-            - COMANAGE_REGISTRY_EMAIL_PORT=465
             - COMANAGE_REGISTRY_EMAIL_TRANSPORT=Smtp
             - COMANAGE_REGISTRY_EMAIL_HOST=tls://smtp.gmail.com
             - COMANAGE_REGISTRY_EMAIL_PORT=465
