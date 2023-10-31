@@ -122,7 +122,7 @@ services:
                 tag: "cilogon_docker_{{.Name}}"
 
     satosa:
-        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:14
+        image: 495649616520.dkr.ecr.us-east-2.amazonaws.com/comanage-registry-satosa:18
         volumes:
             - /srv/docker/cloudbank/opt/satosa/proxy_conf.yaml:/opt/satosa/proxy_conf.yaml
             - /srv/docker/cloudbank/opt/satosa/internal_attributes.yaml:/opt/satosa/internal_attributes.yaml
