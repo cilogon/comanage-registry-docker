@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         build-essential \
@@ -18,8 +18,8 @@ RUN mkdir -p /opt/satosa \
     && pip install python-pcre \
     && pip install uwsgi \
     && pip install ldap3 \
-    && pip install pysaml2==7.1.2 \
-    && pip install satosa==8.0.1 \
+    && pip install pysaml2==7.5.0 \
+    && pip install satosa==8.4.0 \
     && chown -R satosa:satosa /opt/satosa \
     && apt-get purge -y \
         build-essential \
@@ -29,11 +29,15 @@ RUN mkdir -p /opt/satosa \
 
 # Use version of mdstore.py from thread_safe_mdq branch
 # until merged upstream.
-COPY mdstore.py.b3754877 /opt/satosa/lib/python3.9/site-packages/saml2/mdstore.py
+RUN curl -L \
+  -o /opt/satosa/lib/python3.11/site-packages/saml2/mdstore.py \
+  https://raw.githubusercontent.com/cilogon/pysaml2/256ca0129aa9ee9b652fff3812a3f9b8182a5902/src/saml2/mdstore.py
 
 # Use updated ldap_attribute_store.py from ldap_server_mode branch
 # until merged upstream.
-COPY ldap_attribute_store.py /opt/satosa/lib/python3.9/site-packages/satosa/micro_services/ldap_attribute_store.py
+RUN curl -L \
+  -o /opt/satosa/lib/python3.11/site-packages/satosa/micro_services/ldap_attribute_store.py \
+  https://raw.githubusercontent.com/cilogon/SATOSA/ef0d51beed75b8a30dbe011cd48e3e3b83d37a14/src/satosa/micro_services/ldap_attribute_store.py
 
 COPY start.sh /usr/local/sbin/satosa-start.sh
 
