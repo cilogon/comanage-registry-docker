@@ -1,4 +1,4 @@
-FROM redis:5.0.14-bullseye
+FROM redis:7.2.4-bookworm
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         curl \
@@ -13,7 +13,7 @@ RUN mkdir -p /opt/pyff \
     && python3 -m venv /opt/pyff \
     && . /opt/pyff/bin/activate \
     && pip install --upgrade pip \
-    && pip install pyff==2.0.0 \
+    && pip install pyff==2.1.2 \
     && chown -R pyff:pyff /opt/pyff \
     && apt-get remove -y --purge \
         git \
