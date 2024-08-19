@@ -276,7 +276,9 @@ class LdapAttributeStore(ResponseMicroService):
             "LDIF": ldap3.LDIF,
             "RESTARTABLE": ldap3.RESTARTABLE,
             "REUSABLE": ldap3.REUSABLE,
-            "MOCK_SYNC": ldap3.MOCK_SYNC
+            "MOCK_SYNC": ldap3.MOCK_SYNC,
+            "SAFE_SYNC": ldap3.SAFE_SYNC,
+            "SAFE_RESTARTABLE": ldap3.SAFE_RESTARTABLE
         }
         client_strategy = client_strategy_map[client_strategy_string]
 
@@ -502,6 +504,15 @@ class LdapAttributeStore(ResponseMicroService):
                 else config["search_return_attributes"].keys()
             )
             try:
+                if connection.closed or not connection.listening or not connection.bound:
+                    msg = "Calling bind on connection object"
+                    logline = lu.LOG_FMT.format(id=session_id, message=msg)
+                    logger.debug(logline)
+                    connection.bind()
+                    if connection.bound and connection.listening and not connection.closed:
+                        msg = "Connection is now open and bound"
+                        logline = lu.LOG_FMT.format(id=session_id, message=msg)
+                        logger.debug(logline)
                 results = connection.search(
                     config["search_base"], search_filter, attributes=attributes
                 )
@@ -547,6 +558,13 @@ class LdapAttributeStore(ResponseMicroService):
                     logger.warning(logline)
                 record = responses[0]
                 break
+
+        # Unbind and close if not using pooling.
+        if config["client_strategy"] != "REUSABLE" and config["pool_size"] == 0:
+            connection.unbind()
+            msg = "Connection is now unbound"
+            logline = lu.LOG_FMT.format(id=session_id, message=msg)
+            logger.debug(logline)
 
         # Before using a found record, if any, to populate attributes
         # clear any attributes incoming to this microservice if so configured.
