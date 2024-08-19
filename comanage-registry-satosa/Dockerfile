@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         build-essential \
@@ -29,11 +29,11 @@ RUN mkdir -p /opt/satosa \
 
 # Use version of mdstore.py from thread_safe_mdq branch
 # until merged upstream.
-COPY mdstore.py.b3754877 /opt/satosa/lib/python3.9/site-packages/saml2/mdstore.py
+COPY mdstore.py.b3754877 /opt/satosa/lib/python3.11/site-packages/saml2/mdstore.py
 
 # Use updated ldap_attribute_store.py from ldap_server_mode branch
 # until merged upstream.
-COPY ldap_attribute_store.py /opt/satosa/lib/python3.9/site-packages/satosa/micro_services/ldap_attribute_store.py
+COPY ldap_attribute_store.py /opt/satosa/lib/python3.11/site-packages/satosa/micro_services/ldap_attribute_store.py
 
 COPY start.sh /usr/local/sbin/satosa-start.sh
 
