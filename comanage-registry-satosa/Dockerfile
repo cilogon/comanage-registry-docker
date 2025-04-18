@@ -18,8 +18,8 @@ RUN mkdir -p /opt/satosa \
     && pip install python-pcre \
     && pip install uwsgi \
     && pip install ldap3 \
-    && pip install pysaml2==7.5.0 \
-    && pip install satosa==8.4.0 \
+    && pip install pysaml2==7.5.2 \
+    && pip install satosa==8.5.1 \
     && chown -R satosa:satosa /opt/satosa \
     && apt-get purge -y \
         build-essential \
